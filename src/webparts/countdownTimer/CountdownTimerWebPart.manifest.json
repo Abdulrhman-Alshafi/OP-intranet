@@ -1,0 +1,41 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "a3c7b1e2-9d4f-4a8e-b6c5-1f2d3e4a5b6c",
+  "alias": "CountdownTimerWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "TeamsPersonalApp",
+    "TeamsTab",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "OP Countdown Timer"
+      },
+      "description": {
+        "default": "A customizable countdown timer for events and deadlines."
+      },
+      "officeFabricIconFontName": "Timer",
+      "properties": {
+        "eventTitle": "Upcoming Event",
+        "targetDate": "",
+        "layout": "horizontal",
+        "showDays": true,
+        "showHours": true,
+        "showMinutes": true,
+        "showSeconds": true,
+        "completedMessage": "The event has started!"
+      }
+    }
+  ]
+}

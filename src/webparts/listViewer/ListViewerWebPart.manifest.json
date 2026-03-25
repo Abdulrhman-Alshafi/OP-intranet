@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "e21b79e2-cae3-4d6b-8859-15fa2cc4e124",
+  "alias": "ListViewerWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+  "supportsFullBleed": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {"default": "Advanced"},
+      "title": {"default": "OP Premium List Viewer"},
+      "description": {"default": "Display items from any SharePoint list."},
+      "officeFabricIconFontName": "List",
+      "properties": {
+        "listId": "",
+        "maxItems": 10,
+        "viewStyle": "grid"
+      }
+    }
+  ]
+}

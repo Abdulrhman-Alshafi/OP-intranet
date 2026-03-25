@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "2f28b2bd-6511-477f-a6dd-b1d564bb3b52",
+  "alias": "ServicesGridWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Other" },
+    "title": { "default": "OP Services Grid" },
+    "description": { "default": "A premium grid to showcase services" },
+    "officeFabricIconFontName": "GridViewMedium",
+    "properties": {
+      "services": [],
+      "columns": "3"
+    }
+  }]
+}

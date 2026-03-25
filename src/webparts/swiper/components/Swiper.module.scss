@@ -1,0 +1,340 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+/* ===== Container — full-bleed, no border-radius like native SP ===== */
+.swiperContainer {
+  overflow: hidden;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  width: 100%;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+/* ===== Hero Layout Container ===== */
+.heroContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* 2px gap matching standard SP margin */
+  width: 100%;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  color: var(--bodyText, #323130);
+
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+
+  @media (min-width: 1024px) {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    height: var(--hero-height, 500px);
+    /* Increased overall height */
+  }
+}
+
+.heroMain {
+  height: var(--hero-height, 500px);
+  min-height: var(--hero-height, 500px);
+
+  /* Critical fixes to stop Swiper from breaking the grid */
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  @media (min-width: 1024px) {
+    height: 100%;
+    min-height: unset;
+  }
+}
+
+.heroSide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+  height: var(--hero-height, 500px);
+  min-height: var(--hero-height, 500px);
+
+  @media (min-width: 1024px) {
+    height: 100%;
+    min-height: unset;
+  }
+}
+
+/* ===== Hero static tile ===== */
+.heroTile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    .tileOverlay {
+      opacity: 0.1;
+      /* slight lighten on hover based on image logic */
+    }
+
+    .tileContent {
+      h3 {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.tileOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: opacity 0.2s ease;
+}
+
+.tileContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  color: #ffffff;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ===== Empty State ===== */
+.emptyState {
+  text-align: center;
+  padding: 60px 24px;
+  background-color: "[theme:neutralLighter, default: #f3f2f1]";
+  background-color: var(--neutralLighter);
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: "[theme:neutralPrimary, default: #323130]";
+    color: var(--neutralPrimary);
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: "[theme:neutralSecondary, default: #605e5c]";
+    color: var(--neutralSecondary);
+    margin: 0;
+  }
+}
+
+/* ===== Swiper Root ===== */
+.swiperRoot {
+  width: 100%;
+  height: var(--hero-height, 500px);
+
+  /* Theme colours for swiper chrome */
+  --swiper-theme-color: "[theme:white, default: #ffffff]";
+  --swiper-theme-color: var(--white);
+  --swiper-navigation-color: "[theme:white, default: #ffffff]";
+  --swiper-navigation-color: var(--white, #ffffff);
+  --swiper-navigation-size: 14px;
+  /* Makes the actual > icon small */
+
+  @media (min-width: 1024px) {
+    height: 100%;
+  }
+
+  /* Nav arrows — Transparent Circular style with small arrows */
+  :global(.swiper-button-next),
+  :global(.swiper-button-prev) {
+    width: 36px;
+    height: 36px;
+    /* Very transparent background */
+    transition: all 0.2s ease;
+    margin-top: -18px;
+
+    /* Position with slight padding from edge */
+    &.swiper-button-prev {
+      left: 16px;
+    }
+
+    &.swiper-button-next {
+      right: 16px;
+    }
+
+    &::after {
+      font-weight: 700;
+      color: #ffffff !important;
+      /* Explicitly forces the white icon */
+      transform: scale(0.6) !important;
+      /* Scales down ONLY the arrow, keeping circle intact */
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  /* Pagination dots — small, clean circles */
+  :global(.swiper-pagination) {
+    bottom: 16px !important;
+  }
+
+  :global(.swiper-pagination-bullet) {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+    transition: background 0.2s ease;
+    margin: 0 4px !important;
+  }
+
+  :global(.swiper-pagination-bullet-active) {
+    background: #ffffff;
+  }
+}
+
+/* ===== Slide Wrapper ===== */
+.slideWrapper {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* ===== Overlay — clean bottom gradient like SP Hero ===== */
+.slideOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top,
+      rgba(0, 0, 0, 0.70) 0%,
+      rgba(0, 0, 0, 0.35) 35%,
+      rgba(0, 0, 0, 0.05) 65%,
+      transparent 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 0 0 44px 48px;
+}
+
+/* ===== Content — flat text on gradient, no card ===== */
+.slideContent {
+  max-width: 560px;
+  color: #ffffff;
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 8px 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  p {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+    opacity: 0.92;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* ===== CTA Button — Variants ===== */
+.ctaButton {
+  display: inline-block;
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 4px;
+  /* slightly more modern radius */
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+:global(.swiperWebPart_ctaButtonSolid) {
+  background-color: "[theme:white, default: #ffffff]";
+  background-color: var(--white, #ffffff);
+  color: "[theme:neutralPrimary, default: #323130]" !important;
+  /* Dark text */
+  color: var(--neutralPrimary, #323130) !important;
+
+  &:hover {
+    background-color: "[theme:neutralLighter, default: #f3f2f1]";
+    background-color: var(--neutralLighter, #f3f2f1);
+    color: "[theme:neutralPrimary, default: #323130]" !important;
+    /* Keep text dark */
+    color: var(--neutralPrimary, #323130) !important;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    background-color: "[theme:neutralLight, default: #edebe9]";
+    background-color: var(--neutralLight, #edebe9);
+    transform: translateY(0);
+  }
+}
+
+:global(.swiperWebPart_ctaButtonOutline) {
+  background-color: rgba(0, 0, 0, 0.3);
+  /* slightly tinted to contrast image */
+  color: #ffffff !important;
+  border-color: #ffffff;
+
+  &:hover {
+    background-color: #ffffff;
+    color: "[theme:themePrimary, default: #0078d4]" !important;
+    color: var(--themePrimary) !important;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+:global(.swiperWebPart_ctaButtonTransparent) {
+  background-color: transparent;
+  color: #ffffff !important;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff !important;
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(0);
+  }
+}

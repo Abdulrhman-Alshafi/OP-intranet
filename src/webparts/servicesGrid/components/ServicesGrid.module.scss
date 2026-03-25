@@ -1,0 +1,114 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.servicesGridContainer {
+  padding: 4px 4px 40px 4px; /* Removed top gap, added bottom gap for shadows */
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--bodyText, "[theme:bodyText, default: #323130]");
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px;
+  background-color: var(--neutralLighter, "[theme:neutralLighter, default: #f3f2f1]");
+  border-radius: 8px;
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px; /* Safe area for shadows to not clip outside the container */
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.serviceCard {
+  background-color: var(--white, "[theme:white, default: #ffffff]");
+  border-radius: 2px;
+  padding: 16px 20px; /* Native SP feels */
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.13), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.11);
+  transition: all 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  border: 1px solid var(--neutralLight, "[theme:neutralLight, default: #edebe9]");
+  border-top: 3px solid var(--neutralLight, "[theme:neutralLight, default: #edebe9]");
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3.2px 7.2px 0 rgba(0, 0, 0, 0.13), 0 0.6px 1.8px 0 rgba(0, 0, 0, 0.11);
+  }
+}
+
+.imageWrapper {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  height: 36px;
+  /* fixed height layout for logo cohesion */
+
+  img {
+    height: 100%;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+  }
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: var(--bodyText, "[theme:bodyText, default: #323130]");
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--neutralSecondary, "[theme:neutralSecondary, default: #605e5c]");
+  margin-top: 0;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.learnMore {
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s;
+
+  &::after {
+    content: '→';
+    font-size: 14px;
+    font-weight: bold;
+    transition: transform 0.2s;
+  }
+
+  &:hover {
+    text-decoration: underline;
+
+    &::after {
+      transform: translateX(3px);
+    }
+  }
+}

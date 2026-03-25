@@ -1,0 +1,19 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "useGulp": false,
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.22.1",
+    "sdksVersions": {},
+    "version": "1.22.2",
+    "libraryName": "op-intranet",
+    "libraryId": "59ad7e1c-ab49-4c95-8894-2c77517d9d8c",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "op-intranet",
+    "solutionShortDescription": "op-intranet description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

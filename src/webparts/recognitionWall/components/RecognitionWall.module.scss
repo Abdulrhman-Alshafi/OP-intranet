@@ -1,0 +1,579 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+/* ─── Main Container ─────────────────────────────────────────────── */
+.recognitionWall {
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 24px;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  background: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  min-height: 300px;
+
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-bottom-color: var(--neutralLight);
+
+  .titleSection {
+    flex: 1;
+    min-width: 200px;
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: "[theme:neutralPrimary, default: #323130]";
+      color: var(--neutralPrimary);
+      line-height: 1.3;
+    }
+
+    .summary {
+      font-size: 14px;
+      color: "[theme:neutralSecondary, default: #605e5c]";
+      color: var(--neutralSecondary);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+
+      .summaryItem {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .icon {
+          font-size: 14px;
+          color: "[theme:themePrimary, default: #0078d4]";
+          color: var(--themePrimary);
+        }
+      }
+    }
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .searchBox {
+      min-width: 200px;
+    }
+
+    .lastUpdated {
+      font-size: 12px;
+      color: "[theme:neutralTertiary, default: #a19f9d]";
+      color: var(--neutralTertiary);
+      white-space: nowrap;
+    }
+  }
+}
+
+/* ─── Employee of the Month ──────────────────────────────────────── */
+.employeeHighlight {
+  background: linear-gradient(135deg, #fff8e1 0%, #fffde7 100%);
+  border: 1px solid #ffe082;
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.08);
+  position: relative;
+
+  .highlightBadge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f9a825;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    .starIcon {
+      font-size: 16px;
+    }
+  }
+
+  .highlightContent {
+    flex: 1;
+  }
+}
+
+/* ─── Delete Button (Admin Only) ─────────────────────────────────── */
+.deleteBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  color: "[theme:neutralTertiary, default: #a19f9d]";
+  color: var(--neutralTertiary);
+  background: transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+  z-index: 1;
+
+  &:hover {
+    background: rgba(209, 52, 56, 0.1);
+    color: #d13438;
+  }
+
+  i {
+    font-size: 12px;
+  }
+}
+
+/* ─── Employee of the Month Button ───────────────────────────────── */
+.eotmButton {
+  border-color: #f9a825 !important;
+  color: #f9a825 !important;
+  font-weight: 600;
+
+  &:hover {
+    background: #f9a825 !important;
+    color: white !important;
+  }
+}
+
+/* ─── Feed Grid ──────────────────────────────────────────────────── */
+.feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+
+/* ─── Kudos Card ─────────────────────────────────────────────────── */
+.kudosCard {
+  background: "[theme:white, default: #ffffff]";
+  background-color: var(--white);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  transition: box-shadow 0.2s ease;
+  position: relative;
+
+  &:hover {
+    box-shadow: 0 6.4px 14.4px 0 rgba(0, 0, 0, 0.132), 0 1.2px 3.6px 0 rgba(0, 0, 0, 0.108);
+  }
+}
+
+.kudosCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kudosSender,
+.kudosRecipient {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.personIcon {
+  font-size: 14px;
+  color: "[theme:themePrimary, default: #0078d4]";
+  color: var(--themePrimary);
+}
+
+.personName {
+  font-size: 14px;
+  font-weight: 600;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+}
+
+.arrowIcon {
+  font-size: 12px;
+  color: "[theme:neutralTertiary, default: #a19f9d]";
+  color: var(--neutralTertiary);
+}
+
+/* ─── Category Badges ────────────────────────────────────────────── */
+.categoryBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.catTeamwork {
+  background: rgba(0, 120, 212, 0.1);
+  color: #0078d4;
+}
+
+.catInnovation {
+  background: rgba(135, 100, 184, 0.1);
+  color: #8764b8;
+}
+
+.catLeadership {
+  background: rgba(0, 128, 0, 0.1);
+  color: #107c10;
+}
+
+.catCustomer {
+  background: rgba(202, 80, 16, 0.1);
+  color: #ca5010;
+}
+
+.catAboveBeyond {
+  background: rgba(194, 57, 179, 0.1);
+  color: #c239b3;
+}
+
+.catDefault {
+  background: "[theme:neutralLighter, default: #f3f2f1]";
+  background-color: var(--neutralLighter);
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+}
+
+/* ─── Message ────────────────────────────────────────────────────── */
+.kudosMessage {
+  font-size: 14px;
+  line-height: 1.5;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+}
+
+.kudosDate {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: "[theme:neutralTertiary, default: #a19f9d]";
+  color: var(--neutralTertiary);
+
+  .clockIcon {
+    font-size: 12px;
+  }
+}
+
+/* ─── Actions (like + comment) ───────────────────────────────────── */
+.kudosActions {
+  display: flex;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid "[theme:neutralLighter, default: #f3f2f1]";
+  border-top-color: var(--neutralLighter);
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: "[theme:neutralLighter, default: #f3f2f1]";
+    background-color: var(--neutralLighter);
+  }
+
+  &.liked {
+    color: #d13438;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+/* ─── Comment Section ────────────────────────────────────────────── */
+.commentSection {
+  padding-top: 8px;
+  border-top: 1px solid "[theme:neutralLighter, default: #f3f2f1]";
+  border-top-color: var(--neutralLighter);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.noComments {
+  font-size: 13px;
+  color: "[theme:neutralTertiary, default: #a19f9d]";
+  color: var(--neutralTertiary);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.commentItem {
+  padding: 6px 0;
+}
+
+.commentAuthor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+  margin-bottom: 2px;
+
+  .commentIcon {
+    font-size: 12px;
+  }
+
+  .commentAuthorName {
+    font-weight: 600;
+  }
+
+  .commentDate {
+    color: "[theme:neutralTertiary, default: #a19f9d]";
+    color: var(--neutralTertiary);
+    margin-left: auto;
+  }
+}
+
+.commentText {
+  font-size: 13px;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+  line-height: 1.4;
+  padding-left: 18px;
+}
+
+.commentInput {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.commentTextBox {
+  flex: 1;
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: "[theme:themePrimary, default: #0078d4]";
+  }
+}
+
+.commentSendBtn {
+  background: "[theme:themePrimary, default: #0078d4]";
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+/* ─── Kudos Form ─────────────────────────────────────────────────── */
+.kudosForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 12px;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.formLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+}
+
+.recipientSearch {
+  position: relative;
+}
+
+.recipientInput {
+  width: 100%;
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: "[theme:themePrimary, default: #0078d4]";
+  }
+}
+
+.selectedRecipient {
+  font-size: 12px;
+  color: #107c10;
+  margin-top: 4px;
+  display: block;
+}
+
+.searchDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-radius: 4px;
+  box-shadow: 0 6.4px 14.4px 0 rgba(0, 0, 0, 0.132);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.searchResultItem {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s ease;
+
+  &:hover {
+    background: "[theme:neutralLighter, default: #f3f2f1]";
+  }
+}
+
+.resultName {
+  font-size: 14px;
+  font-weight: 600;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+}
+
+.resultEmail {
+  font-size: 12px;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+}
+
+.formActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-top: 8px;
+}
+
+/* ─── Empty / Loading States ─────────────────────────────────────── */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  gap: 20px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 40px;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+  background: "[theme:neutralLighterAlt, default: #faf9f8]";
+  background-color: var(--neutralLighterAlt);
+  border-radius: 4px;
+  border: 2px dashed "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight);
+
+  .emptyIcon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+    color: "[theme:themePrimary, default: #0078d4]";
+    color: var(--themePrimary);
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: "[theme:neutralPrimary, default: #323130]";
+    color: var(--neutralPrimary);
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ─── Load More ──────────────────────────────────────────────────── */
+.loadMoreContainer {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.loadMoreBtn {
+  background: none;
+  border: 1px solid "[theme:themePrimary, default: #0078d4]";
+  color: "[theme:themePrimary, default: #0078d4]";
+  padding: 8px 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: "[theme:themePrimary, default: #0078d4]";
+    color: white;
+  }
+}

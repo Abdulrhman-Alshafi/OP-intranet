@@ -1,0 +1,219 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+/* ===== Container ===== */
+.countdownContainer {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== Empty / Config State ===== */
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+  background-color: var(--neutralLighter, #f3f2f1);
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--neutralPrimary, #323130);
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--neutralSecondary, #605e5c);
+    margin: 0;
+  }
+}
+
+/* ===== Background Image Layer ===== */
+.bgImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.bgOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+/* ===== Content wrapper ===== */
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 40px 32px;
+}
+
+/* ===== Event Header ===== */
+.eventTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  color: var(--neutralPrimary, #323130);
+}
+
+.eventTitleOnImage {
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.eventDescription {
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0 0 40px 0;
+  color: var(--neutralSecondary, #605e5c);
+  line-height: 1.4;
+}
+
+.eventDescriptionOnImage {
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== Timer Grid ===== */
+.timerGrid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.timerGridCompact {
+  gap: 10px;
+}
+
+/* ===== Individual Time Unit ===== */
+.timeUnit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 72px;
+  padding: 16px 12px;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--neutralLight, #edebe9);
+  border-radius: 2px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.13), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.11);
+}
+
+.timeUnitOnImage {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.timeUnitCompact {
+  min-width: 56px;
+  padding: 10px 8px;
+}
+
+.timeValue {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+  color: var(--neutralPrimary, #323130);
+  font-variant-numeric: tabular-nums;
+}
+
+.timeValueOnImage {
+  color: #ffffff;
+}
+
+.timeValueCompact {
+  font-size: 24px;
+}
+
+.timeLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--neutralSecondary, #605e5c);
+}
+
+.timeLabelOnImage {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ===== Accent bar at top of unit ===== */
+.accentBar {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  margin-bottom: 12px;
+}
+
+.accentBarCompact {
+  margin-bottom: 8px;
+}
+
+/* ===== Completed State ===== */
+.completedMessage {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--neutralPrimary, #323130);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.completedMessageOnImage {
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.checkIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+/* ===== Separator between units ===== */
+.separator {
+  display: flex;
+  align-items: center;
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--neutralTertiary, #a19f9d);
+  padding-top: 4px;
+}
+
+.separatorOnImage {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ===== Banner layout ===== */
+.bannerLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.bannerLeft {
+  flex: 1;
+  min-width: 200px;
+}
+
+.bannerRight {
+  flex-shrink: 0;
+}

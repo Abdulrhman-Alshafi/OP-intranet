@@ -1,0 +1,82 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "swiper-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/swiper/SwiperWebPart.js",
+          "manifest": "./src/webparts/swiper/SwiperWebPart.manifest.json"
+        }
+      ]
+    },
+    "services-grid-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/servicesGrid/ServicesGridWebPart.js",
+          "manifest": "./src/webparts/servicesGrid/ServicesGridWebPart.manifest.json"
+        }
+      ]
+    },
+    "countdown-timer-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/countdownTimer/CountdownTimerWebPart.js",
+          "manifest": "./src/webparts/countdownTimer/CountdownTimerWebPart.manifest.json"
+        }
+      ]
+    },
+    "announcement-banner-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/announcementBanner/AnnouncementBannerWebPart.js",
+          "manifest": "./src/webparts/announcementBanner/AnnouncementBannerWebPart.manifest.json"
+        }
+      ]
+    },
+    "list-viewer-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/listViewer/ListViewerWebPart.js",
+          "manifest": "./src/webparts/listViewer/ListViewerWebPart.manifest.json"
+        }
+      ]
+    },
+    "task-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskDashboard/TaskDashboardWebPart.js",
+          "manifest": "./src/webparts/taskDashboard/TaskDashboardWebPart.manifest.json"
+        }
+      ]
+    },
+    "recognition-wall-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/recognitionWall/RecognitionWallWebPart.js",
+          "manifest": "./src/webparts/recognitionWall/RecognitionWallWebPart.manifest.json"
+        }
+      ]
+    },
+    "polls-survey-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/pollsSurvey/PollsSurveyWebPart.js",
+          "manifest": "./src/webparts/pollsSurvey/PollsSurveyWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "SwiperWebPartStrings": "lib/webparts/swiper/loc/{locale}.js",
+    "ServicesGridWebPartStrings": "lib/webparts/servicesGrid/loc/{locale}.js",
+    "CountdownTimerWebPartStrings": "lib/webparts/countdownTimer/loc/{locale}.js",
+    "AnnouncementBannerWebPartStrings": "lib/webparts/announcementBanner/loc/{locale}.js",
+    "ListViewerWebPartStrings": "lib/webparts/listViewer/loc/{locale}.js",
+    "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js",
+    "RecognitionWallWebPartStrings": "lib/webparts/recognitionWall/loc/{locale}.js",
+    "PollsSurveyWebPartStrings": "lib/webparts/pollsSurvey/loc/{locale}.js",
+    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
+  }
+}

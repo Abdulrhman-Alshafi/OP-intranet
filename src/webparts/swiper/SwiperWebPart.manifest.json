@@ -1,0 +1,41 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "0e14ff74-cae3-4e6b-8859-14fc6aa5d272",
+  "alias": "SwiperWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "TeamsPersonalApp",
+    "TeamsTab",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "supportsFullBleed": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "OP swiper"
+      },
+      "description": {
+        "default": "swiper description"
+      },
+      "officeFabricIconFontName": "Page",
+      "properties": {
+        "slides": [],
+        "staticTiles": [],
+        "containerHeight": "500",
+        "autoplayDelay": "5000",
+        "enablePagination": true,
+        "enableNavigation": true,
+        "buttonStyle": "solid"
+      }
+    }
+  ]
+}

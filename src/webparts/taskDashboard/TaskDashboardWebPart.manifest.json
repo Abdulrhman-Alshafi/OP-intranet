@@ -1,0 +1,48 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "f8a2b3c1-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
+  "alias": "TaskDashboardWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "TeamsPersonalApp",
+    "TeamsTab",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "OP Task Dashboard"
+      },
+      "description": {
+        "default": "Unified dashboard displaying tasks from Microsoft Planner and SharePoint"
+      },
+      "officeFabricIconFontName": "TaskManager",
+      "properties": {
+        "title": "OP My Tasks",
+        "enablePlanner": true,
+        "enableSharePoint": false,
+        "sharePointListId": "",
+        "selectedPlans": [],
+        "groupBy": "status",
+        "sortBy": "dueDate",
+        "showCompleted": true,
+        "highlightOverdue": true,
+        "refreshInterval": 5,
+        "overdueColor": "#d13438",
+        "inProgressColor": "#0078d4",
+        "completedColor": "#107c10",
+        "showProgressBars": true,
+        "showSourceBadges": true
+      }
+    }
+  ]
+}
