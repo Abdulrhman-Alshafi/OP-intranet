@@ -12,136 +12,69 @@ import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { IconButton } from '@fluentui/react/lib/Button';
 import { Icon } from '@fluentui/react/lib/Icon';
 
-export interface ITaskDashboardState {
-  tasks: ITask[];
-  loading: boolean;
-  error: string | null;
-  filter: ITaskFilter;
-  lastUpdated: Date | null;
-}
-
 /**
  * Main TaskDashboard component
  */
-export default class TaskDashboard extends React.Component<ITaskDashboardProps, ITaskDashboardState> {
-  private _taskService: TaskService;
+const TaskDashboard = (props: ITaskDashboardProps): React.ReactElement => {
+  const [tasks, setTasks] = React.useState<ITask[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [filter, setFilter] = React.useState<ITaskFilter>({
+    sources: ['Planner', 'SharePoint'],
+    statuses: ['Not Started', 'In Progress', 'Completed']
+  });
+  const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null);
+  const selectedPlansKey = JSON.stringify(props.selectedPlans || []);
 
-  constructor(props: ITaskDashboardProps) {
-    super(props);
-    
-    this.state = {
-      tasks: [],
-      loading: false,
-      error: null,
-      filter: {
-        sources: ['Planner', 'SharePoint'],
-        statuses: ['Not Started', 'In Progress', 'Completed']
-      },
-      lastUpdated: null
-    };
-
-    this._taskService = new TaskService(this.props.graphClient, this.props.spHttpClient);
-  }
-
-  public async componentDidMount(): Promise<void> {
-    await this._fetchAllTasks();
-  }
-
-  public async componentDidUpdate(prevProps: ITaskDashboardProps): Promise<void> {
-    // Re-fetch if data source toggles change
-    if (
-      prevProps.enablePlanner !== this.props.enablePlanner ||
-      prevProps.enableSharePoint !== this.props.enableSharePoint ||
-      prevProps.sharePointListId !== this.props.sharePointListId ||
-      JSON.stringify(prevProps.selectedPlans) !== JSON.stringify(this.props.selectedPlans)
-    ) {
-      await this._fetchAllTasks();
+  const isOverdue = (task: ITask): boolean => {
+    if (!task.dueDate || task.status === 'Completed') {
+      return false;
     }
-  }
+    return new Date(task.dueDate) < new Date();
+  };
 
-  /**
-   * Fetch tasks from all enabled sources
-   */
-  private async _fetchAllTasks(): Promise<void> {
-    this.setState({ loading: true, error: null });
-
-    try {
-      const allTasks: ITask[] = [];
-      const errors: string[] = [];
-
-      // Fetch from Planner
-      if (this.props.enablePlanner) {
-        if (this.props.selectedPlans && this.props.selectedPlans.length > 0) {
-          // Fetch from selected plans
-          const planIds = this.props.selectedPlans.map(p => p.id);
-          const plannerResult = await this._taskService.getTasksFromPlans(planIds);
-          if (plannerResult.error) {
-            errors.push(plannerResult.error);
-          } else {
-            allTasks.push(...plannerResult.tasks);
-          }
-        } else {
-          // Fetch all user's Planner tasks
-          const plannerResult = await this._taskService.getPlannerTasks();
-          if (plannerResult.error) {
-            errors.push(plannerResult.error);
-          } else {
-            allTasks.push(...plannerResult.tasks);
-          }
-        }
-      }
-
-      // Fetch from SharePoint
-      if (this.props.enableSharePoint && this.props.sharePointListId) {
-        const spResult = await this._taskService.getSharePointTasks(
-          this.props.sharePointListId,
-          this.props.siteUrl
-        );
-        if (spResult.error) {
-          errors.push(spResult.error);
-        } else {
-          allTasks.push(...spResult.tasks);
-        }
-      }
-
-      // Sort tasks
-      const sortedTasks = this._sortTasks(allTasks);
-
-      this.setState({
-        tasks: sortedTasks,
-        loading: false,
-        error: errors.length > 0 ? errors.join('; ') : null,
-        lastUpdated: new Date()
-      });
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-      const errorMessage = (error as Error).message || 'Unknown error';
-      this.setState({
-        loading: false,
-        error: `Failed to fetch tasks: ${errorMessage}`
-      });
+  const isDueToday = (task: ITask): boolean => {
+    if (!task.dueDate) {
+      return false;
     }
-  }
 
-  /**
-   * Sort tasks based on sortBy prop
-   */
-  private _sortTasks(tasks: ITask[]): ITask[] {
-    const sorted = [...tasks];
+    const today = new Date();
+    const dueDate = new Date(task.dueDate);
 
-    // Always prioritize overdue tasks if highlighting is enabled
-    if (this.props.highlightOverdue) {
+    return (
+      today.getDate() === dueDate.getDate() &&
+      today.getMonth() === dueDate.getMonth() &&
+      today.getFullYear() === dueDate.getFullYear()
+    );
+  };
+
+  const isDueThisWeek = (task: ITask): boolean => {
+    if (!task.dueDate) {
+      return false;
+    }
+
+    const today = new Date();
+    const dueDate = new Date(task.dueDate);
+    const weekFromNow = new Date();
+    weekFromNow.setDate(today.getDate() + 7);
+
+    return dueDate > today && dueDate <= weekFromNow;
+  };
+
+  const sortTasks = (sourceTasks: ITask[]): ITask[] => {
+    const sorted = [...sourceTasks];
+
+    if (props.highlightOverdue) {
       sorted.sort((a, b) => {
-        const aOverdue = this._isOverdue(a);
-        const bOverdue = this._isOverdue(b);
+        const aOverdue = isOverdue(a);
+        const bOverdue = isOverdue(b);
         if (aOverdue && !bOverdue) return -1;
         if (!aOverdue && bOverdue) return 1;
         return 0;
       });
     }
 
-    // Then apply the selected sort
-    switch (this.props.sortBy) {
+    switch (props.sortBy) {
       case 'dueDate':
         sorted.sort((a, b) => {
           if (!a.dueDate && !b.dueDate) return 0;
@@ -151,7 +84,7 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
         });
         break;
       case 'priority': {
-        const priorityOrder = { 'Urgent': 1, 'High': 2, 'Medium': 3, 'Low': 4 };
+        const priorityOrder: Record<string, number> = { Urgent: 1, High: 2, Medium: 3, Low: 4 };
         sorted.sort((a, b) => {
           const aPriority = priorityOrder[a.priority || 'Medium'];
           const bPriority = priorityOrder[b.priority || 'Medium'];
@@ -165,42 +98,87 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
     }
 
     return sorted;
-  }
+  };
 
-  /**
-   * Filter tasks based on current filter state
-   */
-  private _filterTasks(tasks: ITask[]): ITask[] {
-    let filtered = [...tasks];
+  const fetchAllTasks = async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
 
-    // Filter by source
-    filtered = filtered.filter(task => this.state.filter.sources.indexOf(task.source) !== -1);
+    try {
+      const allTasks: ITask[] = [];
+      const errors: string[] = [];
+      const taskService = new TaskService(props.graphClient, props.spHttpClient);
 
-    // Filter by status
-    filtered = filtered.filter(task => this.state.filter.statuses.indexOf(task.status) !== -1);
+      if (props.enablePlanner) {
+        if (props.selectedPlans && props.selectedPlans.length > 0) {
+          const planIds = props.selectedPlans.map((plan) => plan.id);
+          const plannerResult = await taskService.getTasksFromPlans(planIds);
+          if (plannerResult.error) {
+            errors.push(plannerResult.error);
+          } else {
+            allTasks.push(...plannerResult.tasks);
+          }
+        } else {
+          const plannerResult = await taskService.getPlannerTasks();
+          if (plannerResult.error) {
+            errors.push(plannerResult.error);
+          } else {
+            allTasks.push(...plannerResult.tasks);
+          }
+        }
+      }
 
-    // Filter completed tasks if showCompleted is false
-    if (!this.props.showCompleted) {
-      filtered = filtered.filter(task => task.status !== 'Completed');
+      if (props.enableSharePoint && props.sharePointListId) {
+        const spResult = await taskService.getSharePointTasks(props.sharePointListId, props.siteUrl);
+        if (spResult.error) {
+          errors.push(spResult.error);
+        } else {
+          allTasks.push(...spResult.tasks);
+        }
+      }
+
+      setTasks(sortTasks(allTasks));
+      setLoading(false);
+      setError(errors.length > 0 ? errors.join('; ') : null);
+      setLastUpdated(new Date());
+    } catch (fetchError) {
+      console.error('Error fetching tasks:', fetchError);
+      const errorMessage = (fetchError as Error).message || 'Unknown error';
+      setLoading(false);
+      setError(`Failed to fetch tasks: ${errorMessage}`);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchAllTasks().catch((fetchError) => {
+      console.error('Error fetching tasks:', fetchError);
+    });
+  }, [props.enablePlanner, props.enableSharePoint, props.sharePointListId, selectedPlansKey]);
+
+  const filterTasks = (sourceTasks: ITask[]): ITask[] => {
+    let filtered = [...sourceTasks];
+
+    filtered = filtered.filter((task) => filter.sources.indexOf(task.source) !== -1);
+    filtered = filtered.filter((task) => filter.statuses.indexOf(task.status) !== -1);
+
+    if (!props.showCompleted) {
+      filtered = filtered.filter((task) => task.status !== 'Completed');
     }
 
     return filtered;
-  }
+  };
 
-  /**
-   * Group tasks based on groupBy prop
-   */
-  private _groupTasks(tasks: ITask[]): { [key: string]: ITask[] } {
-    if (this.props.groupBy === 'none') {
-      return { 'All Tasks': tasks };
+  const groupTasks = (sourceTasks: ITask[]): { [key: string]: ITask[] } => {
+    if (props.groupBy === 'none') {
+      return { 'All Tasks': sourceTasks };
     }
 
     const groups: { [key: string]: ITask[] } = {};
 
-    tasks.forEach(task => {
+    sourceTasks.forEach((task) => {
       let groupKey: string;
 
-      switch (this.props.groupBy) {
+      switch (props.groupBy) {
         case 'status':
           groupKey = task.status;
           break;
@@ -210,11 +188,11 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
         case 'dueDate':
           if (!task.dueDate) {
             groupKey = 'No Due Date';
-          } else if (this._isOverdue(task)) {
+          } else if (isOverdue(task)) {
             groupKey = 'Overdue';
-          } else if (this._isDueToday(task)) {
+          } else if (isDueToday(task)) {
             groupKey = 'Due Today';
-          } else if (this._isDueThisWeek(task)) {
+          } else if (isDueThisWeek(task)) {
             groupKey = 'Due This Week';
           } else {
             groupKey = 'Later';
@@ -231,148 +209,90 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
     });
 
     return groups;
-  }
-
-  /**
-   * Check if task is overdue
-   */
-  private _isOverdue(task: ITask): boolean {
-    if (!task.dueDate || task.status === 'Completed') {
-      return false;
-    }
-    return new Date(task.dueDate) < new Date();
-  }
-
-  /**
-   * Check if task is due today
-   */
-  private _isDueToday(task: ITask): boolean {
-    if (!task.dueDate) return false;
-    
-    const today = new Date();
-    const dueDate = new Date(task.dueDate);
-    
-    return (
-      today.getDate() === dueDate.getDate() &&
-      today.getMonth() === dueDate.getMonth() &&
-      today.getFullYear() === dueDate.getFullYear()
-    );
-  }
-
-  /**
-   * Check if task is due this week
-   */
-  private _isDueThisWeek(task: ITask): boolean {
-    if (!task.dueDate) return false;
-    
-    const today = new Date();
-    const dueDate = new Date(task.dueDate);
-    const weekFromNow = new Date();
-    weekFromNow.setDate(today.getDate() + 7);
-    
-    return dueDate > today && dueDate <= weekFromNow;
-  }
-
-  /**
-   * Handle refresh button click
-   */
-  private _handleRefresh = async (): Promise<void> => {
-    await this._fetchAllTasks();
   };
 
-  /**
-   * Handle source filter change
-   */
-  private _handleSourceFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption): void => {
-    if (!option) return;
+  const handleRefresh = async (): Promise<void> => {
+    await fetchAllTasks();
+  };
+
+  const handleSourceFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption): void => {
+    if (!option) {
+      return;
+    }
 
     const source = option.key as 'Planner' | 'SharePoint';
-    const currentSources = [...this.state.filter.sources];
 
-    if (option.selected) {
-      if (currentSources.indexOf(source) === -1) {
-        currentSources.push(source);
-      }
-    } else {
-      const index = currentSources.indexOf(source);
-      if (index > -1) {
-        currentSources.splice(index, 1);
-      }
-    }
+    setFilter((currentFilter) => {
+      const currentSources = [...currentFilter.sources];
 
-    this.setState({
-      filter: {
-        ...this.state.filter,
+      if (option.selected) {
+        if (currentSources.indexOf(source) === -1) {
+          currentSources.push(source);
+        }
+      } else {
+        const index = currentSources.indexOf(source);
+        if (index > -1) {
+          currentSources.splice(index, 1);
+        }
+      }
+
+      return {
+        ...currentFilter,
         sources: currentSources
-      }
+      };
     });
   };
 
-  /**
-   * Handle status filter change
-   */
-  private _handleStatusFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption): void => {
-    if (!option) return;
+  const handleStatusFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption): void => {
+    if (!option) {
+      return;
+    }
 
     const status = option.key as 'Not Started' | 'In Progress' | 'Completed';
-    const currentStatuses = [...this.state.filter.statuses];
 
-    if (option.selected) {
-      if (currentStatuses.indexOf(status) === -1) {
-        currentStatuses.push(status);
-      }
-    } else {
-      const index = currentStatuses.indexOf(status);
-      if (index > -1) {
-        currentStatuses.splice(index, 1);
-      }
-    }
+    setFilter((currentFilter) => {
+      const currentStatuses = [...currentFilter.statuses];
 
-    this.setState({
-      filter: {
-        ...this.state.filter,
+      if (option.selected) {
+        if (currentStatuses.indexOf(status) === -1) {
+          currentStatuses.push(status);
+        }
+      } else {
+        const index = currentStatuses.indexOf(status);
+        if (index > -1) {
+          currentStatuses.splice(index, 1);
+        }
+      }
+
+      return {
+        ...currentFilter,
         statuses: currentStatuses
-      }
+      };
     });
   };
 
-  /**
-   * Get task count summary
-   */
-  private _getTaskSummary(tasks: ITask[]): { total: number; overdue: number; dueToday: number } {
-    return {
-      total: tasks.length,
-      overdue: tasks.filter(t => this._isOverdue(t)).length,
-      dueToday: tasks.filter(t => this._isDueToday(t)).length
-    };
-  }
+  const getTaskSummary = (sourceTasks: ITask[]): { total: number; overdue: number; dueToday: number } => ({
+    total: sourceTasks.length,
+    overdue: sourceTasks.filter((task) => isOverdue(task)).length,
+    dueToday: sourceTasks.filter((task) => isDueToday(task)).length
+  });
 
-  /**
-   * Render method
-   */
-  public render(): React.ReactElement<ITaskDashboardProps> {
-    const { loading, error, tasks, lastUpdated } = this.state;
-    const { title, hasTeamsContext } = this.props;
+  const filteredTasks = filterTasks(tasks);
+  const groupedTasks = groupTasks(filteredTasks);
+  const summary = getTaskSummary(filteredTasks);
+  const { title, hasTeamsContext } = props;
+  const sourceOptions: IDropdownOption[] = [
+    { key: 'Planner', text: 'Planner', selected: filter.sources.indexOf('Planner') !== -1 },
+    { key: 'SharePoint', text: 'SharePoint', selected: filter.sources.indexOf('SharePoint') !== -1 }
+  ];
+  const statusOptions: IDropdownOption[] = [
+    { key: 'Not Started', text: 'Not Started', selected: filter.statuses.indexOf('Not Started') !== -1 },
+    { key: 'In Progress', text: 'In Progress', selected: filter.statuses.indexOf('In Progress') !== -1 },
+    { key: 'Completed', text: 'Completed', selected: filter.statuses.indexOf('Completed') !== -1 }
+  ];
 
-    const filteredTasks = this._filterTasks(tasks);
-    const groupedTasks = this._groupTasks(filteredTasks);
-    const summary = this._getTaskSummary(filteredTasks);
-
-    // Source filter options
-    const sourceOptions: IDropdownOption[] = [
-      { key: 'Planner', text: 'Planner', selected: this.state.filter.sources.indexOf('Planner') !== -1 },
-      { key: 'SharePoint', text: 'SharePoint', selected: this.state.filter.sources.indexOf('SharePoint') !== -1 }
-    ];
-
-    // Status filter options
-    const statusOptions: IDropdownOption[] = [
-      { key: 'Not Started', text: 'Not Started', selected: this.state.filter.statuses.indexOf('Not Started') !== -1 },
-      { key: 'In Progress', text: 'In Progress', selected: this.state.filter.statuses.indexOf('In Progress') !== -1 },
-      { key: 'Completed', text: 'Completed', selected: this.state.filter.statuses.indexOf('Completed') !== -1 }
-    ];
-
-    return (
-      <section className={`${styles.taskDashboard} ${hasTeamsContext ? styles.teams : ''}`}>
+  return (
+    <section className={`${styles.taskDashboard} ${hasTeamsContext ? styles.teams : ''}`}>
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.titleSection}>
@@ -404,7 +324,7 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
               placeholder="Filter by Source"
               multiSelect
               options={sourceOptions}
-              onChange={this._handleSourceFilterChange}
+              onChange={handleSourceFilterChange}
               className={styles.filterDropdown}
               styles={{ dropdown: { minWidth: 150 } }}
             />
@@ -412,7 +332,7 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
               placeholder="Filter by Status"
               multiSelect
               options={statusOptions}
-              onChange={this._handleStatusFilterChange}
+              onChange={handleStatusFilterChange}
               className={styles.filterDropdown}
               styles={{ dropdown: { minWidth: 150 } }}
             />
@@ -420,7 +340,7 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
               iconProps={{ iconName: 'Refresh' }}
               title="Refresh tasks"
               ariaLabel="Refresh tasks"
-              onClick={this._handleRefresh}
+              onClick={handleRefresh}
               disabled={loading}
             />
             {lastUpdated && (
@@ -437,7 +357,7 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
             <MessageBar
               messageBarType={MessageBarType.error}
               isMultiline={false}
-              onDismiss={() => this.setState({ error: null })}
+              onDismiss={() => setError(null)}
               dismissButtonAriaLabel="Close"
             >
               {error}
@@ -450,8 +370,8 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
           <div className={styles.loadingContainer}>
             <Spinner size={SpinnerSize.large} label="Fetching tasks..." />
             <div className={styles.loadingText}>
-              Loading tasks from {this.props.enablePlanner && 'Planner'}
-              {this.props.enableSharePoint && ', SharePoint'}...
+              Loading tasks from {props.enablePlanner && 'Planner'}
+              {props.enableSharePoint && ', SharePoint'}...
             </div>
           </div>
         )}
@@ -462,7 +382,7 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
             <Icon iconName="TaskManager" className={styles.icon} />
             <h3>No tasks found</h3>
             <p>
-              {!this.props.enablePlanner && !this.props.enableSharePoint
+              {!props.enablePlanner && !props.enableSharePoint
                 ? 'Please enable at least one data source in the web part properties.'
                 : 'You don\'t have any tasks assigned. Create tasks in Planner or SharePoint to see them here.'}
             </p>
@@ -481,7 +401,7 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
           <div className={styles.taskContainer}>
             {Object.keys(groupedTasks).map((groupKey, index) => (
               <div key={index} className={styles.groupSection}>
-                {this.props.groupBy !== 'none' && (
+                {props.groupBy !== 'none' && (
                   <div className={styles.groupHeader}>
                     <span>{groupKey}</span>
                     <span className={styles.groupCount}>
@@ -494,12 +414,12 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
                     <TaskCard
                       key={task.id}
                       task={task}
-                      showProgress={this.props.showProgressBars}
-                      showSource={this.props.showSourceBadges}
-                      overdueColor={this.props.overdueColor}
-                      inProgressColor={this.props.inProgressColor}
-                      completedColor={this.props.completedColor}
-                      highlightOverdue={this.props.highlightOverdue}
+                      showProgress={props.showProgressBars}
+                      showSource={props.showSourceBadges}
+                      overdueColor={props.overdueColor}
+                      inProgressColor={props.inProgressColor}
+                      completedColor={props.completedColor}
+                      highlightOverdue={props.highlightOverdue}
                     />
                   ))}
                 </div>
@@ -508,6 +428,7 @@ export default class TaskDashboard extends React.Component<ITaskDashboardProps, 
           </div>
         )}
       </section>
-    );
-  }
-}
+  );
+};
+
+export default TaskDashboard;

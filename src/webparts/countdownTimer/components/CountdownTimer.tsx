@@ -12,36 +12,31 @@ interface ITimeLeft {
   seconds: number;
 }
 
-interface ICountdownTimerState {
-  timeLeft: ITimeLeft | null;
-}
+const CountdownTimer = (props: ICountdownTimerProps): React.ReactElement => {
+  const {
+    eventTitle,
+    eventDescription,
+    targetDate,
+    backgroundImage,
+    overlayOpacity,
+    layout,
+    showDays,
+    showHours,
+    showMinutes,
+    showSeconds,
+    completedMessage,
+    accentColor
+  } = props;
 
-export default class CountdownTimer extends React.Component<ICountdownTimerProps, ICountdownTimerState> {
-  private _interval: number | undefined;
-
-  constructor(props: ICountdownTimerProps) {
-    super(props);
-    this.state = { timeLeft: this._calculateTimeLeft() };
-  }
-
-  public componentDidMount(): void {
-    this._interval = window.setInterval(() => {
-      this.setState({ timeLeft: this._calculateTimeLeft() });
-    }, 1000);
-  }
-
-  public componentWillUnmount(): void {
-    if (this._interval) {
-      window.clearInterval(this._interval);
+  const calculateTimeLeft = React.useCallback((): ITimeLeft | null => {
+    if (!targetDate) {
+      return null;
     }
-  }
-
-  private _calculateTimeLeft(): ITimeLeft | null {
-    const { targetDate } = this.props;
-    if (!targetDate) return null;
 
     const difference = new Date(targetDate).getTime() - new Date().getTime();
-    if (difference <= 0) return null;
+    if (difference <= 0) {
+      return null;
+    }
 
     return {
       days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -49,111 +44,105 @@ export default class CountdownTimer extends React.Component<ICountdownTimerProps
       minutes: Math.floor((difference / 1000 / 60) % 60),
       seconds: Math.floor((difference / 1000) % 60)
     };
-  }
+  }, [targetDate]);
 
-  public render(): React.ReactElement<ICountdownTimerProps> {
-    const {
-      eventTitle,
-      eventDescription,
-      targetDate,
-      backgroundImage,
-      overlayOpacity,
-      layout,
-      showDays,
-      showHours,
-      showMinutes,
-      showSeconds,
-      completedMessage,
-      accentColor,
-      hasTeamsContext
-    } = this.props;
+  const [timeLeft, setTimeLeft] = React.useState<ITimeLeft | null>(() => calculateTimeLeft());
 
-    const { timeLeft } = this.state;
-    const hasImage = !!backgroundImage;
-    const accent = accentColor || '#0078d4';
-    const isCompact = layout === 'compact';
-    const isBanner = layout === 'banner';
+  React.useEffect(() => {
+    setTimeLeft(calculateTimeLeft());
 
-    // No target date configured
-    if (!targetDate) {
-      return (
-        <section className={styles.countdownContainer}>
-          <div className={styles.emptyState}>
-            <h2>Countdown Timer</h2>
-            <p>Set a target date in the property pane to start the countdown.</p>
-          </div>
-        </section>
-      );
-    }
+    const interval = window.setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
 
-    // Build time units to display
-    const units: { value: number; label: string }[] = [];
-    if (timeLeft) {
-      if (showDays) units.push({ value: timeLeft.days, label: 'Days' });
-      if (showHours) units.push({ value: timeLeft.hours, label: 'Hours' });
-      if (showMinutes) units.push({ value: timeLeft.minutes, label: 'Minutes' });
-      if (showSeconds) units.push({ value: timeLeft.seconds, label: 'Seconds' });
-    }
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [calculateTimeLeft]);
 
-    const titleClass = `${styles.eventTitle} ${hasImage ? styles.eventTitleOnImage : ''}`;
-    const descClass = `${styles.eventDescription} ${hasImage ? styles.eventDescriptionOnImage : ''}`;
+  const hasImage = !!backgroundImage;
+  const accent = accentColor || '#0078d4';
+  const isCompact = layout === 'compact';
+  const isBanner = layout === 'banner';
 
-    const timerContent = timeLeft ? (
-      <div className={`${styles.timerGrid} ${isCompact ? styles.timerGridCompact : ''}`}>
-        {units.map((unit, idx) => (
-          <React.Fragment key={unit.label}>
-            {idx > 0 && (
-              <div className={`${styles.separator} ${hasImage ? styles.separatorOnImage : ''}`}>:</div>
-            )}
-            <div className={`${styles.timeUnit} ${hasImage ? styles.timeUnitOnImage : ''} ${isCompact ? styles.timeUnitCompact : ''}`}>
-              <div className={`${styles.accentBar} ${isCompact ? styles.accentBarCompact : ''}`} style={{ backgroundColor: accent }} />
-              <span className={`${styles.timeValue} ${hasImage ? styles.timeValueOnImage : ''} ${isCompact ? styles.timeValueCompact : ''}`}>
-                {unit.value < 10 ? '0' + unit.value : '' + unit.value}
-              </span>
-              <span className={`${styles.timeLabel} ${hasImage ? styles.timeLabelOnImage : ''}`}>
-                {unit.label}
-              </span>
-            </div>
-          </React.Fragment>
-        ))}
-      </div>
-    ) : (
-      <div className={`${styles.completedMessage} ${hasImage ? styles.completedMessageOnImage : ''}`}>
-        <span className={styles.checkIcon} style={{ backgroundColor: accent }}>✓</span>
-        {escape(completedMessage || 'The event has started!')}
-      </div>
-    );
-
+  if (!targetDate) {
     return (
       <section className={styles.countdownContainer}>
-        {/* Background image layer */}
-        {hasImage && (
-          <>
-            <div className={styles.bgImage} style={{ backgroundImage: `url(${backgroundImage})` }} />
-            <div className={styles.bgOverlay} style={{ backgroundColor: `rgba(0, 0, 0, ${(overlayOpacity || 50) / 100})` }} />
-          </>
-        )}
-
-        <div className={styles.content}>
-          {isBanner ? (
-            <div className={styles.bannerLayout}>
-              <div className={styles.bannerLeft}>
-                {eventTitle && <h2 className={titleClass}>{escape(eventTitle)}</h2>}
-                {eventDescription && <p className={descClass}>{escape(eventDescription)}</p>}
-              </div>
-              <div className={styles.bannerRight}>
-                {timerContent}
-              </div>
-            </div>
-          ) : (
-            <>
-              {eventTitle && <h2 className={titleClass}>{escape(eventTitle)}</h2>}
-              {eventDescription && <p className={descClass}>{escape(eventDescription)}</p>}
-              {timerContent}
-            </>
-          )}
+        <div className={styles.emptyState}>
+          <h2>Countdown Timer</h2>
+          <p>Set a target date in the property pane to start the countdown.</p>
         </div>
       </section>
     );
   }
-}
+
+  const units: { value: number; label: string }[] = [];
+  if (timeLeft) {
+    if (showDays) units.push({ value: timeLeft.days, label: 'Days' });
+    if (showHours) units.push({ value: timeLeft.hours, label: 'Hours' });
+    if (showMinutes) units.push({ value: timeLeft.minutes, label: 'Minutes' });
+    if (showSeconds) units.push({ value: timeLeft.seconds, label: 'Seconds' });
+  }
+
+  const titleClass = `${styles.eventTitle} ${hasImage ? styles.eventTitleOnImage : ''}`;
+  const descClass = `${styles.eventDescription} ${hasImage ? styles.eventDescriptionOnImage : ''}`;
+
+  const timerContent = timeLeft ? (
+    <div className={`${styles.timerGrid} ${isCompact ? styles.timerGridCompact : ''}`}>
+      {units.map((unit, idx) => (
+        <React.Fragment key={unit.label}>
+          {idx > 0 && (
+            <div className={`${styles.separator} ${hasImage ? styles.separatorOnImage : ''}`}>:</div>
+          )}
+          <div className={`${styles.timeUnit} ${hasImage ? styles.timeUnitOnImage : ''} ${isCompact ? styles.timeUnitCompact : ''}`}>
+            <div className={`${styles.accentBar} ${isCompact ? styles.accentBarCompact : ''}`} style={{ backgroundColor: accent }} />
+            <span className={`${styles.timeValue} ${hasImage ? styles.timeValueOnImage : ''} ${isCompact ? styles.timeValueCompact : ''}`}>
+              {unit.value < 10 ? '0' + unit.value : '' + unit.value}
+            </span>
+            <span className={`${styles.timeLabel} ${hasImage ? styles.timeLabelOnImage : ''}`}>
+              {unit.label}
+            </span>
+          </div>
+        </React.Fragment>
+      ))}
+    </div>
+  ) : (
+    <div className={`${styles.completedMessage} ${hasImage ? styles.completedMessageOnImage : ''}`}>
+      <span className={styles.checkIcon} style={{ backgroundColor: accent }}>✓</span>
+      {escape(completedMessage || 'The event has started!')}
+    </div>
+  );
+
+  return (
+    <section className={styles.countdownContainer}>
+      {hasImage && (
+        <>
+          <div className={styles.bgImage} style={{ backgroundImage: `url(${backgroundImage})` }} />
+          <div className={styles.bgOverlay} style={{ backgroundColor: `rgba(0, 0, 0, ${(overlayOpacity || 50) / 100})` }} />
+        </>
+      )}
+
+      <div className={styles.content}>
+        {isBanner ? (
+          <div className={styles.bannerLayout}>
+            <div className={styles.bannerLeft}>
+              {eventTitle && <h2 className={titleClass}>{escape(eventTitle)}</h2>}
+              {eventDescription && <p className={descClass}>{escape(eventDescription)}</p>}
+            </div>
+            <div className={styles.bannerRight}>
+              {timerContent}
+            </div>
+          </div>
+        ) : (
+          <>
+            {eventTitle && <h2 className={titleClass}>{escape(eventTitle)}</h2>}
+            {eventDescription && <p className={descClass}>{escape(eventDescription)}</p>}
+            {timerContent}
+          </>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default CountdownTimer;

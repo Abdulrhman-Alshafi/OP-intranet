@@ -34,14 +34,6 @@
         }
       ]
     },
-    "list-viewer-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/listViewer/ListViewerWebPart.js",
-          "manifest": "./src/webparts/listViewer/ListViewerWebPart.manifest.json"
-        }
-      ]
-    },
     "task-dashboard-web-part": {
       "components": [
         {
@@ -73,7 +65,6 @@
     "ServicesGridWebPartStrings": "lib/webparts/servicesGrid/loc/{locale}.js",
     "CountdownTimerWebPartStrings": "lib/webparts/countdownTimer/loc/{locale}.js",
     "AnnouncementBannerWebPartStrings": "lib/webparts/announcementBanner/loc/{locale}.js",
-    "ListViewerWebPartStrings": "lib/webparts/listViewer/loc/{locale}.js",
     "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js",
     "RecognitionWallWebPartStrings": "lib/webparts/recognitionWall/loc/{locale}.js",
     "PollsSurveyWebPartStrings": "lib/webparts/pollsSurvey/loc/{locale}.js",

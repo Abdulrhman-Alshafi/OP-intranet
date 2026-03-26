@@ -3,7 +3,7 @@ import importedStyles from './RecognitionWall.module.scss';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const styles: any = importedStyles;
 import { IRecognitionWallProps } from './IRecognitionWallProps';
-import { IKudosPost, ITopEmployee, IComment, IEmployeeOfMonth, RecognitionService } from '../../../services/RecognitionService';
+import { IKudosPost, IComment, IEmployeeOfMonth, RecognitionService } from '../../../services/RecognitionService';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
@@ -15,262 +15,188 @@ import KudosPost from './KudosPost';
 import KudosForm from './KudosForm';
 import EmployeeOfMonthForm from './EmployeeOfMonthForm';
 
-export interface IRecognitionWallState {
-  posts: IKudosPost[];
-  employeeOfMonth: IEmployeeOfMonth | null;
-  likeStatuses: { [postId: number]: boolean };
-  loading: boolean;
-  error: string | null;
-  searchQuery: string;
-  showForm: boolean;
-  showEotmForm: boolean;
-  loadingMore: boolean;
-  hasMore: boolean;
-  lastUpdated: Date | null;
-}
-
 /**
  * RecognitionWall is the main container component.
  * Manages data fetching, search, pagination, and polling.
  */
-export default class RecognitionWall extends React.Component<IRecognitionWallProps, IRecognitionWallState> {
-  private _service: RecognitionService;
-  private _currentPage: number = 0;
+const RecognitionWall = (props: IRecognitionWallProps): React.ReactElement => {
+  const { title, hasTeamsContext, showEmployeeOfMonth, siteUrl, isAdmin, postsPerPage, currentUserId, spHttpClient } = props;
+  const serviceRef = React.useRef<RecognitionService>(new RecognitionService(spHttpClient, siteUrl));
+  const currentPageRef = React.useRef<number>(0);
+  const [posts, setPosts] = React.useState<IKudosPost[]>([]);
+  const [employeeOfMonth, setEmployeeOfMonth] = React.useState<IEmployeeOfMonth | null>(null);
+  const [likeStatuses, setLikeStatuses] = React.useState<{ [postId: number]: boolean }>({});
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = React.useState<string>('');
+  const [showForm, setShowForm] = React.useState<boolean>(false);
+  const [showEotmForm, setShowEotmForm] = React.useState<boolean>(false);
+  const [loadingMore, setLoadingMore] = React.useState<boolean>(false);
+  const [hasMore, setHasMore] = React.useState<boolean>(true);
+  const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null);
 
-  constructor(props: IRecognitionWallProps) {
-    super(props);
+  React.useEffect(() => {
+    serviceRef.current = new RecognitionService(props.spHttpClient, props.siteUrl);
+  }, [props.spHttpClient, props.siteUrl]);
 
-    this._service = new RecognitionService(props.spHttpClient, props.siteUrl);
-
-    this.state = {
-      posts: [],
-      employeeOfMonth: null,
-      likeStatuses: {},
-      loading: true,
-      error: null,
-      searchQuery: '',
-      showForm: false,
-      showEotmForm: false,
-      loadingMore: false,
-      hasMore: true,
-      lastUpdated: null
-    };
-  }
-
-  public async componentDidMount(): Promise<void> {
-    await this._loadInitialData();
-  }
-
-  /**
-   * Load posts, employee of the month, and like statuses.
-   */
-  private async _loadInitialData(): Promise<void> {
-    this.setState({ loading: true, error: null });
-    this._currentPage = 0;
+  const loadInitialData = async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    currentPageRef.current = 0;
 
     try {
-      const { posts } = await this._service.getPosts(this.props.postsPerPage, 0);
-      const employeeOfMonth = this.props.showEmployeeOfMonth ? await this._service.getEmployeeOfMonth() : null;
-      const likeStatuses = this.props.currentUserId > 0
-        ? await this._service.getUserLikeStatuses(posts.map(p => p.Id), this.props.currentUserId)
+      const { posts: loadedPosts } = await serviceRef.current.getPosts(postsPerPage, 0);
+      const loadedEmployeeOfMonth = showEmployeeOfMonth ? await serviceRef.current.getEmployeeOfMonth() : null;
+      const loadedLikeStatuses = currentUserId > 0
+        ? await serviceRef.current.getUserLikeStatuses(loadedPosts.map((post) => post.Id), currentUserId)
         : {};
 
-      this.setState({
-        posts,
-        employeeOfMonth,
-        likeStatuses,
-        loading: false,
-        hasMore: posts.length >= this.props.postsPerPage,
-        lastUpdated: new Date()
-      });
+      setPosts(loadedPosts);
+      setEmployeeOfMonth(loadedEmployeeOfMonth);
+      setLikeStatuses(loadedLikeStatuses);
+      setLoading(false);
+      setHasMore(loadedPosts.length >= postsPerPage);
+      setLastUpdated(new Date());
     } catch (err) {
       console.error('RecognitionWall: Failed to load data', err);
-      this.setState({
-        loading: false,
-        error: (err as Error).message || 'Failed to load recognition data.'
-      });
+      setLoading(false);
+      setError((err as Error).message || 'Failed to load recognition data.');
     }
-  }
+  };
 
-  /**
-   * Load more posts (pagination via "Load More" button).
-   */
-  private _loadMore = async (): Promise<void> => {
-    this.setState({ loadingMore: true });
-    this._currentPage++;
+  React.useEffect(() => {
+    loadInitialData().catch((err) => {
+      console.error('RecognitionWall: Failed to load data', err);
+    });
+  }, [postsPerPage, showEmployeeOfMonth, currentUserId, props.siteUrl, props.spHttpClient]);
+
+  const loadMore = async (): Promise<void> => {
+    setLoadingMore(true);
+    currentPageRef.current += 1;
 
     try {
-      const skip = this._currentPage * this.props.postsPerPage;
-      const { posts: newPosts } = await this._service.getPosts(this.props.postsPerPage, skip, this.state.searchQuery || undefined);
+      const skip = currentPageRef.current * postsPerPage;
+      const { posts: newPosts } = await serviceRef.current.getPosts(postsPerPage, skip, searchQuery || undefined);
 
-      if (this.props.currentUserId > 0 && newPosts.length > 0) {
-        const newLikes = await this._service.getUserLikeStatuses(newPosts.map(p => p.Id), this.props.currentUserId);
-        this.setState(prev => ({
-          posts: [...prev.posts, ...newPosts],
-          likeStatuses: { ...prev.likeStatuses, ...newLikes },
-          loadingMore: false,
-          hasMore: newPosts.length >= this.props.postsPerPage
-        }));
+      if (currentUserId > 0 && newPosts.length > 0) {
+        const newLikes = await serviceRef.current.getUserLikeStatuses(newPosts.map((post) => post.Id), currentUserId);
+        setPosts((currentPosts) => [...currentPosts, ...newPosts]);
+        setLikeStatuses((currentLikeStatuses) => ({ ...currentLikeStatuses, ...newLikes }));
+        setLoadingMore(false);
+        setHasMore(newPosts.length >= postsPerPage);
       } else {
-        this.setState(prev => ({
-          posts: [...prev.posts, ...newPosts],
-          loadingMore: false,
-          hasMore: newPosts.length >= this.props.postsPerPage
-        }));
+        setPosts((currentPosts) => [...currentPosts, ...newPosts]);
+        setLoadingMore(false);
+        setHasMore(newPosts.length >= postsPerPage);
       }
     } catch {
-      this.setState({ loadingMore: false });
+      setLoadingMore(false);
     }
   };
 
-  /**
-   * Handle search query change.
-   */
-  private _handleSearch = async (query: string): Promise<void> => {
-    this.setState({ searchQuery: query, loading: true });
-    this._currentPage = 0;
+  const handleSearch = async (query: string): Promise<void> => {
+    setSearchQuery(query);
+    setLoading(true);
+    currentPageRef.current = 0;
 
     try {
-      const { posts } = await this._service.getPosts(this.props.postsPerPage, 0, query || undefined);
-      const likeStatuses = this.props.currentUserId > 0
-        ? await this._service.getUserLikeStatuses(posts.map(p => p.Id), this.props.currentUserId)
+      const { posts: searchedPosts } = await serviceRef.current.getPosts(postsPerPage, 0, query || undefined);
+      const searchedLikeStatuses = currentUserId > 0
+        ? await serviceRef.current.getUserLikeStatuses(searchedPosts.map((post) => post.Id), currentUserId)
         : {};
 
-      this.setState({
-        posts,
-        likeStatuses,
-        loading: false,
-        hasMore: posts.length >= this.props.postsPerPage
-      });
+      setPosts(searchedPosts);
+      setLikeStatuses(searchedLikeStatuses);
+      setLoading(false);
+      setHasMore(searchedPosts.length >= postsPerPage);
     } catch {
-      this.setState({ loading: false });
+      setLoading(false);
     }
   };
 
-  /**
-   * Toggle like on a post.
-   */
-  private _handleToggleLike = async (postId: number): Promise<void> => {
-    if (this.props.currentUserId === 0) return;
+  const handleToggleLike = async (postId: number): Promise<void> => {
+    if (currentUserId === 0) {
+      return;
+    }
 
     try {
-      const isNowLiked = await this._service.toggleLike(postId, this.props.currentUserId);
+      const isNowLiked = await serviceRef.current.toggleLike(postId, currentUserId);
 
-      this.setState(prev => {
-        const updatedPosts = prev.posts.map(p => {
-          if (p.Id === postId) {
-            return { ...p, LikesCount: p.LikesCount + (isNowLiked ? 1 : -1) };
-          }
-          return p;
-        });
-        return {
-          posts: updatedPosts,
-          likeStatuses: { ...prev.likeStatuses, [postId]: isNowLiked }
-        };
-      });
+      setPosts((currentPosts) => currentPosts.map((post) => {
+        if (post.Id === postId) {
+          return { ...post, LikesCount: post.LikesCount + (isNowLiked ? 1 : -1) };
+        }
+        return post;
+      }));
+      setLikeStatuses((currentLikeStatuses) => ({ ...currentLikeStatuses, [postId]: isNowLiked }));
     } catch (err) {
       console.error('RecognitionWall: Failed to toggle like', err);
     }
   };
 
-  /**
-   * Load comments for a post.
-   */
-  private _handleLoadComments = async (postId: number): Promise<IComment[]> => {
-    return this._service.getComments(postId);
+  const handleLoadComments = async (postId: number): Promise<IComment[]> => {
+    return serviceRef.current.getComments(postId);
   };
 
-  /**
-   * Add a comment to a post.
-   */
-  private _handleAddComment = async (postId: number, text: string): Promise<void> => {
-    // Optimistically update comment count immediately
-    this.setState(prev => ({
-      posts: prev.posts.map(p =>
-        p.Id === postId ? { ...p, CommentsCount: (p.CommentsCount || 0) + 1 } : p
-      )
-    }));
+  const handleAddComment = async (postId: number, text: string): Promise<void> => {
+    setPosts((currentPosts) => currentPosts.map((post) =>
+      post.Id === postId ? { ...post, CommentsCount: (post.CommentsCount || 0) + 1 } : post
+    ));
 
     try {
-      await this._service.addComment(postId, text);
+      await serviceRef.current.addComment(postId, text);
     } catch (err) {
       console.error('RecognitionWall: Failed to add comment', err);
-      // Rollback the optimistic update on error
-      this.setState(prev => ({
-        posts: prev.posts.map(p =>
-          p.Id === postId ? { ...p, CommentsCount: Math.max(0, (p.CommentsCount || 0) - 1) } : p
-        )
-      }));
+      setPosts((currentPosts) => currentPosts.map((post) =>
+        post.Id === postId ? { ...post, CommentsCount: Math.max(0, (post.CommentsCount || 0) - 1) } : post
+      ));
     }
   };
 
-  /**
-   * Handle new kudos submission from the form.
-   */
-  private _handleKudosSubmit = async (recipientEmail: string, _recipientName: string, message: string, category: string): Promise<void> => {
+  const handleKudosSubmit = async (recipientEmail: string, _recipientName: string, message: string, category: string): Promise<void> => {
     try {
-      await this._service.createPost(recipientEmail, message, category);
-      this.setState({ showForm: false });
-      // Reload to show the new post
-      await this._loadInitialData();
+      await serviceRef.current.createPost(recipientEmail, message, category);
+      setShowForm(false);
+      await loadInitialData();
     } catch (err) {
       console.error('RecognitionWall: Failed to create kudos', err);
     }
   };
 
-  /**
-   * Handle deleting a kudos post (admin only).
-   */
-  private _handleDeletePost = async (postId: number): Promise<void> => {
+  const handleDeletePost = async (postId: number): Promise<void> => {
     try {
-      await this._service.deletePost(postId);
-      // Remove the post from state immediately
-      this.setState(prev => ({
-        posts: prev.posts.filter(p => p.Id !== postId)
-      }));
+      await serviceRef.current.deletePost(postId);
+      setPosts((currentPosts) => currentPosts.filter((post) => post.Id !== postId));
     } catch (err) {
       console.error('RecognitionWall: Failed to delete post', err);
     }
   };
 
-  /**
-   * Handle setting Employee of the Month (admin only).
-   */
-  private _handleSetEmployee = async (email: string, name: string): Promise<void> => {
+  const handleSetEmployee = async (email: string, name: string): Promise<void> => {
     try {
-      await this._service.setEmployeeOfMonth(email, name);
-      this.setState({ showEotmForm: false });
-      await this._loadInitialData();
+      await serviceRef.current.setEmployeeOfMonth(email, name);
+      setShowEotmForm(false);
+      await loadInitialData();
     } catch (err) {
       console.error('RecognitionWall: Failed to set Employee of the Month', err);
     }
   };
 
-  /**
-   * Handle removing Employee of the Month (admin only).
-   */
-  private _handleRemoveEmployee = async (): Promise<void> => {
+  const handleRemoveEmployee = async (): Promise<void> => {
     try {
-      await this._service.removeEmployeeOfMonth();
-      this.setState({ employeeOfMonth: null });
+      await serviceRef.current.removeEmployeeOfMonth();
+      setEmployeeOfMonth(null);
     } catch (err) {
       console.error('RecognitionWall: Failed to remove Employee of the Month', err);
     }
   };
 
-  /**
-   * Handle manual refresh.
-   */
-  private _handleRefresh = async (): Promise<void> => {
-    await this._loadInitialData();
+  const handleRefresh = async (): Promise<void> => {
+    await loadInitialData();
   };
 
-  public render(): React.ReactElement<IRecognitionWallProps> {
-    const { title, hasTeamsContext, showEmployeeOfMonth, siteUrl, isAdmin } = this.props;
-    const { posts, employeeOfMonth, likeStatuses, loading, error, showForm, showEotmForm, loadingMore, hasMore, lastUpdated } = this.state;
-
-    return (
-      <section className={`${styles.recognitionWall} ${hasTeamsContext ? styles.teams : ''}`}>
+  return (
+    <section className={`${styles.recognitionWall} ${hasTeamsContext ? styles.teams : ''}`}>
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.titleSection}>
@@ -287,8 +213,16 @@ export default class RecognitionWall extends React.Component<IRecognitionWallPro
           <div className={styles.controls}>
             <SearchBox
               placeholder="Search kudos..."
-              onSearch={(val) => { this._handleSearch(val || '').catch(console.error); }}
-              onClear={() => { this._handleSearch('').catch(console.error); }}
+              onSearch={(val) => {
+                handleSearch(val || '').catch(() => {
+                  setLoading(false);
+                });
+              }}
+              onClear={() => {
+                handleSearch('').catch(() => {
+                  setLoading(false);
+                });
+              }}
               className={styles.searchBox}
               styles={{ root: { minWidth: 200 } }}
             />
@@ -296,7 +230,7 @@ export default class RecognitionWall extends React.Component<IRecognitionWallPro
               <PrimaryButton
                 text="Give Kudos"
                 iconProps={{ iconName: 'FavoriteStar' }}
-                onClick={() => this.setState({ showForm: true })}
+                onClick={() => setShowForm(true)}
               />
             )}
             {isAdmin && showEmployeeOfMonth && (
@@ -304,14 +238,18 @@ export default class RecognitionWall extends React.Component<IRecognitionWallPro
                 text="Employee of the Month"
                 iconProps={{ iconName: 'Ribbon' }}
                 className={styles.eotmButton}
-                onClick={() => this.setState({ showEotmForm: true })}
+                onClick={() => setShowEotmForm(true)}
               />
             )}
             <IconButton
               iconProps={{ iconName: 'Refresh' }}
               title="Refresh"
               ariaLabel="Refresh"
-              onClick={() => { this._handleRefresh().catch(console.error); }}
+              onClick={() => {
+                handleRefresh().catch((err) => {
+                  console.error('RecognitionWall: Refresh failed', err);
+                });
+              }}
               disabled={loading}
             />
             {lastUpdated && (
@@ -327,7 +265,7 @@ export default class RecognitionWall extends React.Component<IRecognitionWallPro
           <MessageBar
             messageBarType={MessageBarType.error}
             isMultiline={false}
-            onDismiss={() => this.setState({ error: null })}
+            onDismiss={() => setError(null)}
           >
             {error}
           </MessageBar>
@@ -339,7 +277,11 @@ export default class RecognitionWall extends React.Component<IRecognitionWallPro
             employee={employeeOfMonth}
             siteUrl={siteUrl}
             isAdmin={isAdmin}
-            onRemove={() => { this._handleRemoveEmployee().catch(console.error); }}
+            onRemove={() => {
+              handleRemoveEmployee().catch((err) => {
+                console.error('RecognitionWall: Failed to remove Employee of the Month', err);
+              });
+            }}
           />
         )}
 
@@ -366,13 +308,13 @@ export default class RecognitionWall extends React.Component<IRecognitionWallPro
               <KudosPost
                 key={post.Id}
                 post={post}
-                currentUserId={this.props.currentUserId}
+                currentUserId={currentUserId}
                 hasLiked={likeStatuses[post.Id] || false}
                 isAdmin={isAdmin}
-                onToggleLike={this._handleToggleLike}
-                onAddComment={this._handleAddComment}
-                onLoadComments={this._handleLoadComments}
-                onDelete={this._handleDeletePost}
+                onToggleLike={handleToggleLike}
+                onAddComment={handleAddComment}
+                onLoadComments={handleLoadComments}
+                onDelete={handleDeletePost}
               />
             ))}
           </div>
@@ -384,7 +326,14 @@ export default class RecognitionWall extends React.Component<IRecognitionWallPro
             {loadingMore ? (
               <Spinner size={SpinnerSize.small} label="Loading more..." />
             ) : (
-              <button className={styles.loadMoreBtn} onClick={() => { this._loadMore().catch(console.error); }}>
+              <button
+                className={styles.loadMoreBtn}
+                onClick={() => {
+                  loadMore().catch(() => {
+                    setLoadingMore(false);
+                  });
+                }}
+              >
                 Load More
               </button>
             )}
@@ -394,21 +343,22 @@ export default class RecognitionWall extends React.Component<IRecognitionWallPro
         {/* Kudos Form Panel */}
         <KudosForm
           isOpen={showForm}
-          onDismiss={() => this.setState({ showForm: false })}
-          onSubmit={this._handleKudosSubmit}
-          siteUrl={this.props.siteUrl}
-          spHttpClient={this.props.spHttpClient}
+          onDismiss={() => setShowForm(false)}
+          onSubmit={handleKudosSubmit}
+          siteUrl={props.siteUrl}
+          spHttpClient={props.spHttpClient}
         />
 
         {/* Employee of the Month Form Panel */}
         <EmployeeOfMonthForm
           isOpen={showEotmForm}
-          onDismiss={() => this.setState({ showEotmForm: false })}
-          onSubmit={this._handleSetEmployee}
-          siteUrl={this.props.siteUrl}
-          spHttpClient={this.props.spHttpClient}
+          onDismiss={() => setShowEotmForm(false)}
+          onSubmit={handleSetEmployee}
+          siteUrl={props.siteUrl}
+          spHttpClient={props.spHttpClient}
         />
       </section>
-    );
-  }
-}
+  );
+};
+
+export default RecognitionWall;
