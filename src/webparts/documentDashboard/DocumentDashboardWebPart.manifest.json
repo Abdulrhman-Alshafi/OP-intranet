@@ -1,0 +1,33 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b4f9c0ad-3130-4ea4-aa0e-4c8036aac12f",
+  "alias": "DocumentDashboardWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "Document Dashboard"
+      },
+      "description": {
+        "default": "Displays personal and department documents from CompanyDocuments using SharePoint permissions"
+      },
+      "officeFabricIconFontName": "FabricFolder",
+      "properties": {
+        "title": "Document Dashboard",
+        "libraryName": "CompanyDocuments"
+      }
+    }
+  ]
+}

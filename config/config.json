@@ -73,6 +73,14 @@
           "manifest": "./src/webparts/announcements/AnnouncementsWebPart.manifest.json"
         }
       ]
+    },
+    "document-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/documentDashboard/DocumentDashboardWebPart.js",
+          "manifest": "./src/webparts/documentDashboard/DocumentDashboardWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -86,6 +94,7 @@
     "PollsSurveyWebPartStrings": "lib/webparts/pollsSurvey/loc/{locale}.js",
     "KnowledgeBaseWebPartStrings": "lib/webparts/knowledgeBase/loc/{locale}.js",
     "AnnouncementsWebPartStrings": "lib/webparts/announcements/loc/{locale}.js",
+    "DocumentDashboardWebPartStrings": "lib/webparts/documentDashboard/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
   }
 }
