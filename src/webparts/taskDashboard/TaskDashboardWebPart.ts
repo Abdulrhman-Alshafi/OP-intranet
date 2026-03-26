@@ -18,6 +18,7 @@ import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spf
 import * as strings from 'TaskDashboardWebPartStrings';
 import TaskDashboard from './components/TaskDashboard';
 import { ITaskDashboardProps, ISelectedPlan } from './components/ITaskDashboardProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface ITaskDashboardWebPartProps {
   title: string;
@@ -96,6 +97,7 @@ export default class TaskDashboardWebPart extends BaseClientSideWebPart<ITaskDas
   }
 
   protected async onInit(): Promise<void> {
+    configureFluentUi();
     await super.onInit();
     this._environmentMessage = await this._getEnvironmentMessage();
     return Promise.resolve();

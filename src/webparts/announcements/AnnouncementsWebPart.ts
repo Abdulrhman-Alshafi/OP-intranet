@@ -13,6 +13,7 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'AnnouncementsWebPartStrings';
 import Announcements from './components/Announcements';
 import { IAnnouncementsProps } from './components/IAnnouncementsProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface IAnnouncementsWebPartProps {
   title: string;
@@ -50,6 +51,7 @@ export default class AnnouncementsWebPart extends BaseClientSideWebPart<IAnnounc
   }
 
   protected async onInit(): Promise<void> {
+    configureFluentUi();
     await super.onInit();
     return Promise.resolve();
   }

@@ -14,6 +14,7 @@ import { SPHttpClient } from '@microsoft/sp-http';
 import * as strings from 'PollsSurveyWebPartStrings';
 import PollsSurvey from './components/PollsSurvey';
 import { IPollsSurveyProps } from './components/IPollsSurveyProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface IPollsSurveyWebPartProps {
   title: string;
@@ -65,6 +66,7 @@ export default class PollsSurveyWebPart extends BaseClientSideWebPart<IPollsSurv
   }
 
   protected async onInit(): Promise<void> {
+    configureFluentUi();
     await super.onInit();
   }
 

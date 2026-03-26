@@ -16,6 +16,7 @@ import { RecognitionService } from '../../services/RecognitionService';
 import * as strings from 'RecognitionWallWebPartStrings';
 import RecognitionWall from './components/RecognitionWall';
 import { IRecognitionWallProps } from './components/IRecognitionWallProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface IRecognitionWallWebPartProps {
   title: string;
@@ -70,6 +71,7 @@ export default class RecognitionWallWebPart extends BaseClientSideWebPart<IRecog
   }
 
   protected async onInit(): Promise<void> {
+    configureFluentUi();
     await super.onInit();
   }
 

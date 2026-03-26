@@ -14,6 +14,7 @@ import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spf
 import * as strings from 'ServicesGridWebPartStrings';
 import ServicesGrid from './components/ServicesGrid';
 import { IServicesGridProps, IServiceItem } from './components/IServicesGridProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface IServicesGridWebPartProps {
   sectionTitle: string;
@@ -43,10 +44,10 @@ export default class ServicesGridWebPart extends BaseClientSideWebPart<IServices
     ReactDom.render(element, this.domElement);
   }
 
-  protected onInit(): Promise<void> {
-    return this._getEnvironmentMessage().then(message => {
-      this._environmentMessage = message;
-    });
+  protected async onInit(): Promise<void> {
+    configureFluentUi();
+    await super.onInit();
+    this._environmentMessage = await this._getEnvironmentMessage();
   }
 
   private _getEnvironmentMessage(): Promise<string> {

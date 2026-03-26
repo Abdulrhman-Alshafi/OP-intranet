@@ -15,6 +15,7 @@ import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spf
 import * as strings from 'SwiperWebPartStrings';
 import Swiper from './components/Swiper';
 import { ISwiperProps, ISlide, IStaticTile } from './components/ISwiperProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface ISwiperWebPartProps {
   slides: ISlide[];
@@ -52,10 +53,10 @@ export default class SwiperWebPart extends BaseClientSideWebPart<ISwiperWebPartP
     ReactDom.render(element, this.domElement);
   }
 
-  protected onInit(): Promise<void> {
-    return this._getEnvironmentMessage().then(message => {
-      this._environmentMessage = message;
-    });
+  protected async onInit(): Promise<void> {
+    configureFluentUi();
+    await super.onInit();
+    this._environmentMessage = await this._getEnvironmentMessage();
   }
 
   private _getEnvironmentMessage(): Promise<string> {

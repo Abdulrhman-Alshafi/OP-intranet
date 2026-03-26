@@ -13,6 +13,7 @@ import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spf
 
 import AnnouncementBanner from './components/AnnouncementBanner';
 import { IAnnouncementBannerProps, IAnnouncement } from './components/IAnnouncementBannerProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface IAnnouncementBannerWebPartProps {
   announcements: IAnnouncement[];
@@ -39,6 +40,11 @@ export default class AnnouncementBannerWebPart extends BaseClientSideWebPart<IAn
     );
 
     ReactDom.render(element, this.domElement);
+  }
+
+  protected async onInit(): Promise<void> {
+    configureFluentUi();
+    await super.onInit();
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {

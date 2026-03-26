@@ -16,6 +16,7 @@ import { PropertyFieldDateTimePicker, DateConvention, TimeConvention, IDateTimeF
 import * as strings from 'CountdownTimerWebPartStrings';
 import CountdownTimer from './components/CountdownTimer';
 import { ICountdownTimerProps } from './components/ICountdownTimerProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface ICountdownTimerWebPartProps {
   eventTitle: string;
@@ -60,6 +61,11 @@ export default class CountdownTimerWebPart extends BaseClientSideWebPart<ICountd
     );
 
     ReactDom.render(element, this.domElement);
+  }
+
+  protected async onInit(): Promise<void> {
+    configureFluentUi();
+    await super.onInit();
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {

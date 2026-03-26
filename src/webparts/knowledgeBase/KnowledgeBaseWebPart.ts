@@ -14,6 +14,7 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'KnowledgeBaseWebPartStrings';
 import KnowledgeBase from './components/KnowledgeBase';
 import { IKnowledgeBaseProps } from './components/IKnowledgeBaseProps';
+import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface IKnowledgeBaseWebPartProps {
   title: string;
@@ -50,6 +51,7 @@ export default class KnowledgeBaseWebPart extends BaseClientSideWebPart<IKnowled
   }
 
   protected async onInit(): Promise<void> {
+    configureFluentUi();
     await super.onInit();
     return Promise.resolve();
   }
