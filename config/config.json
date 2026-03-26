@@ -57,6 +57,22 @@
           "manifest": "./src/webparts/pollsSurvey/PollsSurveyWebPart.manifest.json"
         }
       ]
+    },
+    "knowledge-base-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/knowledgeBase/KnowledgeBaseWebPart.js",
+          "manifest": "./src/webparts/knowledgeBase/KnowledgeBaseWebPart.manifest.json"
+        }
+      ]
+    },
+    "announcements-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/announcements/AnnouncementsWebPart.js",
+          "manifest": "./src/webparts/announcements/AnnouncementsWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -68,6 +84,8 @@
     "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js",
     "RecognitionWallWebPartStrings": "lib/webparts/recognitionWall/loc/{locale}.js",
     "PollsSurveyWebPartStrings": "lib/webparts/pollsSurvey/loc/{locale}.js",
+    "KnowledgeBaseWebPartStrings": "lib/webparts/knowledgeBase/loc/{locale}.js",
+    "AnnouncementsWebPartStrings": "lib/webparts/announcements/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
   }
 }

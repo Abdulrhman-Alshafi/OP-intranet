@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "d8e9f0a1-b2c3-4d5e-6f7a-8b9c0d1e2f3a",
+  "alias": "AnnouncementsWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "OP Announcements"
+      },
+      "description": {
+        "default": "Share announcements with reactions and comments. Keep your team informed and engaged."
+      },
+      "officeFabricIconFontName": "Megaphone",
+      "properties": {
+        "title": "OP Announcements",
+        "announcementsListName": "Announcements",
+        "enableCreateAnnouncement": true,
+        "enableReactions": true,
+        "enableComments": true,
+        "itemsPerPage": 5
+      }
+    }
+  ]
+}

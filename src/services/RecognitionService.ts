@@ -46,6 +46,7 @@ export interface ITopEmployee {
  */
 export interface IEmployeeOfMonth {
   Id: number;
+  EmployeeId?: number;
   EmployeeName: string;
   EmployeeEmail: string;
   Month: string;
@@ -102,6 +103,7 @@ export class RecognitionService {
       ]);
 
       await this._ensureList(LIST_EMPLOYEE_OF_MONTH, 'Admin-selected Employee of the Month', [
+        { type: 'User', title: 'Employee' },
         { type: 'Text', title: 'EmployeeName' },
         { type: 'Text', title: 'EmployeeEmail' },
         { type: 'Text', title: 'Month' },
@@ -467,26 +469,51 @@ export class RecognitionService {
     const now = new Date();
     const monthKey = `${now.getFullYear()}-${((now.getMonth() + 1) < 10 ? '0' : '') + (now.getMonth() + 1)}`;
 
-    const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_EMPLOYEE_OF_MONTH}')/items` +
-      `?$select=Id,EmployeeName,EmployeeEmail,Month,SelectedById` +
-      `&$filter=Month eq '${monthKey}'` +
-      `&$top=1&$orderby=Created desc`;
+    try {
+      const personUrl = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_EMPLOYEE_OF_MONTH}')/items` +
+        `?$select=Id,Employee/Id,Employee/Title,Employee/EMail,EmployeeName,EmployeeEmail,Month,SelectedById` +
+        `&$expand=Employee` +
+        `&$filter=Month eq '${monthKey}'` +
+        `&$top=1&$orderby=Created desc`;
 
-    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1);
-    if (!response.ok) return null;
+      const personResponse = await this._spHttpClient.get(personUrl, SPHttpClient.configurations.v1);
+      if (!personResponse.ok) return null;
 
-    const json = await response.json();
-    const items = json.value || [];
-    if (items.length === 0) return null;
+      const personJson = await personResponse.json();
+      const personItems = personJson.value || [];
+      if (personItems.length === 0) return null;
 
-    const item = items[0];
-    return {
-      Id: item.Id,
-      EmployeeName: item.EmployeeName || '',
-      EmployeeEmail: item.EmployeeEmail || '',
-      Month: item.Month || '',
-      SelectedById: item.SelectedById || 0
-    };
+      const personItem = personItems[0];
+      return {
+        Id: personItem.Id,
+        EmployeeId: personItem.Employee?.Id || 0,
+        EmployeeName: personItem.Employee?.Title || personItem.EmployeeName || '',
+        EmployeeEmail: personItem.Employee?.EMail || personItem.EmployeeEmail || '',
+        Month: personItem.Month || '',
+        SelectedById: personItem.SelectedById || 0
+      };
+    } catch {
+      const legacyUrl = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_EMPLOYEE_OF_MONTH}')/items` +
+        `?$select=Id,EmployeeName,EmployeeEmail,Month,SelectedById` +
+        `&$filter=Month eq '${monthKey}'` +
+        `&$top=1&$orderby=Created desc`;
+
+      const legacyResponse = await this._spHttpClient.get(legacyUrl, SPHttpClient.configurations.v1);
+      if (!legacyResponse.ok) return null;
+
+      const legacyJson = await legacyResponse.json();
+      const legacyItems = legacyJson.value || [];
+      if (legacyItems.length === 0) return null;
+
+      const legacyItem = legacyItems[0];
+      return {
+        Id: legacyItem.Id,
+        EmployeeName: legacyItem.EmployeeName || '',
+        EmployeeEmail: legacyItem.EmployeeEmail || '',
+        Month: legacyItem.Month || '',
+        SelectedById: legacyItem.SelectedById || 0
+      };
+    }
   }
 
   /**
@@ -499,22 +526,37 @@ export class RecognitionService {
     const now = new Date();
     const monthKey = `${now.getFullYear()}-${((now.getMonth() + 1) < 10 ? '0' : '') + (now.getMonth() + 1)}`;
     const currentUserId = await this._getCurrentUserId();
+    const employeeId = await this._ensureUser(email);
 
     // Remove existing entry for this month
     await this.removeEmployeeOfMonth();
 
     // Create new entry
     const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_EMPLOYEE_OF_MONTH}')/items`;
-    const body = JSON.stringify({
+
+    const modernBody = JSON.stringify({
       Title: `${name} - ${monthKey}`,
+      EmployeeId: employeeId,
       EmployeeName: name,
       EmployeeEmail: email,
       Month: monthKey,
       SelectedById: currentUserId
     });
-    const options: ISPHttpClientOptions = { body };
 
-    const response = await this._spHttpClient.post(url, SPHttpClient.configurations.v1, options);
+    let response = await this._spHttpClient.post(url, SPHttpClient.configurations.v1, { body: modernBody });
+
+    if (!response.ok) {
+      const legacyBody = JSON.stringify({
+        Title: `${name} - ${monthKey}`,
+        EmployeeName: name,
+        EmployeeEmail: email,
+        Month: monthKey,
+        SelectedById: currentUserId
+      });
+
+      response = await this._spHttpClient.post(url, SPHttpClient.configurations.v1, { body: legacyBody });
+    }
+
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
       throw new Error(`Failed to set Employee of the Month: ${JSON.stringify(err)}`);

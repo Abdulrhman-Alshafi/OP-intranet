@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "c7d8e9f0-a1b2-3c4d-5e6f-7a8b9c0d1e2f",
+  "alias": "KnowledgeBaseWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "OP Knowledge Base"
+      },
+      "description": {
+        "default": "A searchable, filterable Knowledge Base and FAQ system connected to a SharePoint list"
+      },
+      "officeFabricIconFontName": "KnowledgeArticle",
+      "properties": {
+        "title": "OP Knowledge Base",
+        "listName": "KnowledgeBase",
+        "defaultCategory": "All",
+        "itemsPerPage": 10,
+        "enableSearch": true,
+        "enableCategoryFilter": true
+      }
+    }
+  ]
+}

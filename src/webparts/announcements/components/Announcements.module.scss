@@ -1,0 +1,376 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.announcements {
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 24px;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  background: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  min-height: 300px;
+}
+
+.header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid "[theme:neutralLighter, default: #f3f2f1]";
+  border-bottom-color: var(--neutralLighter);
+
+  h2 {
+    margin: 0 0 4px 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: "[theme:themeDarkAlt, default: #005a9e]";
+    color: var(--themeDarkAlt);
+  }
+
+  .summary {
+    font-size: 13px;
+    color: "[theme:neutralSecondary, default: #605e5c]";
+    color: var(--neutralSecondary);
+  }
+}
+
+.createAnnouncementForm {
+  background: "[theme:neutralLighter, default: #f3f2f1]";
+  background-color: var(--neutralLighter);
+  padding: 16px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  border-left: 4px solid "[theme:themePrimary, default: #0078d4]";
+  border-left-color: var(--themePrimary);
+}
+
+.announcementsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.announcementCard {
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight);
+  border-radius: 4px;
+  padding: 16px;
+  background: "[theme:white, default: #ffffff]";
+  background-color: var(--white);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+
+    .titleSection {
+      flex: 1;
+
+      h3 {
+        margin: 0 0 4px 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: "[theme:themeDarkAlt, default: #005a9e]";
+        color: var(--themeDarkAlt);
+        line-height: 1.3;
+      }
+    }
+
+    .meta {
+      font-size: 12px;
+      color: "[theme:neutralSecondary, default: #605e5c]";
+      color: var(--neutralSecondary);
+      text-align: right;
+    }
+  }
+
+  .cardContent {
+    font-size: 14px;
+    line-height: 1.6;
+    color: "[theme:bodyText, default: #323130]";
+    color: var(--bodyText);
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    &.expanded {
+      display: block;
+      -webkit-line-clamp: auto;
+      line-clamp: auto;
+      overflow: visible;
+    }
+  }
+
+  .author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    .authorName {
+      font-size: 13px;
+      font-weight: 600;
+      color: "[theme:bodyText, default: #323130]";
+      color: var(--bodyText);
+    }
+
+    .authorEmail {
+      font-size: 12px;
+      color: "[theme:neutralSecondary, default: #605e5c]";
+      color: var(--neutralSecondary);
+    }
+  }
+}
+
+.reactionBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 12px 0 0 0;
+  border-top: 1px solid "[theme:neutralLighter, default: #f3f2f1]";
+  border-top-color: var(--neutralLighter);
+
+  .reactionButton {
+    padding: 0 6px;
+    border: 1px solid "[theme:neutralLight, default: #edebe9]";
+    border-color: var(--neutralLight);
+    border-radius: 16px;
+    background: "[theme:white, default: #ffffff]";
+    background-color: var(--white);
+    color: "[theme:bodyText, default: #323130]";
+    color: var(--bodyText);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: "[theme:neutralLighter, default: #f3f2f1]";
+      background-color: var(--neutralLighter);
+      border-color: "[theme:neutralDark, default: #3c3c3c]";
+      border-color: var(--neutralDark);
+    }
+
+    &.active {
+      background: "[theme:themeLighterAlt, default: #eff6fc]";
+      background-color: var(--themeLighterAlt);
+      border-color: "[theme:themePrimary, default: #0078d4]";
+      border-color: var(--themePrimary);
+      color: "[theme:themePrimary, default: #0078d4]";
+      color: var(--themePrimary);
+      font-weight: 600;
+    }
+
+    :global(.ms-Button-label) {
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+}
+
+.commentSection {
+  border-top: 1px solid "[theme:neutralLighter, default: #f3f2f1]";
+  border-top-color: var(--neutralLighter);
+  padding: 12px 0 0 0;
+  margin-top: 12px;
+}
+
+.commentForm {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: flex-end;
+
+  .inputField {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.commentItem {
+  padding: 12px;
+  background: "[theme:neutralLighter, default: #f3f2f1]";
+  background-color: var(--neutralLighter);
+  border-radius: 4px;
+  border-left: 2px solid "[theme:themeLight, default: #c7e0f4]";
+  border-left-color: var(--themeLight);
+
+  &.reply {
+    margin-left: 24px;
+    background: "[theme:white, default: #ffffff]";
+    background-color: var(--white);
+    border: 1px solid "[theme:neutralLight, default: #edebe9]";
+    border-color: var(--neutralLight);
+    border-left: 2px solid "[theme:themeLighterAlt, default: #eff6fc]";
+    border-left-color: var(--themeLighterAlt);
+  }
+
+  .commentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+
+    .authorInfo {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .authorName {
+        font-size: 13px;
+        font-weight: 600;
+        color: "[theme:bodyText, default: #323130]";
+        color: var(--bodyText);
+      }
+
+      .timestamp {
+        font-size: 11px;
+        color: "[theme:neutralSecondary, default: #605e5c]";
+        color: var(--neutralSecondary);
+      }
+    }
+  }
+
+  .authorInfoRow {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .commentText {
+    font-size: 13px;
+    color: "[theme:bodyText, default: #323130]";
+    color: var(--bodyText);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .commentActions {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+
+    .actionButton {
+      min-height: 28px;
+
+      :global(.ms-Button-label) {
+        color: var(--link);
+        font-size: 12px;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.replyForm {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: flex-end;
+
+  .inputField {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.repliesList {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.repliesWrapper {
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+
+  &.expanded {
+    max-height: 900px;
+  }
+
+  &.collapsed {
+    max-height: 0;
+  }
+}
+
+.expandButton {
+  margin-bottom: 12px;
+
+  :global(.ms-Button-label) {
+    color: var(--link);
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+.loadMoreButton {
+  margin-top: 4px;
+
+  :global(.ms-Button-label) {
+    color: var(--link);
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid "[theme:neutralLighter, default: #f3f2f1]";
+  border-top-color: var(--neutralLighter);
+
+  .pageInfo {
+    font-size: 13px;
+    color: "[theme:neutralSecondary, default: #605e5c]";
+    color: var(--neutralSecondary);
+    min-width: 100px;
+    text-align: center;
+  }
+}
+
+.errorMessage {
+  padding: 12px;
+  background: "[theme:errorBackground, default: #fde7e9]";
+  border-left: 4px solid "[theme:errorText, default: #a4262c]";
+  color: "[theme:errorText, default: #a4262c]";
+  border-radius: 2px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
