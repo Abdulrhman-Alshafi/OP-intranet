@@ -1,0 +1,33 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b2d3f4a5-6c78-4e90-bdf2-345678901bcd",
+  "alias": "HrDocumentWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "HR Documents"
+      },
+      "description": {
+        "default": "Employees view their own HR letters and contracts; HR staff manage and upload all documents with item-level security."
+      },
+      "officeFabricIconFontName": "People",
+      "properties": {
+        "libraryName": "HRDocuments",
+        "hrGroupName": "HR"
+      }
+    }
+  ]
+}

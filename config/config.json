@@ -81,6 +81,14 @@
           "manifest": "./src/webparts/salaryDocument/SalaryDocumentWebPart.manifest.json"
         }
       ]
+    },
+    "hr-document-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hrDocument/HrDocumentWebPart.js",
+          "manifest": "./src/webparts/hrDocument/HrDocumentWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -95,6 +103,7 @@
     "KnowledgeBaseWebPartStrings": "lib/webparts/knowledgeBase/loc/{locale}.js",
     "AnnouncementsWebPartStrings": "lib/webparts/announcements/loc/{locale}.js",
     "SalaryDocumentWebPartStrings": "lib/webparts/salaryDocument/loc/{locale}.js",
+    "HrDocumentWebPartStrings": "lib/webparts/hrDocument/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
   }

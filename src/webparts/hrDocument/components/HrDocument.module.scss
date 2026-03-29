@@ -1,0 +1,310 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   HR Documents — Card-Based UI (mirrors Salary Documents style)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Tile Container ───────────────────────────────────────────────────────── */
+
+.hrDocument {
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 24px;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  background: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  min-height: 200px;
+}
+
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+
+.wpHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wpTitleSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wpIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0, 120, 212, 0.08);
+  flex-shrink: 0;
+
+  i {
+    font-size: 20px;
+    color: "[theme:themePrimary, default: #0078d4]";
+    color: var(--themePrimary);
+  }
+}
+
+.wpTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Document Table Area ──────────────────────────────────────────────────── */
+
+.tableArea {
+  padding: 0;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: var(--neutralSecondary, #605e5c);
+  text-align: center;
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: var(--neutralTertiary, #a19f9d);
+}
+
+.loadMoreWrapper {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+/* ─── File icon column ─────────────────────────────────────────────────────── */
+
+.fileIconCell {
+  width: 32px;
+  text-align: center;
+}
+
+/* ─── Document type badge ──────────────────────────────────────────────────── */
+
+.docTypeBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(0, 120, 212, 0.08);
+  color: var(--themePrimary, #0078d4);
+  white-space: nowrap;
+}
+
+/* ─── Scrollable table wrapper ─────────────────────────────────────────────── */
+
+.tableScrollWrapper {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 480px;
+
+  :global(.ms-DetailsList-headerWrapper) {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bodyBackground, #ffffff);
+  }
+
+  :global(.ms-DetailsRow) {
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+    border-top: none;
+  }
+
+  :global(.ms-DetailsHeader) {
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+  }
+
+  :global(.ms-DetailsRow-cell) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bodyBackground, #ffffff);
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+    border-top: none;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+  }
+
+  td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 260px;
+    border: none;
+  }
+}
+
+/* ─── Upload Panel — Responsive Split Layout ───────────────────────────────── */
+
+.uploadColumns {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+}
+
+.uploadColLeft,
+.uploadColRight {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 24px;
+
+  @media (max-width: 767px) {
+    padding: 16px 0;
+    width: 100%;
+  }
+}
+
+.uploadColLeft {
+  padding-left: 0;
+
+  @media (max-width: 767px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.uploadColRight {
+  padding-right: 0;
+
+  @media (max-width: 767px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.colDivider {
+  width: 1px;
+  align-self: stretch;
+  background-color: var(--neutralLight, #edebe9);
+  flex-shrink: 0;
+  margin: 0 4px;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    height: 1px;
+    align-self: auto;
+    margin: 4px 0;
+  }
+}
+
+/* ─── Upload Fields ────────────────────────────────────────────────────────── */
+
+.uploadSectionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--neutralPrimary, #323130);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  i {
+    color: var(--themePrimary, #0078d4);
+    font-size: 16px;
+  }
+}
+
+.uploadField {
+  margin-bottom: 16px;
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.fileNameDisplay {
+  margin-top: 4px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--neutralSecondary, #605e5c);
+}
+
+/* ─── Validation & Progress ────────────────────────────────────────────────── */
+
+.validationReport {
+  margin: 12px 0;
+}
+
+.progressTable {
+  margin-top: 16px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.progressTable th,
+.progressTable td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--neutralLight, #edebe9);
+  font-size: 13px;
+}
+
+.progressTable th {
+  font-weight: 600;
+  color: var(--neutralPrimary, #323130);
+}
+
+.statusPending {
+  color: var(--neutralSecondary, #605e5c);
+}
+
+.statusUploading {
+  color: var(--themePrimary, #0078d4);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.statusSuccess {
+  color: var(--successText, #107c10);
+}
+
+.statusError {
+  color: var(--errorText, #a4262c);
+}
+
+.actionRow {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

@@ -301,13 +301,20 @@ A unified task view aggregating tasks from **Microsoft Planner** (via Graph API)
 
 **What it does**
 
-A secure, role-based salary document management system with payslip period tracking. Regular employees see **only their own** salary documents, filterable by **Year** and **Month**. Members of the Accountants group see a three-tab interface:
+A secure, role-based salary document management system with payslip period tracking.
 
-- **My Salary** — the accountant's own salary files with period filter
-- **Documents** — all employees' documents with search, period filter, pagination, and delete
-- **Upload** — single-file upload (with employee picker + year/month selector) and bulk Excel-driven upload
+- **Employees** see only their own salary documents in a single table, filterable by **Year**, **Month**, and a search box — all on one responsive row.
+- **Members of the Accountants group** and **site collection administrators** see a three-tab interface:
+  - **My Salary** — the accountant's own salary files with period filter + search
+  - **Documents** — all employees' documents with Year/Month filter, search, pagination, and delete
+  - **Upload** — single-file upload (employee picker + year/month selector) and bulk Excel-driven upload
 
-Every uploaded document has its SharePoint inheritance broken automatically and item-level permissions granted only to the target employee (Read) and the Accountants group (Full Control). Documents are organized by pay period (Year + Month) and display a **Pay Period** column in all tables.
+Key behaviours:
+- Every uploaded document has its SharePoint inheritance broken automatically. The target employee receives **Read** access; the Accountants group receives **Edit** access on that item.
+- Documents display a **Pay Period** column (e.g. *Jan 2026*) in all tables.
+- **Duplicate protection** — uploading a file whose name already exists in the library is blocked in both single and bulk upload modes.
+- **Bulk validation** checks for missing files, extra files, duplicate names in the Excel sheet, unresolvable emails, and already-existing files before any upload starts.
+- Site collection administrators can delete documents even if they are not in the Accountants group.
 
 **Property pane settings**
 
@@ -328,30 +335,32 @@ Every uploaded document has its SharePoint inheritance broken automatically and 
 
 #### Step 2 — Add metadata columns to the library
 
-1. In the library → **Add column → Person** → name it exactly `Employee`
+1. **Add column → Person** → name it exactly `Employee`
    - Allow only one person (not groups), single value
-   - After creation go to **Library settings → Indexed columns → Add a column → select Employee** (indexing required for filter queries)
+   - Go to **Library settings → Indexed columns → Add a column → select Employee** (indexing is required for the filter query to work)
 
-2. In the library → **Add column → Number** → name it exactly `PayPeriodYear`
+2. **Add column → Number** → name it exactly `PayPeriodYear`
    - No decimal places, not required
 
-3. In the library → **Add column → Number** → name it exactly `PayPeriodMonth`
+3. **Add column → Number** → name it exactly `PayPeriodMonth`
    - No decimal places, not required, valid values 1–12
 
-#### Step 3 — Break library-level permissions
+#### Step 3 — Set library-level permissions
+
+The upload code calls `breakroleinheritance` on each uploaded item, which requires **Full Control** on the library itself.
 
 1. **Library settings → Permissions for this document library**
 2. Click **Stop Inheriting Permissions**
 3. Remove all existing groups
 4. Add back only:
    - `Site Owners` → **Full Control**
-   - `Accountants` (your group) → **Full Control** ← must be Full Control, not Edit, so the upload code can call `breakroleinheritance` on individual items
+   - `Accountants` (your group) → **Full Control** ← required for `breakroleinheritance`; individual items will be downgraded to Edit automatically
 
 #### Step 4 — Create the Accountants SharePoint group
 
 1. **Site settings → People and groups → New → New Group**
 2. Name it `Accountants` (must match the web part property exactly)
-3. Add all accountant / HR users to this group
+3. Add all accountant users to this group
 
 #### Step 5 — Graph API permissions (for PeoplePicker)
 
@@ -362,17 +371,93 @@ The upload panel's employee picker uses Microsoft Graph. A tenant admin must app
 
 #### Bulk upload Excel format
 
-The Excel manifest used for bulk upload must contain exactly **four columns** in the first sheet:
+The Excel manifest must contain exactly **four columns** in the first sheet:
 
 | FileName | EmployeeEmail | Year | Month |
 |---|---|---|---|
 | JohnSmith_Jan2026.pdf | john.smith@company.com | 2026 | 1 |
 | SaraLee_Feb2026.pdf | sara.lee@company.com | 2026 | 2 |
 
+- `FileName` — must exactly match the uploaded file name (including extension); case-insensitive match
+- `EmployeeEmail` — must be a valid Azure AD user email
+- `Year` — 4-digit number, e.g. `2026`
+- `Month` — number `1` (January) through `12` (December)
+
+---
+
+### 11. HR Documents
+
+**What it does**
+
+A secure, role-based HR document management system for employment contracts, offer letters, and other personnel correspondence. Regular employees see **only their own** documents, filterable by **Document Type** (Offer Letter, Contract, Warning Letter, Promotion Letter, Termination Letter, NDA). Members of the HR group see a three-tab interface:
+
+- **My Documents** — the HR member's own personal HR letters with type filter
+- **Documents** — all employees' documents with search, document-type filter, pagination, and delete
+- **Upload** — single-file upload (with employee picker + document type selector) and bulk Excel-driven upload
+
+Every uploaded document has its SharePoint inheritance broken automatically and item-level permissions granted only to the target employee (Read) and the HR group (Edit). A **Document Type** badge column is displayed in all tables.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Document Library Name | Internal name of the document library (default: `HRDocuments`) |
+| HR Group Name | Exact SharePoint group display name for HR staff (default: `HR`) |
+
+**SharePoint requirements — step by step**
+
+#### Step 1 — Create the document library
+
+1. Go to the target site → **New → Document library**
+2. Name it `HRDocuments` (or whatever you configure in the property pane)
+3. Open **Library settings → Advanced settings** → set **Item-level permissions** to:
+   - Read access: **Only their own items**
+   - Create/edit access: **None** (the web part handles it programmatically)
+
+#### Step 2 — Add metadata columns to the library
+
+1. In the library → **Add column → Person** → name it exactly `Employee`
+   - Allow only one person (not groups), single value
+   - After creation go to **Library settings → Indexed columns → Add a column → select Employee** (indexing required for filter queries)
+
+2. In the library → **Add column → Single line of text** → name it exactly `DocumentType`
+   - Not required, max 255 characters
+
+#### Step 3 — Break library-level permissions
+
+1. **Library settings → Permissions for this document library**
+2. Click **Stop Inheriting Permissions**
+3. Remove all existing groups
+4. Add back only:
+   - `Site Owners` → **Full Control**
+   - `HR` (your group) → **Full Control** ← must be Full Control (not Edit) so the upload code can call `breakroleinheritance` on individual items
+
+#### Step 4 — Create the HR SharePoint group
+
+1. **Site settings → People and groups → New → New Group**
+2. Name it `HR` (must match the web part property exactly)
+3. Add all HR staff to this group
+
+#### Step 5 — Graph API permissions (for PeoplePicker)
+
+The upload panel's employee picker uses Microsoft Graph. A tenant admin must approve the `User.ReadBasic.All` delegated permission:
+
+1. Go to **SharePoint admin center → Advanced → API access**
+2. Approve the pending `User.ReadBasic.All` request (created automatically on first load)
+
+#### Bulk upload Excel format
+
+The Excel manifest used for bulk upload must contain exactly **three columns** in the first sheet:
+
+| FileName | EmployeeEmail | DocumentType |
+|---|---|---|
+| JohnSmith_OfferLetter.pdf | john.smith@company.com | Offer Letter |
+| SaraLee_Contract.pdf | sara.lee@company.com | Contract |
+| Ahmed_Warning.pdf | ahmed.ali@company.com | Warning Letter |
+
 - `FileName` must exactly match the file name of the uploaded document (including extension)
 - `EmployeeEmail` must be a valid user email that exists in Azure AD
-- `Year` is a 4-digit number, e.g. `2026`
-- `Month` is a number from `1` (January) to `12` (December)
+- `DocumentType` must be one of: `Offer Letter`, `Contract`, `Warning Letter`, `Promotion Letter`, `Termination Letter`, `NDA`
 
 ---
 
@@ -395,8 +480,3 @@ npx heft package-solution --production
 2. Choose **Make this solution available to all sites** if you want tenant-wide deployment
 3. Add individual web parts to pages via the modern page editor
 
----
-
-## Disclaimer
-
-**THIS CODE IS PROVIDED _AS IS_ WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.**
