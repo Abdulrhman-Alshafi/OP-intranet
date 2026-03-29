@@ -340,6 +340,46 @@ export class SalaryDocumentService {
     await runInPool(tasks, 3);
   }
 
+  /**
+   * Permanently deletes a library item (the file + its list item).
+   * Requires at minimum Manage Permissions on the item (Full Control on the library).
+   */
+  public async deleteDocument(libraryName: string, itemId: number): Promise<void> {
+    const encodedLib = encodeURIComponent(libraryName);
+    const url =
+      `${this._siteUrl}/_api/web/lists/getbytitle('${encodedLib}')/items(${itemId})`;
+
+    const response = await this._spHttpClient.post(
+      url,
+      SPHttpClient.configurations.v1,
+      {
+        headers: {
+          Accept: 'application/json;odata=nometadata',
+          'Content-Type': 'application/json;odata=nometadata',
+          'odata-version': '',
+          'IF-MATCH': '*',
+          'X-HTTP-Method': 'DELETE'
+        },
+        body: JSON.stringify({})
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete document (HTTP ${response.status}).`);
+    }
+  }
+
+  /**
+   * Returns true when the current user is a site collection administrator.
+   */
+  public async isCurrentUserSiteAdmin(): Promise<boolean> {
+    const url = `${this._siteUrl}/_api/web/currentuser?$select=IsSiteAdmin`;
+    const response = await this._get(url);
+    if (!response.ok) return false;
+    const data = (await response.json()) as { IsSiteAdmin?: boolean };
+    return data.IsSiteAdmin === true;
+  }
+
   // ── Private helpers ───────────────────────────────────────────────────────
 
   private async _get(url: string): Promise<SPHttpClientResponse> {

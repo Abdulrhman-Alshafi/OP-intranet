@@ -20,12 +20,17 @@ declare interface ISalaryDocumentWebPartStrings {
   // Actions
   RetryFailedLabel: string;
   DownloadErrorReportLabel: string;
+  DeleteConfirmTitle: string;
+  DeleteConfirmMessage: string;
+  DeleteButtonLabel: string;
+  CancelButtonLabel: string;
   // Column headers
   ColumnFileName: string;
   ColumnEmployee: string;
   ColumnCreated: string;
   ColumnModified: string;
   // Tabs
+  TabMySalary: string;
   TabDocuments: string;
   TabUpload: string;
   // Search

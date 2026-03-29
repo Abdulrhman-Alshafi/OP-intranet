@@ -22,12 +22,17 @@ define([], function () {
     // Actions
     RetryFailedLabel: "Retry failed uploads",
     DownloadErrorReportLabel: "Download error report",
+    DeleteConfirmTitle: "Delete Document",
+    DeleteConfirmMessage: "Are you sure you want to permanently delete '{name}'? This cannot be undone.",
+    DeleteButtonLabel: "Delete",
+    CancelButtonLabel: "Cancel",
     // Column headers
     ColumnFileName: "File Name",
     ColumnEmployee: "Employee",
     ColumnCreated: "Created",
     ColumnModified: "Modified",
     // Tabs
+    TabMySalary: "My Salary",
     TabDocuments: "Documents",
     TabUpload: "Upload",
     // Search

@@ -9,9 +9,10 @@ import {
 import { Icon } from '@fluentui/react/lib/Icon';
 import { Link } from '@fluentui/react/lib/Link';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
-import { DefaultButton } from '@fluentui/react/lib/Button';
+import { DefaultButton, PrimaryButton, IconButton } from '@fluentui/react/lib/Button';
 import { Stack } from '@fluentui/react/lib/Stack';
 import { Text } from '@fluentui/react/lib/Text';
+import { Dialog, DialogType, DialogFooter } from '@fluentui/react/lib/Dialog';
 
 import * as strings from 'SalaryDocumentWebPartStrings';
 import styles from './SalaryDocument.module.scss';
@@ -58,6 +59,8 @@ export interface ISalaryTableProps {
   loading: boolean;
   nextLink: string | undefined;
   onLoadMore: () => void;
+  canDelete?: boolean;
+  onDeleteRequest?: (item: ISalaryDocument) => Promise<void>;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -67,8 +70,24 @@ export const SalaryTable: React.FC<ISalaryTableProps> = ({
   showEmployeeColumn,
   loading,
   nextLink,
-  onLoadMore
+  onLoadMore,
+  canDelete,
+  onDeleteRequest
 }) => {
+  const [pendingDeleteItem, setPendingDeleteItem] = React.useState<ISalaryDocument | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState<boolean>(false);
+
+  const handleConfirmDelete = React.useCallback(async () => {
+    if (!pendingDeleteItem || !onDeleteRequest) return;
+    setIsDeleting(true);
+    try {
+      await onDeleteRequest(pendingDeleteItem);
+    } finally {
+      setIsDeleting(false);
+      setPendingDeleteItem(null);
+    }
+  }, [pendingDeleteItem, onDeleteRequest]);
+
   const columns = React.useMemo<IColumn[]>(() => {
     const cols: IColumn[] = [
       {
@@ -135,8 +154,29 @@ export const SalaryTable: React.FC<ISalaryTableProps> = ({
       }
     );
 
+    if (canDelete) {
+      cols.push({
+        key: 'delete',
+        name: '',
+        minWidth: 36,
+        maxWidth: 36,
+        onRender: (item: ISalaryDocument) => (
+          <IconButton
+            iconProps={{ iconName: 'Delete' }}
+            title="Delete document"
+            ariaLabel="Delete document"
+            onClick={() => setPendingDeleteItem(item)}
+            styles={{
+              root: { color: '#a4262c' },
+              rootHovered: { color: '#750b1c', backgroundColor: 'rgba(164,38,44,0.08)' }
+            }}
+          />
+        )
+      });
+    }
+
     return cols;
-  }, [showEmployeeColumn]);
+  }, [showEmployeeColumn, canDelete]);
 
   if (!loading && items.length === 0) {
     return (
@@ -149,15 +189,17 @@ export const SalaryTable: React.FC<ISalaryTableProps> = ({
 
   return (
     <Stack tokens={{ childrenGap: 8 }}>
-      <DetailsList
-        items={items}
-        columns={columns}
-        layoutMode={DetailsListLayoutMode.fixedColumns}
-        constrainMode={ConstrainMode.unconstrained}
-        selectionMode={SelectionMode.none}
-        isHeaderVisible={true}
-        compact={false}
-      />
+      <div className={styles.tableScrollWrapper}>
+        <DetailsList
+          items={items}
+          columns={columns}
+          layoutMode={DetailsListLayoutMode.fixedColumns}
+          constrainMode={ConstrainMode.unconstrained}
+          selectionMode={SelectionMode.none}
+          isHeaderVisible={true}
+          compact={false}
+        />
+      </div>
       {loading && (
         <Stack horizontalAlign="center" styles={{ root: { padding: '8px 0' } }}>
           <Spinner size={SpinnerSize.small} />
@@ -168,6 +210,33 @@ export const SalaryTable: React.FC<ISalaryTableProps> = ({
           <DefaultButton text={strings.LoadMoreLabel} onClick={onLoadMore} />
         </Stack>
       )}
+
+      <Dialog
+        hidden={pendingDeleteItem === null}
+        onDismiss={() => { if (!isDeleting) setPendingDeleteItem(null); }}
+        dialogContentProps={{
+          type: DialogType.normal,
+          title: strings.DeleteConfirmTitle,
+          subText: pendingDeleteItem
+            ? strings.DeleteConfirmMessage.replace('{name}', pendingDeleteItem.name)
+            : ''
+        }}
+        modalProps={{ isBlocking: isDeleting }}
+      >
+        <DialogFooter>
+          <PrimaryButton
+            text={isDeleting ? '...' : strings.DeleteButtonLabel}
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+            styles={{ root: { backgroundColor: '#a4262c', borderColor: '#a4262c' } }}
+          />
+          <DefaultButton
+            text={strings.CancelButtonLabel}
+            onClick={() => setPendingDeleteItem(null)}
+            disabled={isDeleting}
+          />
+        </DialogFooter>
+      </Dialog>
     </Stack>
   );
 };

@@ -487,7 +487,8 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
                   percentComplete={progressPercent}
                 />
               )}
-              <table className={styles.progressTable}>
+              <div className={styles.tableScrollWrapper}>
+                <table className={styles.progressTable}>
                 <thead>
                   <tr>
                     <th>File</th>
@@ -522,6 +523,7 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
                   ))}
                 </tbody>
               </table>
+              </div>
             </Stack>
           )}
 

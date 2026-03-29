@@ -5,7 +5,6 @@ import { SearchBox } from '@fluentui/react/lib/SearchBox';
 import { Pivot, PivotItem } from '@fluentui/react/lib/Pivot';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
-import { Icon } from '@fluentui/react/lib/Icon';
 
 import * as strings from 'SalaryDocumentWebPartStrings';
 import { ISalaryDocumentProps } from './ISalaryDocumentProps';
@@ -30,6 +29,7 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
 
   // ── Auth state ────────────────────────────────────────────────────────────
   const [isAccountant, setIsAccountant] = useState<boolean>(false);
+  const [isSiteAdmin, setIsSiteAdmin] = useState<boolean>(false);
   const [accountantsGroupId, setAccountantsGroupId] = useState<number>(0);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string | undefined>(undefined);
@@ -40,6 +40,12 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [dataError, setDataError] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // ── My salary state (accountant's own documents) ──────────────────────────
+  const [mySalaryDocuments, setMySalaryDocuments] = useState<ISalaryDocument[]>([]);
+  const [mySearchQuery, setMySearchQuery] = useState<string>('');
+  const [myDataLoading, setMyDataLoading] = useState<boolean>(false);
+  const [myDataError, setMyDataError] = useState<string | undefined>(undefined);
 
   // Track whether still mounted to avoid state updates after unmount
   const mountedRef = useRef(true);
@@ -53,13 +59,15 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
       setAuthLoading(true);
       setAuthError(undefined);
       try {
-        const [accountant, grpId] = await Promise.all([
+        const [accountant, grpId, siteAdmin] = await Promise.all([
           service.isUserInGroup(accountantGroupName),
-          service.resolveAccountantsGroupId(accountantGroupName)
+          service.resolveAccountantsGroupId(accountantGroupName),
+          service.isCurrentUserSiteAdmin()
         ]);
         if (!cancelled) {
           setIsAccountant(accountant);
           setAccountantsGroupId(grpId);
+          setIsSiteAdmin(siteAdmin);
         }
       } catch (err) {
         if (!cancelled) {
@@ -88,13 +96,14 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
       setDataError(undefined);
       try {
         if (isAccountant) {
-          const page: IPagedSalaryDocuments = await service.getAllSalaryDocuments(
-            libraryName,
-            PAGE_SIZE
-          );
+          const [page, myItems] = await Promise.all([
+            service.getAllSalaryDocuments(libraryName, PAGE_SIZE),
+            service.getSalaryDocuments(libraryName, currentUserEmail)
+          ]);
           if (!cancelled) {
             setDocuments(page.items);
             setNextLink(page.nextLink);
+            setMySalaryDocuments(myItems);
           }
         } else {
           const items = await service.getSalaryDocuments(libraryName, currentUserEmail);
@@ -139,19 +148,37 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
   // ── After a successful upload, reload data ────────────────────────────────
   const handleUploadsComplete = useCallback(async () => {
     setDataLoading(true);
+    setMyDataLoading(true);
     setDataError(undefined);
+    setMyDataError(undefined);
     try {
-      const page = await service.getAllSalaryDocuments(libraryName, PAGE_SIZE);
+      const [page, myItems] = await Promise.all([
+        service.getAllSalaryDocuments(libraryName, PAGE_SIZE),
+        service.getSalaryDocuments(libraryName, currentUserEmail)
+      ]);
       if (mountedRef.current) {
         setDocuments(page.items);
         setNextLink(page.nextLink);
+        setMySalaryDocuments(myItems);
       }
     } catch (err) {
       if (mountedRef.current) {
         setDataError(err instanceof Error ? err.message : 'Failed to reload documents.');
       }
     } finally {
-      if (mountedRef.current) setDataLoading(false);
+      if (mountedRef.current) {
+        setDataLoading(false);
+        setMyDataLoading(false);
+      }
+    }
+  }, [service, libraryName, currentUserEmail]);
+
+  // ── Delete a document ─────────────────────────────────────────────────────
+  const handleDeleteDocument = useCallback(async (item: ISalaryDocument) => {
+    await service.deleteDocument(libraryName, item.listItemId);
+    if (mountedRef.current) {
+      setDocuments((prev) => prev.filter((d) => d.listItemId !== item.listItemId));
+      setMySalaryDocuments((prev) => prev.filter((d) => d.listItemId !== item.listItemId));
     }
   }, [service, libraryName]);
 
@@ -166,13 +193,18 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
     });
   }, [documents, searchQuery, isAccountant]);
 
+  const filteredMyDocuments = useMemo(() => {
+    const q = mySearchQuery.trim().toLowerCase();
+    if (!q) return mySalaryDocuments;
+    return mySalaryDocuments.filter((doc) => doc.name.toLowerCase().includes(q));
+  }, [mySalaryDocuments, mySearchQuery]);
+
   // ── Render ────────────────────────────────────────────────────────────────
   if (authLoading) {
     return (
       <div className={styles.salaryDocument}>
         <div className={styles.wpHeader}>
           <div className={styles.wpTitleSection}>
-            <div className={styles.wpIconWrap}><Icon iconName="Money" /></div>
             <h2 className={styles.wpTitle}>{strings.WebPartTitle}</h2>
           </div>
         </div>
@@ -188,7 +220,6 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
       <div className={styles.salaryDocument}>
         <div className={styles.wpHeader}>
           <div className={styles.wpTitleSection}>
-            <div className={styles.wpIconWrap}><Icon iconName="Money" /></div>
             <h2 className={styles.wpTitle}>{strings.WebPartTitle}</h2>
           </div>
         </div>
@@ -222,6 +253,8 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
         loading={dataLoading}
         nextLink={nextLink}
         onLoadMore={handleLoadMore}
+        canDelete={isAccountant || isSiteAdmin}
+        onDeleteRequest={handleDeleteDocument}
       />
     </Stack>
   );
@@ -231,7 +264,6 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
       <div className={styles.salaryDocument}>
         <div className={styles.wpHeader}>
           <div className={styles.wpTitleSection}>
-            <div className={styles.wpIconWrap}><Icon iconName="Money" /></div>
             <h2 className={styles.wpTitle}>{strings.WebPartTitle}</h2>
           </div>
         </div>
@@ -240,16 +272,45 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
     );
   }
 
-  // Accountant: two-tab view
+  // Accountant: three-tab view (My Salary / All Documents / Upload)
+  const mySalaryContent = (
+    <Stack tokens={{ childrenGap: 8 }}>
+      <SearchBox
+        placeholder={strings.SearchPlaceholderEmployee}
+        value={mySearchQuery}
+        onChange={(_, newValue) => setMySearchQuery(newValue || '')}
+        styles={{ root: { maxWidth: 400 } }}
+      />
+      {myDataError && (
+        <MessageBar messageBarType={MessageBarType.error}>
+          {myDataError}
+        </MessageBar>
+      )}
+      <SalaryTable
+        items={filteredMyDocuments}
+        showEmployeeColumn={false}
+        loading={myDataLoading}
+        nextLink={undefined}
+        onLoadMore={async () => undefined}
+        canDelete={isAccountant || isSiteAdmin}
+        onDeleteRequest={handleDeleteDocument}
+      />
+    </Stack>
+  );
+
   return (
     <div className={styles.salaryDocument}>
       <div className={styles.wpHeader}>
         <div className={styles.wpTitleSection}>
-          <div className={styles.wpIconWrap}><Icon iconName="Money" /></div>
           <h2 className={styles.wpTitle}>{strings.WebPartTitle}</h2>
         </div>
       </div>
       <Pivot>
+        <PivotItem headerText={strings.TabMySalary}>
+          <Stack tokens={{ childrenGap: 8 }} styles={{ root: { marginTop: 16 } }}>
+            {mySalaryContent}
+          </Stack>
+        </PivotItem>
         <PivotItem headerText={strings.TabDocuments}>
           <Stack tokens={{ childrenGap: 8 }} styles={{ root: { marginTop: 16 } }}>
             {tableContent}

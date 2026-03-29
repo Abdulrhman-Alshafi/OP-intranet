@@ -21,9 +21,6 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
-  border-bottom-color: var(--neutralLight);
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -103,6 +100,41 @@
 .fileIconCell {
   width: 32px;
   text-align: center;
+}
+
+/* ─── Scrollable table wrapper ─────────────────────────────────────────────── */
+
+.tableScrollWrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 480px;
+  border: 1px solid var(--neutralLight, #edebe9);
+  border-radius: 4px;
+
+  // Sticky header for FluentUI DetailsList
+  :global(.ms-DetailsList) {
+    min-width: 500px;
+  }
+
+  :global(.ms-DetailsList-headerWrapper) {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bodyBackground, #ffffff);
+  }
+
+  // Sticky header for plain HTML table (bulk progress table)
+  table {
+    min-width: 480px;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bodyBackground, #ffffff);
+  }
 }
 
 /* ─── Upload Panel — Responsive Split Layout ───────────────────────────────── */
