@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "b4f9c0ad-3130-4ea4-aa0e-4c8036aac12f",
-  "alias": "DocumentDashboardWebPart",
+  "id": "a1c2e3f4-5b67-4d89-ace1-234567890abc",
+  "alias": "SalaryDocumentWebPart",
   "componentType": "WebPart",
   "version": "*",
   "manifestVersion": 2,
@@ -18,15 +18,15 @@
         "default": "Advanced"
       },
       "title": {
-        "default": "Document Dashboard"
+        "default": "Salary Documents"
       },
       "description": {
-        "default": "Displays personal and department documents from CompanyDocuments using SharePoint permissions"
+        "default": "Employees view their own salary documents; accountants manage and upload all documents with item-level security."
       },
-      "officeFabricIconFontName": "FabricFolder",
+      "officeFabricIconFontName": "Money",
       "properties": {
-        "title": "Document Dashboard",
-        "libraryName": "CompanyDocuments"
+        "libraryName": "SalaryDocuments",
+        "accountantGroupName": "Accountants"
       }
     }
   ]

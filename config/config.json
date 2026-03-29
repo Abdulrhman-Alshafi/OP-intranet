@@ -74,11 +74,11 @@
         }
       ]
     },
-    "document-dashboard-web-part": {
+    "salary-document-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/documentDashboard/DocumentDashboardWebPart.js",
-          "manifest": "./src/webparts/documentDashboard/DocumentDashboardWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/salaryDocument/SalaryDocumentWebPart.js",
+          "manifest": "./src/webparts/salaryDocument/SalaryDocumentWebPart.manifest.json"
         }
       ]
     }
@@ -94,7 +94,8 @@
     "PollsSurveyWebPartStrings": "lib/webparts/pollsSurvey/loc/{locale}.js",
     "KnowledgeBaseWebPartStrings": "lib/webparts/knowledgeBase/loc/{locale}.js",
     "AnnouncementsWebPartStrings": "lib/webparts/announcements/loc/{locale}.js",
-    "DocumentDashboardWebPartStrings": "lib/webparts/documentDashboard/loc/{locale}.js",
-    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
+    "SalaryDocumentWebPartStrings": "lib/webparts/salaryDocument/loc/{locale}.js",
+    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
   }
 }

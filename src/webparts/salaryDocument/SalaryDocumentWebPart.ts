@@ -8,17 +8,18 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme, ThemeChangedEventArgs, ThemeProvider } from '@microsoft/sp-component-base';
 
-import * as strings from 'DocumentDashboardWebPartStrings';
-import Dashboard from './components/Dashboard';
-import { IDashboardProps } from './components/IDashboardProps';
+import * as strings from 'SalaryDocumentWebPartStrings';
+import { SalaryDocumentWebPartDashboard } from './components/Dashboard';
+import { ISalaryDocumentProps } from './components/ISalaryDocumentProps';
 import { configureFluentUi } from '../../common/configureFluentUi';
+import { SalaryDocumentService } from '../../services/SalaryDocumentService';
 
-export interface IDocumentDashboardWebPartProps {
-  title: string;
+export interface ISalaryDocumentWebPartProps {
   libraryName: string;
+  accountantGroupName: string;
 }
 
-export default class DocumentDashboardWebPart extends BaseClientSideWebPart<IDocumentDashboardWebPartProps> {
+export default class SalaryDocumentWebPart extends BaseClientSideWebPart<ISalaryDocumentWebPartProps> {
   private _themeProvider: ThemeProvider | undefined;
   private _themeVariant: IReadonlyTheme | undefined;
 
@@ -28,15 +29,22 @@ export default class DocumentDashboardWebPart extends BaseClientSideWebPart<IDoc
   };
 
   public render(): void {
-    const element: React.ReactElement<IDashboardProps> = React.createElement(
-      Dashboard,
+    const service = new SalaryDocumentService(
+      this.context.pageContext.web.absoluteUrl,
+      this.context.spHttpClient
+    );
+
+    const element: React.ReactElement<ISalaryDocumentProps> = React.createElement(
+      SalaryDocumentWebPartDashboard,
       {
-        title: this.properties.title || 'Document Dashboard',
-        libraryName: this.properties.libraryName || 'CompanyDocuments',
-        userEmail: this.context.pageContext.user.email,
+        service,
+        libraryName: this.properties.libraryName || 'SalaryDocuments',
+        accountantGroupName: this.properties.accountantGroupName || 'Accountants',
+        currentUserEmail: this.context.pageContext.user.email,
+        currentUserLoginName: this.context.pageContext.user.loginName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        webServerRelativeUrl: this.context.pageContext.web.serverRelativeUrl,
         spHttpClient: this.context.spHttpClient,
+        msGraphClientFactory: this.context.msGraphClientFactory,
         themeVariant: this._themeVariant
       }
     );
@@ -54,12 +62,9 @@ export default class DocumentDashboardWebPart extends BaseClientSideWebPart<IDoc
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
-    if (!currentTheme) {
-      return;
-    }
+    if (!currentTheme) return;
 
     const { semanticColors } = currentTheme;
-
     if (semanticColors) {
       this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
       this.domElement.style.setProperty('--link', semanticColors.link || null);
@@ -71,7 +76,6 @@ export default class DocumentDashboardWebPart extends BaseClientSideWebPart<IDoc
     if (this._themeProvider) {
       this._themeProvider.themeChangedEvent.remove(this, this._handleThemeChanged);
     }
-
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
@@ -90,11 +94,13 @@ export default class DocumentDashboardWebPart extends BaseClientSideWebPart<IDoc
             {
               groupName: strings.GeneralGroupName,
               groupFields: [
-                PropertyPaneTextField('title', {
-                  label: strings.TitleFieldLabel
-                }),
                 PropertyPaneTextField('libraryName', {
-                  label: strings.LibraryNameFieldLabel
+                  label: strings.SalaryLibraryFieldLabel,
+                  description: 'Internal name of the SharePoint document library.'
+                }),
+                PropertyPaneTextField('accountantGroupName', {
+                  label: strings.AccountantGroupFieldLabel,
+                  description: 'Exact name of the SharePoint group granted accountant access.'
                 })
               ]
             }
