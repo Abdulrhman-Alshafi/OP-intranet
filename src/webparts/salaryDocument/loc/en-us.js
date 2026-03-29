@@ -11,7 +11,7 @@ define([], function () {
     // UI labels
     UploadSectionTitle: "Upload Salary Document",
     BulkUploadSectionTitle: "Bulk Upload",
-    ExcelColumnsHint: "Excel file must contain two columns: FileName and EmployeeEmail.",
+    ExcelColumnsHint: "Excel file must contain four columns: FileName, EmployeeEmail, Year (e.g. 2025), Month (1–12).",
     NoDocumentsMessage: "No salary documents found.",
     UploadInProgressMessage: "Upload in progress, please wait…",
     // Validation
@@ -29,8 +29,14 @@ define([], function () {
     // Column headers
     ColumnFileName: "File Name",
     ColumnEmployee: "Employee",
+    ColumnPayPeriod: "Pay Period",
     ColumnCreated: "Created",
     ColumnModified: "Modified",
+    // Period filter
+    PayPeriodYearLabel: "Year",
+    PayPeriodMonthLabel: "Month",
+    FilterAllYears: "All Years",
+    FilterAllMonths: "All Months",
     // Tabs
     TabMySalary: "My Salary",
     TabDocuments: "Documents",

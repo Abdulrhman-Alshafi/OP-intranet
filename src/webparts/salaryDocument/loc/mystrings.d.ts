@@ -27,8 +27,14 @@ declare interface ISalaryDocumentWebPartStrings {
   // Column headers
   ColumnFileName: string;
   ColumnEmployee: string;
+  ColumnPayPeriod: string;
   ColumnCreated: string;
   ColumnModified: string;
+  // Period filter
+  PayPeriodYearLabel: string;
+  PayPeriodMonthLabel: string;
+  FilterAllYears: string;
+  FilterAllMonths: string;
   // Tabs
   TabMySalary: string;
   TabDocuments: string;

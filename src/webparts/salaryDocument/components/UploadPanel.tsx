@@ -6,6 +6,7 @@ import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
 import { ProgressIndicator } from '@fluentui/react/lib/ProgressIndicator';
 import { Icon } from '@fluentui/react/lib/Icon';
+import { Dropdown } from '@fluentui/react/lib/Dropdown';
 import { MSGraphClientFactory, SPHttpClient } from '@microsoft/sp-http';
 import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 import * as XLSX from 'xlsx';
@@ -39,6 +40,8 @@ interface ISelectedEmployee {
 interface IExcelRow {
   fileName: string;
   employeeEmail: string;
+  payPeriodYear: number;
+  payPeriodMonth: number;
 }
 
 interface IValidationReport {
@@ -47,7 +50,20 @@ interface IValidationReport {
   duplicateNames: string[];
   invalidEmails: string[];
 }
+// ── Module-level period options ───────────────────────────────────────────────
 
+const _now = new Date();
+const YEAR_UPLOAD_OPTIONS = Array.from({ length: 6 }, (_, i) => {
+  const y = _now.getFullYear() - 2 + i;
+  return { key: y, text: String(y) };
+});
+
+const MONTH_UPLOAD_OPTIONS = [
+  { key: 1, text: 'January' }, { key: 2, text: 'February' }, { key: 3, text: 'March' },
+  { key: 4, text: 'April' }, { key: 5, text: 'May' }, { key: 6, text: 'June' },
+  { key: 7, text: 'July' }, { key: 8, text: 'August' }, { key: 9, text: 'September' },
+  { key: 10, text: 'October' }, { key: 11, text: 'November' }, { key: 12, text: 'December' }
+];
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
@@ -72,6 +88,8 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
   const singleFileInputRef = useRef<HTMLInputElement>(null);
   const [singleFile, setSingleFile] = useState<File | undefined>(undefined);
   const [singleEmployee, setSingleEmployee] = useState<ISelectedEmployee | undefined>(undefined);
+  const [singleYear, setSingleYear] = useState<number>(_now.getFullYear());
+  const [singleMonth, setSingleMonth] = useState<number>(_now.getMonth() + 1);
   const [singleUploading, setSingleUploading] = useState<boolean>(false);
   const [singleResult, setSingleResult] = useState<IUploadResult | undefined>(undefined);
 
@@ -116,7 +134,9 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
         singleFile,
         singleEmployee.loginName,
         singleEmployee.spId,
-        accountantsGroupId
+        accountantsGroupId,
+        singleYear,
+        singleMonth
       );
       setSingleResult({ fileName: singleFile.name, status: 'success' });
       setSingleFile(undefined);
@@ -157,12 +177,14 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
         const data = new Uint8Array(evt.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: 'array' });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows: { FileName?: string; EmployeeEmail?: string }[] = XLSX.utils.sheet_to_json(sheet);
+        const rows: { FileName?: string; EmployeeEmail?: string; Year?: number | string; Month?: number | string }[] = XLSX.utils.sheet_to_json(sheet);
         const parsed: IExcelRow[] = rows
           .filter((r) => r.FileName && r.EmployeeEmail)
           .map((r) => ({
             fileName: (r.FileName as string).toLowerCase().trim(),
-            employeeEmail: (r.EmployeeEmail as string).toLowerCase().trim()
+            employeeEmail: (r.EmployeeEmail as string).toLowerCase().trim(),
+            payPeriodYear: Number(r.Year) || 0,
+            payPeriodMonth: Number(r.Month) || 0
           }));
         setExcelRows(parsed);
         setValidation(undefined);
@@ -231,7 +253,9 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
         resolvedJobs.push({
           file,
           employeeLoginName: resolved.loginName,
-          employeeId: resolved.id
+          employeeId: resolved.id,
+          payPeriodYear: row.payPeriodYear,
+          payPeriodMonth: row.payPeriodMonth
         });
       }
     }
@@ -351,6 +375,24 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
               onChange={handleSingleEmployeeChange as (items: unknown[]) => void}
             />
           </div>
+
+          {/* Pay period */}
+          <Stack horizontal tokens={{ childrenGap: 12 }}>
+            <Dropdown
+              label={strings.PayPeriodYearLabel}
+              selectedKey={singleYear}
+              options={YEAR_UPLOAD_OPTIONS}
+              onChange={(_, o) => setSingleYear(Number(o?.key ?? 0))}
+              styles={{ root: { minWidth: 120 } }}
+            />
+            <Dropdown
+              label={strings.PayPeriodMonthLabel}
+              selectedKey={singleMonth}
+              options={MONTH_UPLOAD_OPTIONS}
+              onChange={(_, o) => setSingleMonth(Number(o?.key ?? 0))}
+              styles={{ root: { minWidth: 150 } }}
+            />
+          </Stack>
 
           {/* Result feedback */}
           {singleResult && (

@@ -51,6 +51,15 @@ function formatDate(iso: string): string {
   }
 }
 
+const MONTH_ABBREVS = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function formatPeriod(year: number, month: number): string {
+  if (!year && !month) return '';
+  if (year && !month) return String(year);
+  if (!year && month) return MONTH_ABBREVS[month] || '';
+  return `${MONTH_ABBREVS[month] || ''} ${year}`;
+}
+
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 export interface ISalaryTableProps {
@@ -128,6 +137,17 @@ export const SalaryTable: React.FC<ISalaryTableProps> = ({
         )
       });
     }
+
+    cols.push({
+      key: 'payPeriod',
+      name: strings.ColumnPayPeriod,
+      minWidth: 90,
+      maxWidth: 110,
+      isResizable: true,
+      onRender: (item: ISalaryDocument) => (
+        <Text variant="small">{formatPeriod(item.payPeriodYear, item.payPeriodMonth)}</Text>
+      )
+    });
 
     cols.push(
       {

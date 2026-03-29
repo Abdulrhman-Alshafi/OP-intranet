@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Stack } from '@fluentui/react/lib/Stack';
 import { SearchBox } from '@fluentui/react/lib/SearchBox';
+import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { Pivot, PivotItem } from '@fluentui/react/lib/Pivot';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
@@ -14,6 +15,14 @@ import { ISalaryDocument, IPagedSalaryDocuments } from '../../../services/Salary
 import styles from './SalaryDocument.module.scss';
 
 const PAGE_SIZE = 50;
+
+const MONTH_FILTER_OPTIONS: IDropdownOption[] = [
+  { key: 0, text: 'All Months' },
+  { key: 1, text: 'January' }, { key: 2, text: 'February' }, { key: 3, text: 'March' },
+  { key: 4, text: 'April' }, { key: 5, text: 'May' }, { key: 6, text: 'June' },
+  { key: 7, text: 'July' }, { key: 8, text: 'August' }, { key: 9, text: 'September' },
+  { key: 10, text: 'October' }, { key: 11, text: 'November' }, { key: 12, text: 'December' }
+];
 
 export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (props) => {
   const {
@@ -46,6 +55,12 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
   const [mySearchQuery, setMySearchQuery] = useState<string>('');
   const [myDataLoading, setMyDataLoading] = useState<boolean>(false);
   const [myDataError, setMyDataError] = useState<string | undefined>(undefined);
+
+  // ── Period filter state ──────────────────────────────────────────────────
+  const [filterYear, setFilterYear] = useState<number>(0);
+  const [filterMonth, setFilterMonth] = useState<number>(0);
+  const [myFilterYear, setMyFilterYear] = useState<number>(0);
+  const [myFilterMonth, setMyFilterMonth] = useState<number>(0);
 
   // Track whether still mounted to avoid state updates after unmount
   const mountedRef = useRef(true);
@@ -185,19 +200,41 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
   // ── Client-side filtering ─────────────────────────────────────────────────
   const filteredDocuments = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return documents;
     return documents.filter((doc) => {
+      if (filterYear > 0 && doc.payPeriodYear !== filterYear) return false;
+      if (filterMonth > 0 && doc.payPeriodMonth !== filterMonth) return false;
+      if (!q) return true;
       const nameMatch = doc.name.toLowerCase().includes(q);
       const employeeMatch = isAccountant && doc.employeeDisplayName.toLowerCase().includes(q);
       return nameMatch || employeeMatch;
     });
-  }, [documents, searchQuery, isAccountant]);
+  }, [documents, searchQuery, isAccountant, filterYear, filterMonth]);
 
   const filteredMyDocuments = useMemo(() => {
     const q = mySearchQuery.trim().toLowerCase();
-    if (!q) return mySalaryDocuments;
-    return mySalaryDocuments.filter((doc) => doc.name.toLowerCase().includes(q));
-  }, [mySalaryDocuments, mySearchQuery]);
+    return mySalaryDocuments.filter((doc) => {
+      if (myFilterYear > 0 && doc.payPeriodYear !== myFilterYear) return false;
+      if (myFilterMonth > 0 && doc.payPeriodMonth !== myFilterMonth) return false;
+      if (!q) return true;
+      return doc.name.toLowerCase().includes(q);
+    });
+  }, [mySalaryDocuments, mySearchQuery, myFilterYear, myFilterMonth]);
+
+  const yearOptions = useMemo((): IDropdownOption[] => {
+    const years = new Set<number>();
+    documents.forEach((d) => { if (d.payPeriodYear > 0) years.add(d.payPeriodYear); });
+    const opts: IDropdownOption[] = [{ key: 0, text: strings.FilterAllYears }];
+    Array.from(years).sort((a, b) => b - a).forEach((y) => opts.push({ key: y, text: String(y) }));
+    return opts;
+  }, [documents]);
+
+  const myYearOptions = useMemo((): IDropdownOption[] => {
+    const years = new Set<number>();
+    mySalaryDocuments.forEach((d) => { if (d.payPeriodYear > 0) years.add(d.payPeriodYear); });
+    const opts: IDropdownOption[] = [{ key: 0, text: strings.FilterAllYears }];
+    Array.from(years).sort((a, b) => b - a).forEach((y) => opts.push({ key: y, text: String(y) }));
+    return opts;
+  }, [mySalaryDocuments]);
 
   // ── Render ────────────────────────────────────────────────────────────────
   if (authLoading) {
@@ -236,6 +273,22 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
 
   const tableContent = (
     <Stack tokens={{ childrenGap: 8 }}>
+      <Stack horizontal tokens={{ childrenGap: 12 }} styles={{ root: { flexWrap: 'wrap' } }}>
+        <Dropdown
+          label={strings.PayPeriodYearLabel}
+          selectedKey={filterYear}
+          options={yearOptions}
+          onChange={(_, o) => setFilterYear(Number(o?.key ?? 0))}
+          styles={{ root: { minWidth: 120 } }}
+        />
+        <Dropdown
+          label={strings.PayPeriodMonthLabel}
+          selectedKey={filterMonth}
+          options={MONTH_FILTER_OPTIONS}
+          onChange={(_, o) => setFilterMonth(Number(o?.key ?? 0))}
+          styles={{ root: { minWidth: 150 } }}
+        />
+      </Stack>
       <SearchBox
         placeholder={searchPlaceholder}
         value={searchQuery}
@@ -275,6 +328,22 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
   // Accountant: three-tab view (My Salary / All Documents / Upload)
   const mySalaryContent = (
     <Stack tokens={{ childrenGap: 8 }}>
+      <Stack horizontal tokens={{ childrenGap: 12 }} styles={{ root: { flexWrap: 'wrap' } }}>
+        <Dropdown
+          label={strings.PayPeriodYearLabel}
+          selectedKey={myFilterYear}
+          options={myYearOptions}
+          onChange={(_, o) => setMyFilterYear(Number(o?.key ?? 0))}
+          styles={{ root: { minWidth: 120 } }}
+        />
+        <Dropdown
+          label={strings.PayPeriodMonthLabel}
+          selectedKey={myFilterMonth}
+          options={MONTH_FILTER_OPTIONS}
+          onChange={(_, o) => setMyFilterMonth(Number(o?.key ?? 0))}
+          styles={{ root: { minWidth: 150 } }}
+        />
+      </Stack>
       <SearchBox
         placeholder={strings.SearchPlaceholderEmployee}
         value={mySearchQuery}

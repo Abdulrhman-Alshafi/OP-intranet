@@ -10,6 +10,10 @@ export interface ISalaryDocument extends ISharePointDocument {
   listItemId: number;
   /** SP internal integer user ID of the Employee Person/Group field */
   employeeId: number;
+  /** Pay period year, e.g. 2025. 0 means not set. */
+  payPeriodYear: number;
+  /** Pay period month 1–12. 0 means not set. */
+  payPeriodMonth: number;
 }
 
 export interface IUploadJob {
@@ -18,6 +22,10 @@ export interface IUploadJob {
   employeeLoginName: string;
   /** SP integer user ID – resolve once before queueing so permissions are fast */
   employeeId: number;
+  /** Pay period year, e.g. 2025. 0 means not set. */
+  payPeriodYear: number;
+  /** Pay period month 1–12. 0 means not set. */
+  payPeriodMonth: number;
 }
 
 export type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
@@ -48,6 +56,8 @@ interface ISPItem {
     EMail: string;
     Title: string;
   };
+  PayPeriodYear?: number;
+  PayPeriodMonth?: number;
   File: {
     UniqueId: string;
     Name: string;
@@ -120,7 +130,7 @@ export class SalaryDocumentService {
       `${this._siteUrl}/_api/web/lists/getbytitle('${encoded}')/items` +
       `?$filter=${filter}` +
       `&$expand=Employee,File` +
-      `&$select=ID,Employee/Id,Employee/EMail,Employee/Title,File/UniqueId,File/Name,File/ServerRelativeUrl,File/TimeCreated,File/TimeLastModified` +
+      `&$select=ID,Employee/Id,Employee/EMail,Employee/Title,PayPeriodYear,PayPeriodMonth,File/UniqueId,File/Name,File/ServerRelativeUrl,File/TimeCreated,File/TimeLastModified` +
       `&$orderby=Created desc` +
       `&$top=100`;
 
@@ -144,7 +154,7 @@ export class SalaryDocumentService {
       nextLink ||
       `${this._siteUrl}/_api/web/lists/getbytitle('${encoded}')/items` +
         `?$expand=Employee,File` +
-        `&$select=ID,Employee/Id,Employee/EMail,Employee/Title,File/UniqueId,File/Name,File/ServerRelativeUrl,File/TimeCreated,File/TimeLastModified` +
+        `&$select=ID,Employee/Id,Employee/EMail,Employee/Title,PayPeriodYear,PayPeriodMonth,File/UniqueId,File/Name,File/ServerRelativeUrl,File/TimeCreated,File/TimeLastModified` +
         `&$orderby=Created desc` +
         `&$top=${pageSize}`;
 
@@ -219,7 +229,9 @@ export class SalaryDocumentService {
     file: File,
     employeeLoginName: string,
     employeeId: number,
-    accountantsGroupId: number
+    accountantsGroupId: number,
+    payPeriodYear: number = 0,
+    payPeriodMonth: number = 0
   ): Promise<void> {
     const encodedLib = encodeURIComponent(libraryName);
     const encodedName = encodeURIComponent(file.name);
@@ -257,6 +269,9 @@ export class SalaryDocumentService {
 
     // ── Step 2: Set Employee lookup field ────────────────────────────────
     const itemUrl = `${this._siteUrl}/_api/web/lists/getbytitle('${encodedLib}')/items(${itemId})`;
+    const patchBody: { EmployeeId: number; PayPeriodYear?: number; PayPeriodMonth?: number } = { EmployeeId: employeeId };
+    if (payPeriodYear > 0) patchBody.PayPeriodYear = payPeriodYear;
+    if (payPeriodMonth > 0) patchBody.PayPeriodMonth = payPeriodMonth;
     const patchResponse = await this._spHttpClient.post(itemUrl, SPHttpClient.configurations.v1, {
       headers: {
         Accept: 'application/json;odata=nometadata',
@@ -265,7 +280,7 @@ export class SalaryDocumentService {
         'IF-MATCH': '*',
         'X-HTTP-Method': 'MERGE'
       },
-      body: JSON.stringify({ EmployeeId: employeeId })
+      body: JSON.stringify(patchBody)
     });
 
     if (!patchResponse.ok) {
@@ -325,7 +340,9 @@ export class SalaryDocumentService {
           job.file,
           job.employeeLoginName,
           job.employeeId,
-          accountantsGroupId
+          accountantsGroupId,
+          job.payPeriodYear,
+          job.payPeriodMonth
         );
         onProgress({ fileName: job.file.name, status: 'success' });
       } catch (err) {
@@ -415,7 +432,9 @@ export class SalaryDocumentService {
       extension: dotIdx !== -1 ? name.slice(dotIdx + 1).toLowerCase() : '',
       employeeEmail: item.Employee?.EMail ?? '',
       employeeDisplayName: item.Employee?.Title ?? '',
-      employeeId: item.Employee?.Id ?? 0
+      employeeId: item.Employee?.Id ?? 0,
+      payPeriodYear: item.PayPeriodYear ?? 0,
+      payPeriodMonth: item.PayPeriodMonth ?? 0
     };
   };
 }
