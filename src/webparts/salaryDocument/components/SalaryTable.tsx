@@ -113,11 +113,18 @@ export const SalaryTable: React.FC<ISalaryTableProps> = ({
         key: 'name',
         name: strings.ColumnFileName,
         fieldName: 'name',
-        minWidth: 200,
-        maxWidth: 400,
+        minWidth: 120,
+        maxWidth: 300,
         isResizable: true,
+        isMultiline: false,
         onRender: (item: ISalaryDocument) => (
-          <Link href={item.serverRelativeUrl} target="_blank" rel="noreferrer noopener">
+          <Link
+            href={item.serverRelativeUrl}
+            target="_blank"
+            rel="noreferrer noopener"
+            title={item.name}
+            styles={{ root: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', maxWidth: '100%' } }}
+          >
             {item.name}
           </Link>
         )
@@ -133,7 +140,10 @@ export const SalaryTable: React.FC<ISalaryTableProps> = ({
         maxWidth: 250,
         isResizable: true,
         onRender: (item: ISalaryDocument) => (
-          <Text variant="small">{item.employeeDisplayName || item.employeeEmail}</Text>
+          <Text variant="small" title={item.employeeDisplayName || item.employeeEmail}
+            styles={{ root: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' } }}>
+            {item.employeeDisplayName || item.employeeEmail}
+          </Text>
         )
       });
     }

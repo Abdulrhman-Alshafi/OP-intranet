@@ -106,17 +106,12 @@
 
 .tableScrollWrapper {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;   // no horizontal scroll — text truncates instead
   overflow-y: auto;
   max-height: 480px;
-  border: 1px solid var(--neutralLight, #edebe9);
-  border-radius: 4px;
+  // no outer border — rows use bottom-border only
 
   // Sticky header for FluentUI DetailsList
-  :global(.ms-DetailsList) {
-    min-width: 500px;
-  }
-
   :global(.ms-DetailsList-headerWrapper) {
     position: sticky;
     top: 0;
@@ -124,9 +119,28 @@
     background: var(--bodyBackground, #ffffff);
   }
 
-  // Sticky header for plain HTML table (bulk progress table)
+  // Bottom-border only on each DetailsList row
+  :global(.ms-DetailsRow) {
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+    border-top: none;
+  }
+
+  // Remove FluentUI's default row focus/hover border
+  :global(.ms-DetailsHeader) {
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+  }
+
+  // Truncate all text cells in the DetailsList
+  :global(.ms-DetailsRow-cell) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Plain HTML table (bulk progress) — bottom border only
   table {
-    min-width: 480px;
+    width: 100%;
+    border-collapse: collapse;
   }
 
   thead th {
@@ -134,6 +148,21 @@
     top: 0;
     z-index: 1;
     background: var(--bodyBackground, #ffffff);
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+    border-top: none;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+  }
+
+  // Truncate plain table cells
+  td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 260px;
+    border: none;
   }
 }
 

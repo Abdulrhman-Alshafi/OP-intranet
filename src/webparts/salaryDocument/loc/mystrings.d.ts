@@ -24,6 +24,8 @@ declare interface ISalaryDocumentWebPartStrings {
   DeleteConfirmMessage: string;
   DeleteButtonLabel: string;
   CancelButtonLabel: string;
+  ValidationFileExists: string;
+  ValidationBulkFileExists: string;
   // Column headers
   ColumnFileName: string;
   ColumnEmployee: string;

@@ -49,6 +49,7 @@ interface IValidationReport {
   extraFiles: string[];
   duplicateNames: string[];
   invalidEmails: string[];
+  alreadyExistsFiles: string[];
 }
 // ── Module-level period options ───────────────────────────────────────────────
 
@@ -92,11 +93,25 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
   const [singleMonth, setSingleMonth] = useState<number>(_now.getMonth() + 1);
   const [singleUploading, setSingleUploading] = useState<boolean>(false);
   const [singleResult, setSingleResult] = useState<IUploadResult | undefined>(undefined);
+  const [singleFileExists, setSingleFileExists] = useState<boolean>(false);
+  const [singleCheckingExists, setSingleCheckingExists] = useState<boolean>(false);
 
-  const handleSingleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleSingleFileChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0];
     setSingleFile(file);
     setSingleResult(undefined);
+    setSingleFileExists(false);
+    if (file) {
+      setSingleCheckingExists(true);
+      try {
+        const exists = await service.fileExists(libraryName, file.name);
+        setSingleFileExists(exists);
+      } catch {
+        setSingleFileExists(false);
+      } finally {
+        setSingleCheckingExists(false);
+      }
+    }
   };
 
   const handleSingleEmployeeChange = useCallback(
@@ -125,7 +140,7 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
   );
 
   const handleSingleUpload = async (): Promise<void> => {
-    if (!singleFile || !singleEmployee) return;
+    if (!singleFile || !singleEmployee || singleFileExists) return;
     setSingleUploading(true);
     setSingleResult(undefined);
     try {
@@ -141,6 +156,7 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
       setSingleResult({ fileName: singleFile.name, status: 'success' });
       setSingleFile(undefined);
       setSingleEmployee(undefined);
+      setSingleFileExists(false);
       if (singleFileInputRef.current) singleFileInputRef.current.value = '';
       onUploadsComplete();
     } catch (err) {
@@ -260,10 +276,20 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
       }
     }
 
-    setValidation({ missingFiles, extraFiles, duplicateNames, invalidEmails });
-    setBulkJobs(resolvedJobs);
+    // Check which files already exist in the library
+    const alreadyExistsFiles: string[] = [];
+    for (const row of uniqueRows) {
+      const file = fileNameMap.get(row.fileName);
+      if (!file) continue;
+      const exists = await service.fileExists(libraryName, file.name).catch(() => false);
+      if (exists) alreadyExistsFiles.push(file.name);
+    }
+
+    setValidation({ missingFiles, extraFiles, duplicateNames, invalidEmails, alreadyExistsFiles });
+    const filteredJobs = resolvedJobs.filter((j) => alreadyExistsFiles.indexOf(j.file.name) === -1);
+    setBulkJobs(filteredJobs);
     setUploadResults(
-      resolvedJobs.map((j) => ({ fileName: j.file.name, status: 'pending' }))
+      filteredJobs.map((j) => ({ fileName: j.file.name, status: 'pending' }))
     );
     setBulkValidating(false);
   }, [excelRows, bulkFiles, service]);
@@ -394,6 +420,16 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
             />
           </Stack>
 
+          {singleCheckingExists && (
+            <MessageBar messageBarType={MessageBarType.info} isMultiline={false}>
+              Checking if file already exists…
+            </MessageBar>
+          )}
+          {singleFileExists && !singleCheckingExists && (
+            <MessageBar messageBarType={MessageBarType.blocked} isMultiline>
+              {strings.ValidationFileExists}
+            </MessageBar>
+          )}
           {/* Result feedback */}
           {singleResult && (
             <MessageBar
@@ -410,7 +446,7 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
           {/* Upload button */}
           <PrimaryButton
             text={singleUploading ? strings.UploadInProgressMessage : strings.UploadButtonLabel}
-            disabled={!singleFile || !singleEmployee || singleUploading}
+            disabled={!singleFile || !singleEmployee || singleUploading || singleFileExists || singleCheckingExists}
             onClick={handleSingleUpload}
             iconProps={singleUploading ? undefined : { iconName: 'Upload' }}
             onRenderIcon={singleUploading ? () => <Spinner size={SpinnerSize.xSmall} /> : undefined}
@@ -510,6 +546,13 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
                   <strong>{strings.ValidationInvalidEmails}</strong>
                   <br />
                   {validation.invalidEmails.join(', ')}
+                </MessageBar>
+              )}
+              {validation.alreadyExistsFiles.length > 0 && (
+                <MessageBar messageBarType={MessageBarType.warning} isMultiline>
+                  <strong>{strings.ValidationBulkFileExists}</strong>
+                  <br />
+                  {validation.alreadyExistsFiles.join(', ')}
                 </MessageBar>
               )}
               {!hasValidationErrors(validation) && (

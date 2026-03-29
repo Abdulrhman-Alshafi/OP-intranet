@@ -26,6 +26,8 @@ define([], function () {
     DeleteConfirmMessage: "Are you sure you want to permanently delete '{name}'? This cannot be undone.",
     DeleteButtonLabel: "Delete",
     CancelButtonLabel: "Cancel",
+    ValidationFileExists: "A file with this name already exists in the library. Please rename the file or delete the existing one first.",
+    ValidationBulkFileExists: "Files already exist in the library (rename or delete them first):",
     // Column headers
     ColumnFileName: "File Name",
     ColumnEmployee: "Employee",

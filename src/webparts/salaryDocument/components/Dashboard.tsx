@@ -273,7 +273,11 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
 
   const tableContent = (
     <Stack tokens={{ childrenGap: 8 }}>
-      <Stack horizontal tokens={{ childrenGap: 12 }} styles={{ root: { flexWrap: 'wrap' } }}>
+      <Stack
+        horizontal
+        tokens={{ childrenGap: 12 }}
+        styles={{ root: { flexWrap: 'wrap', alignItems: 'flex-end' } }}
+      >
         <Dropdown
           label={strings.PayPeriodYearLabel}
           selectedKey={filterYear}
@@ -288,13 +292,13 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
           onChange={(_, o) => setFilterMonth(Number(o?.key ?? 0))}
           styles={{ root: { minWidth: 150 } }}
         />
+        <SearchBox
+          placeholder={searchPlaceholder}
+          value={searchQuery}
+          onChange={(_, newValue) => setSearchQuery(newValue || '')}
+          styles={{ root: { flexGrow: 1, minWidth: 180 } }}
+        />
       </Stack>
-      <SearchBox
-        placeholder={searchPlaceholder}
-        value={searchQuery}
-        onChange={(_, newValue) => setSearchQuery(newValue || '')}
-        styles={{ root: { maxWidth: 400 } }}
-      />
       {dataError && (
         <MessageBar messageBarType={MessageBarType.error}>
           {dataError}
@@ -328,7 +332,11 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
   // Accountant: three-tab view (My Salary / All Documents / Upload)
   const mySalaryContent = (
     <Stack tokens={{ childrenGap: 8 }}>
-      <Stack horizontal tokens={{ childrenGap: 12 }} styles={{ root: { flexWrap: 'wrap' } }}>
+      <Stack
+        horizontal
+        tokens={{ childrenGap: 12 }}
+        styles={{ root: { flexWrap: 'wrap', alignItems: 'flex-end' } }}
+      >
         <Dropdown
           label={strings.PayPeriodYearLabel}
           selectedKey={myFilterYear}
@@ -343,13 +351,13 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
           onChange={(_, o) => setMyFilterMonth(Number(o?.key ?? 0))}
           styles={{ root: { minWidth: 150 } }}
         />
+        <SearchBox
+          placeholder={strings.SearchPlaceholderEmployee}
+          value={mySearchQuery}
+          onChange={(_, newValue) => setMySearchQuery(newValue || '')}
+          styles={{ root: { flexGrow: 1, minWidth: 180 } }}
+        />
       </Stack>
-      <SearchBox
-        placeholder={strings.SearchPlaceholderEmployee}
-        value={mySearchQuery}
-        onChange={(_, newValue) => setMySearchQuery(newValue || '')}
-        styles={{ root: { maxWidth: 400 } }}
-      />
       {myDataError && (
         <MessageBar messageBarType={MessageBarType.error}>
           {myDataError}

@@ -358,6 +358,22 @@ export class SalaryDocumentService {
   }
 
   /**
+   * Returns true if a file with the given name already exists in the library.
+   */
+  public async fileExists(libraryName: string, fileName: string): Promise<boolean> {
+    const encodedLib = encodeURIComponent(libraryName);
+    const encodedName = encodeURIComponent(fileName.replace(/'/g, "''"));
+    const url =
+      `${this._siteUrl}/_api/web/lists/getbytitle('${encodedLib}')/items` +
+      `?$filter=FileLeafRef eq '${encodedName}'` +
+      `&$select=ID&$top=1`;
+    const response = await this._get(url);
+    if (!response.ok) return false;
+    const data = (await response.json()) as { value: unknown[] };
+    return data.value.length > 0;
+  }
+
+  /**
    * Permanently deletes a library item (the file + its list item).
    * Requires at minimum Manage Permissions on the item (Full Control on the library).
    */
