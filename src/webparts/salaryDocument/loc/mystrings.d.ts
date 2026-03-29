@@ -1,4 +1,6 @@
 declare interface ISalaryDocumentWebPartStrings {
+  // Web part title
+  WebPartTitle: string;
   // Property pane
   PropertyPaneDescription: string;
   GeneralGroupName: string;

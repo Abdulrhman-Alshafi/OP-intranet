@@ -1,10 +1,74 @@
-.container {
-  padding: 16px;
-  font-family: var(--fontFamilyBase, 'Segoe UI', sans-serif);
+/* ═══════════════════════════════════════════════════════════════════════
+   Salary Documents — Card-Based UI (mirrors Polls & Quick Surveys style)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Tile Container ───────────────────────────────────────────────────────── */
+
+.salaryDocument {
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 24px;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  background: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  min-height: 200px;
 }
 
-.header {
-  margin-bottom: 16px;
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+
+.wpHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-bottom-color: var(--neutralLight);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wpTitleSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wpIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0, 120, 212, 0.08);
+  flex-shrink: 0;
+
+  i {
+    font-size: 20px;
+    color: "[theme:themePrimary, default: #0078d4]";
+    color: var(--themePrimary);
+  }
+}
+
+.wpTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Document Table Area ──────────────────────────────────────────────────── */
+
+.tableArea {
+  padding: 0;
 }
 
 .searchBox {
@@ -34,11 +98,93 @@
   padding: 16px 0;
 }
 
-/* ─── Upload Panel ─────────────────────────────────────────────────────────── */
+/* ─── File icon column ─────────────────────────────────────────────────────── */
 
-.uploadSection {
-  max-width: 640px;
-  padding: 16px;
+.fileIconCell {
+  width: 32px;
+  text-align: center;
+}
+
+/* ─── Upload Panel — Responsive Split Layout ───────────────────────────────── */
+
+/*
+  Desktop (≥ 768px): two columns side by side with a vertical divider
+  Mobile (< 768px):  stacked vertically with a horizontal divider
+*/
+
+.uploadColumns {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+}
+
+.uploadColLeft,
+.uploadColRight {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 24px;
+
+  @media (max-width: 767px) {
+    padding: 16px 0;
+    width: 100%;
+  }
+}
+
+.uploadColLeft {
+  padding-left: 0;
+
+  @media (max-width: 767px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.uploadColRight {
+  padding-right: 0;
+
+  @media (max-width: 767px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Vertical divider on desktop → horizontal divider on mobile */
+.colDivider {
+  width: 1px;
+  align-self: stretch;
+  background-color: var(--neutralLight, #edebe9);
+  flex-shrink: 0;
+  margin: 0 4px;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    height: 1px;
+    align-self: auto;
+    margin: 4px 0;
+  }
+}
+
+/* ─── Upload Fields ────────────────────────────────────────────────────────── */
+
+.uploadSectionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--neutralPrimary, #323130);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  i {
+    color: var(--themePrimary, #0078d4);
+    font-size: 16px;
+  }
 }
 
 .uploadField {
@@ -50,22 +196,13 @@
 }
 
 .fileNameDisplay {
-  margin-left: 8px;
+  margin-top: 4px;
+  font-size: 12px;
   font-style: italic;
   color: var(--neutralSecondary, #605e5c);
 }
 
-.divider {
-  margin: 24px 0;
-  border: none;
-  border-top: 1px solid var(--neutralLight, #edebe9);
-}
-
-/* ─── Bulk Upload ──────────────────────────────────────────────────────────── */
-
-.bulkSection {
-  margin-top: 8px;
-}
+/* ─── Validation & Progress ────────────────────────────────────────────────── */
 
 .validationReport {
   margin: 12px 0;
@@ -96,6 +233,9 @@
 
 .statusUploading {
   color: var(--themePrimary, #0078d4);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .statusSuccess {
@@ -113,9 +253,9 @@
   flex-wrap: wrap;
 }
 
-/* ─── File icon column ─────────────────────────────────────────────────────── */
-
-.fileIconCell {
-  width: 32px;
-  text-align: center;
-}
+/* Legacy – kept for safety */
+.container { padding: 16px; }
+.header { margin-bottom: 16px; }
+.uploadSection { padding: 0; }
+.bulkSection { margin-top: 8px; }
+.divider { margin: 24px 0; border: none; border-top: 1px solid var(--neutralLight, #edebe9); }

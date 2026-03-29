@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { Stack } from '@fluentui/react/lib/Stack';
-import { Text } from '@fluentui/react/lib/Text';
 import { PrimaryButton, DefaultButton, ActionButton } from '@fluentui/react/lib/Button';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
 import { ProgressIndicator } from '@fluentui/react/lib/ProgressIndicator';
-import { Separator } from '@fluentui/react/lib/Separator';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { MSGraphClientFactory, SPHttpClient } from '@microsoft/sp-http';
 import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
@@ -311,59 +309,63 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <Stack tokens={{ childrenGap: 24 }} className={styles.uploadSection}>
-      {/* ── Single Upload ────────────────────────────────────────────────── */}
-      <Stack tokens={{ childrenGap: 12 }}>
-        <Text variant="large" styles={{ root: { fontWeight: 600 } }}>
+    <div className={styles.uploadColumns}>
+
+      {/* ══ Left column: Single Upload ══════════════════════════════════════ */}
+      <div className={styles.uploadColLeft}>
+        <h3 className={styles.uploadSectionTitle}>
+          <Icon iconName="Upload" />
           {strings.UploadSectionTitle}
-        </Text>
+        </h3>
 
-        <Stack tokens={{ childrenGap: 8 }} className={styles.uploadField}>
-          <DefaultButton
-            text={strings.SelectFileLabel}
-            iconProps={{ iconName: 'Attach' }}
-            onClick={() => singleFileInputRef.current?.click()}
-          />
-          {singleFile && (
-            <Text variant="small" className={styles.fileNameDisplay}>
-              {singleFile.name}
-            </Text>
+        <Stack tokens={{ childrenGap: 14 }}>
+          {/* File picker */}
+          <div className={styles.uploadField}>
+            <DefaultButton
+              text={strings.SelectFileLabel}
+              iconProps={{ iconName: 'Attach' }}
+              onClick={() => singleFileInputRef.current?.click()}
+            />
+            {singleFile && (
+              <div className={styles.fileNameDisplay}>{singleFile.name}</div>
+            )}
+            <input
+              ref={singleFileInputRef}
+              type="file"
+              accept=".pdf,.doc,.docx,.xlsx,.xls,.ppt,.pptx,.png,.jpg,.jpeg,.zip"
+              className={styles.hiddenFileInput}
+              onChange={handleSingleFileChange}
+            />
+          </div>
+
+          {/* People picker */}
+          <div className={styles.uploadField}>
+            <PeoplePicker
+              context={pickerContext}
+              titleText={strings.SelectEmployeeLabel}
+              personSelectionLimit={1}
+              required={true}
+              principalTypes={[PrincipalType.User]}
+              resolveDelay={300}
+              ensureUser={true}
+              onChange={handleSingleEmployeeChange as (items: unknown[]) => void}
+            />
+          </div>
+
+          {/* Result feedback */}
+          {singleResult && (
+            <MessageBar
+              messageBarType={
+                singleResult.status === 'success' ? MessageBarType.success : MessageBarType.error
+              }
+            >
+              {singleResult.status === 'success'
+                ? `"${singleResult.fileName}" uploaded successfully.`
+                : singleResult.message}
+            </MessageBar>
           )}
-          <input
-            ref={singleFileInputRef}
-            type="file"
-            accept=".pdf,.doc,.docx,.xlsx,.xls,.ppt,.pptx,.png,.jpg,.jpeg,.zip"
-            className={styles.hiddenFileInput}
-            onChange={handleSingleFileChange}
-          />
-        </Stack>
 
-        <Stack className={styles.uploadField}>
-          <PeoplePicker
-            context={pickerContext}
-            titleText={strings.SelectEmployeeLabel}
-            personSelectionLimit={1}
-            required={true}
-            principalTypes={[PrincipalType.User]}
-            resolveDelay={300}
-            ensureUser={true}
-            onChange={handleSingleEmployeeChange as (items: unknown[]) => void}
-          />
-        </Stack>
-
-        {singleResult && (
-          <MessageBar
-            messageBarType={
-              singleResult.status === 'success' ? MessageBarType.success : MessageBarType.error
-            }
-          >
-            {singleResult.status === 'success'
-              ? `"${singleResult.fileName}" uploaded successfully.`
-              : singleResult.message}
-          </MessageBar>
-        )}
-
-        <Stack horizontal tokens={{ childrenGap: 8 }}>
+          {/* Upload button */}
           <PrimaryButton
             text={singleUploading ? strings.UploadInProgressMessage : strings.UploadButtonLabel}
             disabled={!singleFile || !singleEmployee || singleUploading}
@@ -372,182 +374,186 @@ export const UploadPanel: React.FC<IUploadPanelProps> = (props) => {
             onRenderIcon={singleUploading ? () => <Spinner size={SpinnerSize.xSmall} /> : undefined}
           />
         </Stack>
-      </Stack>
+      </div>
 
-      <Separator />
+      {/* ── Responsive Divider (vertical on desktop, horizontal on mobile) ── */}
+      <div className={styles.colDivider} />
 
-      {/* ── Bulk Upload ──────────────────────────────────────────────────── */}
-      <Stack tokens={{ childrenGap: 12 }} className={styles.bulkSection}>
-        <Text variant="large" styles={{ root: { fontWeight: 600 } }}>
+      {/* ══ Right column: Bulk Upload ════════════════════════════════════════ */}
+      <div className={styles.uploadColRight}>
+        <h3 className={styles.uploadSectionTitle}>
+          <Icon iconName="BulkUpload" />
           {strings.BulkUploadSectionTitle}
-        </Text>
+        </h3>
 
-        <Text variant="small" styles={{ root: { color: '#605e5c' } }}>
-          {strings.ExcelColumnsHint}
-        </Text>
+        <Stack tokens={{ childrenGap: 14 }}>
+          {/* Hint */}
+          <div style={{ fontSize: 12, color: 'var(--neutralSecondary, #605e5c)' }}>
+            {strings.ExcelColumnsHint}
+          </div>
 
-        <Stack horizontal tokens={{ childrenGap: 8 }} wrap>
-          <Stack tokens={{ childrenGap: 4 }}>
-            <DefaultButton
-              text={strings.SelectExcelLabel}
-              iconProps={{ iconName: 'ExcelDocument' }}
-              onClick={() => excelInputRef.current?.click()}
-            />
-            {excelRows.length > 0 && (
-              <Text variant="small" className={styles.fileNameDisplay}>
-                {excelRows.length} row(s) loaded
-              </Text>
-            )}
-            <input
-              ref={excelInputRef}
-              type="file"
-              accept=".xlsx"
-              className={styles.hiddenFileInput}
-              onChange={handleExcelChange}
+          {/* File selectors row */}
+          <Stack horizontal tokens={{ childrenGap: 8 }} wrap>
+            <Stack tokens={{ childrenGap: 4 }}>
+              <DefaultButton
+                text={strings.SelectExcelLabel}
+                iconProps={{ iconName: 'ExcelDocument' }}
+                onClick={() => excelInputRef.current?.click()}
+              />
+              {excelRows.length > 0 && (
+                <div className={styles.fileNameDisplay}>{excelRows.length} row(s) loaded</div>
+              )}
+              <input
+                ref={excelInputRef}
+                type="file"
+                accept=".xlsx"
+                className={styles.hiddenFileInput}
+                onChange={handleExcelChange}
+              />
+            </Stack>
+
+            <Stack tokens={{ childrenGap: 4 }}>
+              <DefaultButton
+                text={strings.SelectDocumentsLabel}
+                iconProps={{ iconName: 'BulkUpload' }}
+                onClick={() => docsInputRef.current?.click()}
+              />
+              {bulkFiles.length > 0 && (
+                <div className={styles.fileNameDisplay}>{bulkFiles.length} file(s) selected</div>
+              )}
+              <input
+                ref={docsInputRef}
+                type="file"
+                multiple
+                className={styles.hiddenFileInput}
+                onChange={handleDocsChange}
+              />
+            </Stack>
+
+            <PrimaryButton
+              text={bulkValidating ? 'Validating…' : 'Validate'}
+              iconProps={{ iconName: 'CheckMark' }}
+              disabled={excelRows.length === 0 || bulkFiles.length === 0 || bulkValidating}
+              onClick={handleValidate}
+              onRenderIcon={bulkValidating ? () => <Spinner size={SpinnerSize.xSmall} /> : undefined}
             />
           </Stack>
 
-          <Stack tokens={{ childrenGap: 4 }}>
-            <DefaultButton
-              text={strings.SelectDocumentsLabel}
-              iconProps={{ iconName: 'BulkUpload' }}
-              onClick={() => docsInputRef.current?.click()}
+          {/* Validation report */}
+          {validation && (
+            <Stack tokens={{ childrenGap: 6 }} className={styles.validationReport}>
+              {validation.missingFiles.length > 0 && (
+                <MessageBar messageBarType={MessageBarType.error} isMultiline>
+                  <strong>{strings.ValidationMissingFiles}</strong>
+                  <br />
+                  {validation.missingFiles.join(', ')}
+                </MessageBar>
+              )}
+              {validation.extraFiles.length > 0 && (
+                <MessageBar messageBarType={MessageBarType.warning} isMultiline>
+                  <strong>{strings.ValidationExtraFiles}</strong>
+                  <br />
+                  {validation.extraFiles.join(', ')}
+                </MessageBar>
+              )}
+              {validation.duplicateNames.length > 0 && (
+                <MessageBar messageBarType={MessageBarType.error} isMultiline>
+                  <strong>{strings.ValidationDuplicates}</strong>
+                  <br />
+                  {validation.duplicateNames.join(', ')}
+                </MessageBar>
+              )}
+              {validation.invalidEmails.length > 0 && (
+                <MessageBar messageBarType={MessageBarType.error} isMultiline>
+                  <strong>{strings.ValidationInvalidEmails}</strong>
+                  <br />
+                  {validation.invalidEmails.join(', ')}
+                </MessageBar>
+              )}
+              {!hasValidationErrors(validation) && (
+                <MessageBar messageBarType={MessageBarType.success}>
+                  Validation passed — {bulkJobs.length} document(s) ready to upload.
+                </MessageBar>
+              )}
+            </Stack>
+          )}
+
+          {/* Progress table */}
+          {uploadResults.length > 0 && (
+            <Stack tokens={{ childrenGap: 8 }}>
+              {bulkUploading && (
+                <ProgressIndicator
+                  label={strings.UploadInProgressMessage}
+                  percentComplete={progressPercent}
+                />
+              )}
+              <table className={styles.progressTable}>
+                <thead>
+                  <tr>
+                    <th>File</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {uploadResults.map((r) => (
+                    <tr key={r.fileName}>
+                      <td>{r.fileName}</td>
+                      <td>
+                        <span
+                          className={
+                            r.status === 'pending'
+                              ? styles.statusPending
+                              : r.status === 'uploading'
+                              ? styles.statusUploading
+                              : r.status === 'success'
+                              ? styles.statusSuccess
+                              : styles.statusError
+                          }
+                        >
+                          {r.status === 'uploading' && (
+                            <Spinner size={SpinnerSize.xSmall} />
+                          )}
+                          {r.status}
+                        </span>
+                      </td>
+                      <td>{r.message || ''}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Stack>
+          )}
+
+          {/* Action buttons */}
+          <div className={styles.actionRow}>
+            <PrimaryButton
+              text={strings.ProceedBulkLabel}
+              iconProps={{ iconName: 'Upload' }}
+              disabled={!canProceedBulk}
+              onClick={handleBulkUpload}
             />
-            {bulkFiles.length > 0 && (
-              <Text variant="small" className={styles.fileNameDisplay}>
-                {bulkFiles.length} file(s) selected
-              </Text>
-            )}
-            <input
-              ref={docsInputRef}
-              type="file"
-              multiple
-              className={styles.hiddenFileInput}
-              onChange={handleDocsChange}
-            />
-          </Stack>
-
-          <PrimaryButton
-            text={bulkValidating ? 'Validating…' : 'Validate'}
-            iconProps={{ iconName: 'CheckMark' }}
-            disabled={excelRows.length === 0 || bulkFiles.length === 0 || bulkValidating}
-            onClick={handleValidate}
-            onRenderIcon={bulkValidating ? () => <Spinner size={SpinnerSize.xSmall} /> : undefined}
-          />
-        </Stack>
-
-        {/* Validation report */}
-        {validation && (
-          <Stack tokens={{ childrenGap: 6 }} className={styles.validationReport}>
-            {validation.missingFiles.length > 0 && (
-              <MessageBar messageBarType={MessageBarType.error} isMultiline>
-                <strong>{strings.ValidationMissingFiles}</strong>
-                <br />
-                {validation.missingFiles.join(', ')}
-              </MessageBar>
-            )}
-            {validation.extraFiles.length > 0 && (
-              <MessageBar messageBarType={MessageBarType.warning} isMultiline>
-                <strong>{strings.ValidationExtraFiles}</strong>
-                <br />
-                {validation.extraFiles.join(', ')}
-              </MessageBar>
-            )}
-            {validation.duplicateNames.length > 0 && (
-              <MessageBar messageBarType={MessageBarType.error} isMultiline>
-                <strong>{strings.ValidationDuplicates}</strong>
-                <br />
-                {validation.duplicateNames.join(', ')}
-              </MessageBar>
-            )}
-            {validation.invalidEmails.length > 0 && (
-              <MessageBar messageBarType={MessageBarType.error} isMultiline>
-                <strong>{strings.ValidationInvalidEmails}</strong>
-                <br />
-                {validation.invalidEmails.join(', ')}
-              </MessageBar>
-            )}
-            {!hasValidationErrors(validation) && (
-              <MessageBar messageBarType={MessageBarType.success}>
-                Validation passed — {bulkJobs.length} document(s) ready to upload.
-              </MessageBar>
-            )}
-          </Stack>
-        )}
-
-        {/* Upload progress table */}
-        {uploadResults.length > 0 && (
-          <Stack tokens={{ childrenGap: 8 }}>
-            {bulkUploading && (
-              <ProgressIndicator
-                label={strings.UploadInProgressMessage}
-                percentComplete={progressPercent}
+            {allDone && hasFailedUploads && (
+              <DefaultButton
+                text={strings.RetryFailedLabel}
+                iconProps={{ iconName: 'Refresh' }}
+                onClick={handleRetryFailed}
               />
             )}
-            <table className={styles.progressTable}>
-              <thead>
-                <tr>
-                  <th>File</th>
-                  <th>Status</th>
-                  <th>Message</th>
-                </tr>
-              </thead>
-              <tbody>
-                {uploadResults.map((r) => (
-                  <tr key={r.fileName}>
-                    <td>{r.fileName}</td>
-                    <td>
-                      <span
-                        className={
-                          r.status === 'pending'
-                            ? styles.statusPending
-                            : r.status === 'uploading'
-                            ? styles.statusUploading
-                            : r.status === 'success'
-                            ? styles.statusSuccess
-                            : styles.statusError
-                        }
-                      >
-                        {r.status === 'uploading' && (
-                          <Spinner size={SpinnerSize.xSmall} styles={{ root: { display: 'inline-flex', marginRight: 4 } }} />
-                        )}
-                        {r.status}
-                      </span>
-                    </td>
-                    <td>{r.message || ''}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Stack>
-        )}
-
-        {/* Action buttons */}
-        <Stack horizontal tokens={{ childrenGap: 8 }} wrap className={styles.actionRow}>
-          <PrimaryButton
-            text={strings.ProceedBulkLabel}
-            iconProps={{ iconName: 'Upload' }}
-            disabled={!canProceedBulk}
-            onClick={handleBulkUpload}
-          />
-          {allDone && hasFailedUploads && (
-            <DefaultButton
-              text={strings.RetryFailedLabel}
-              iconProps={{ iconName: 'Refresh' }}
-              onClick={handleRetryFailed}
-            />
-          )}
-          {allDone && hasFailedUploads && (
-            <ActionButton
-              text={strings.DownloadErrorReportLabel}
-              iconProps={{ iconName: 'Download' }}
-              onClick={handleDownloadErrorReport}
-            />
-          )}
+            {allDone && hasFailedUploads && (
+              <ActionButton
+                text={strings.DownloadErrorReportLabel}
+                iconProps={{ iconName: 'Download' }}
+                onClick={handleDownloadErrorReport}
+              />
+            )}
+          </div>
         </Stack>
-      </Stack>
-    </Stack>
+      </div>
+
+    </div>
   );
 };
 
 export default UploadPanel;
+

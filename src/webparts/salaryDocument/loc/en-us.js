@@ -1,6 +1,8 @@
 /* global define */
 define([], function () {
   return {
+    // Web part title
+    WebPartTitle: "Salary Documents",
     // Property pane
     PropertyPaneDescription: "Configure the Salary Document web part settings.",
     GeneralGroupName: "General",

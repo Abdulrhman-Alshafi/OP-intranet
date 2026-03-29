@@ -1,17 +1,18 @@
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Stack } from '@fluentui/react/lib/Stack';
-import { Text } from '@fluentui/react/lib/Text';
 import { SearchBox } from '@fluentui/react/lib/SearchBox';
 import { Pivot, PivotItem } from '@fluentui/react/lib/Pivot';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
+import { Icon } from '@fluentui/react/lib/Icon';
 
 import * as strings from 'SalaryDocumentWebPartStrings';
 import { ISalaryDocumentProps } from './ISalaryDocumentProps';
 import { SalaryTable } from './SalaryTable';
 import { UploadPanel } from './UploadPanel';
 import { ISalaryDocument, IPagedSalaryDocuments } from '../../../services/SalaryDocumentService';
+import styles from './SalaryDocument.module.scss';
 
 const PAGE_SIZE = 50;
 
@@ -168,17 +169,33 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
   // ── Render ────────────────────────────────────────────────────────────────
   if (authLoading) {
     return (
-      <Stack horizontalAlign="center" styles={{ root: { padding: 32 } }}>
-        <Spinner size={SpinnerSize.large} />
-      </Stack>
+      <div className={styles.salaryDocument}>
+        <div className={styles.wpHeader}>
+          <div className={styles.wpTitleSection}>
+            <div className={styles.wpIconWrap}><Icon iconName="Money" /></div>
+            <h2 className={styles.wpTitle}>{strings.WebPartTitle}</h2>
+          </div>
+        </div>
+        <Stack horizontalAlign="center" styles={{ root: { padding: 32 } }}>
+          <Spinner size={SpinnerSize.large} />
+        </Stack>
+      </div>
     );
   }
 
   if (authError) {
     return (
-      <MessageBar messageBarType={MessageBarType.error} isMultiline={false}>
-        {authError}
-      </MessageBar>
+      <div className={styles.salaryDocument}>
+        <div className={styles.wpHeader}>
+          <div className={styles.wpTitleSection}>
+            <div className={styles.wpIconWrap}><Icon iconName="Money" /></div>
+            <h2 className={styles.wpTitle}>{strings.WebPartTitle}</h2>
+          </div>
+        </div>
+        <MessageBar messageBarType={MessageBarType.error} isMultiline={false}>
+          {authError}
+        </MessageBar>
+      </div>
     );
   }
 
@@ -211,15 +228,27 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
 
   if (!isAccountant) {
     return (
-      <Stack tokens={{ childrenGap: 12 }} styles={{ root: { padding: 16 } }}>
+      <div className={styles.salaryDocument}>
+        <div className={styles.wpHeader}>
+          <div className={styles.wpTitleSection}>
+            <div className={styles.wpIconWrap}><Icon iconName="Money" /></div>
+            <h2 className={styles.wpTitle}>{strings.WebPartTitle}</h2>
+          </div>
+        </div>
         {tableContent}
-      </Stack>
+      </div>
     );
   }
 
   // Accountant: two-tab view
   return (
-    <Stack tokens={{ childrenGap: 12 }} styles={{ root: { padding: 16 } }}>
+    <div className={styles.salaryDocument}>
+      <div className={styles.wpHeader}>
+        <div className={styles.wpTitleSection}>
+          <div className={styles.wpIconWrap}><Icon iconName="Money" /></div>
+          <h2 className={styles.wpTitle}>{strings.WebPartTitle}</h2>
+        </div>
+      </div>
       <Pivot>
         <PivotItem headerText={strings.TabDocuments}>
           <Stack tokens={{ childrenGap: 8 }} styles={{ root: { marginTop: 16 } }}>
@@ -227,7 +256,7 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
           </Stack>
         </PivotItem>
         <PivotItem headerText={strings.TabUpload}>
-          <Stack styles={{ root: { marginTop: 16 } }}>
+          <div style={{ marginTop: 16 }}>
             <UploadPanel
               service={service}
               libraryName={libraryName}
@@ -238,10 +267,10 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
               msGraphClientFactory={msGraphClientFactory}
               onUploadsComplete={handleUploadsComplete}
             />
-          </Stack>
+          </div>
         </PivotItem>
       </Pivot>
-    </Stack>
+    </div>
   );
 };
 
