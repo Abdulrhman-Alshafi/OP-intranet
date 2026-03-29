@@ -261,21 +261,21 @@ export const HrDashboard: React.FC<IHrDocumentProps> = (props) => {
     <Stack tokens={{ childrenGap: 8 }}>
       <Stack
         horizontal
-        tokens={{ childrenGap: 12 }}
-        styles={{ root: { flexWrap: 'wrap', alignItems: 'flex-end' } }}
+        wrap
+        tokens={{ childrenGap: 16 }}
+        styles={{ root: { rowGap: 12, alignItems: 'stretch' } }}
       >
         <Dropdown
-          label={strings.DocumentTypeLabel}
           selectedKey={filterDocType}
           options={docTypeOptions}
           onChange={(_, o) => setFilterDocType(String(o?.key ?? ''))}
-          styles={{ root: { minWidth: 160 } }}
+          styles={{ root: { minWidth: 160, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
         />
         <SearchBox
           placeholder={searchPlaceholder}
           value={searchQuery}
           onChange={(_, newValue) => setSearchQuery(newValue || '')}
-          styles={{ root: { flexGrow: 1, minWidth: 180 } }}
+          styles={{ root: { flexGrow: 1, minWidth: 180, height: 32, margin: 0, padding: 0 } }}
         />
       </Stack>
       {dataError && (
@@ -312,21 +312,21 @@ export const HrDashboard: React.FC<IHrDocumentProps> = (props) => {
     <Stack tokens={{ childrenGap: 8 }}>
       <Stack
         horizontal
-        tokens={{ childrenGap: 12 }}
-        styles={{ root: { flexWrap: 'wrap', alignItems: 'flex-end' } }}
+        wrap
+        tokens={{ childrenGap: 16 }}
+        styles={{ root: { rowGap: 12, alignItems: 'stretch' } }}
       >
         <Dropdown
-          label={strings.DocumentTypeLabel}
           selectedKey={myFilterDocType}
           options={myDocTypeOptions}
           onChange={(_, o) => setMyFilterDocType(String(o?.key ?? ''))}
-          styles={{ root: { minWidth: 160 } }}
+          styles={{ root: { minWidth: 160, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
         />
         <SearchBox
           placeholder={strings.SearchPlaceholderEmployee}
           value={mySearchQuery}
           onChange={(_, newValue) => setMySearchQuery(newValue || '')}
-          styles={{ root: { flexGrow: 1, minWidth: 180 } }}
+          styles={{ root: { flexGrow: 1, minWidth: 180, height: 32, margin: 0, padding: 0 } }}
         />
       </Stack>
       {myDataError && (

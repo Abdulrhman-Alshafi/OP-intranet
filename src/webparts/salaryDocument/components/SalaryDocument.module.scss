@@ -106,7 +106,7 @@
 
 .tableScrollWrapper {
   width: 100%;
-  overflow-x: hidden;   // no horizontal scroll — text truncates instead
+  overflow-x: auto;
   overflow-y: auto;
   max-height: 480px;
   // no outer border — rows use bottom-border only
@@ -132,6 +132,8 @@
 
   // Truncate all text cells in the DetailsList
   :global(.ms-DetailsRow-cell) {
+    display: flex;
+    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -150,6 +152,7 @@
     background: var(--bodyBackground, #ffffff);
     border-bottom: 1px solid var(--neutralLight, #edebe9);
     border-top: none;
+    text-align: left;
   }
 
   tbody tr {
@@ -158,6 +161,7 @@
 
   // Truncate plain table cells
   td {
+    vertical-align: middle;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

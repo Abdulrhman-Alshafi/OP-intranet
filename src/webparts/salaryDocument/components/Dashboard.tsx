@@ -275,28 +275,27 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
     <Stack tokens={{ childrenGap: 8 }}>
       <Stack
         horizontal
-        tokens={{ childrenGap: 12 }}
-        styles={{ root: { flexWrap: 'wrap', alignItems: 'flex-end' } }}
+        wrap
+        tokens={{ childrenGap: 16 }}
+        styles={{ root: { rowGap: 12, alignItems: 'stretch' } }}
       >
         <Dropdown
-          label={strings.PayPeriodYearLabel}
           selectedKey={filterYear}
           options={yearOptions}
           onChange={(_, o) => setFilterYear(Number(o?.key ?? 0))}
-          styles={{ root: { minWidth: 120 } }}
+          styles={{ root: { minWidth: 120, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
         />
         <Dropdown
-          label={strings.PayPeriodMonthLabel}
           selectedKey={filterMonth}
           options={MONTH_FILTER_OPTIONS}
           onChange={(_, o) => setFilterMonth(Number(o?.key ?? 0))}
-          styles={{ root: { minWidth: 150 } }}
+          styles={{ root: { minWidth: 150, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
         />
         <SearchBox
           placeholder={searchPlaceholder}
           value={searchQuery}
           onChange={(_, newValue) => setSearchQuery(newValue || '')}
-          styles={{ root: { flexGrow: 1, minWidth: 180 } }}
+          styles={{ root: { flexGrow: 1, minWidth: 180, height: 32, margin: 0, padding: 0 } }}
         />
       </Stack>
       {dataError && (
@@ -334,28 +333,27 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
     <Stack tokens={{ childrenGap: 8 }}>
       <Stack
         horizontal
-        tokens={{ childrenGap: 12 }}
-        styles={{ root: { flexWrap: 'wrap', alignItems: 'flex-end' } }}
+        wrap
+        tokens={{ childrenGap: 16 }}
+        styles={{ root: { rowGap: 12, alignItems: 'stretch' } }}
       >
         <Dropdown
-          label={strings.PayPeriodYearLabel}
           selectedKey={myFilterYear}
           options={myYearOptions}
           onChange={(_, o) => setMyFilterYear(Number(o?.key ?? 0))}
-          styles={{ root: { minWidth: 120 } }}
+          styles={{ root: { minWidth: 120, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
         />
         <Dropdown
-          label={strings.PayPeriodMonthLabel}
           selectedKey={myFilterMonth}
           options={MONTH_FILTER_OPTIONS}
           onChange={(_, o) => setMyFilterMonth(Number(o?.key ?? 0))}
-          styles={{ root: { minWidth: 150 } }}
+          styles={{ root: { minWidth: 150, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
         />
         <SearchBox
           placeholder={strings.SearchPlaceholderEmployee}
           value={mySearchQuery}
           onChange={(_, newValue) => setMySearchQuery(newValue || '')}
-          styles={{ root: { flexGrow: 1, minWidth: 180 } }}
+          styles={{ root: { flexGrow: 1, minWidth: 180, height: 32, margin: 0, padding: 0 } }}
         />
       </Stack>
       {myDataError && (

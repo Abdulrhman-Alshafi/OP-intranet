@@ -114,7 +114,7 @@
 
 .tableScrollWrapper {
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
   max-height: 480px;
 
@@ -135,6 +135,8 @@
   }
 
   :global(.ms-DetailsRow-cell) {
+    display: flex;
+    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -152,6 +154,7 @@
     background: var(--bodyBackground, #ffffff);
     border-bottom: 1px solid var(--neutralLight, #edebe9);
     border-top: none;
+    text-align: left;
   }
 
   tbody tr {
@@ -159,6 +162,7 @@
   }
 
   td {
+    vertical-align: middle;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

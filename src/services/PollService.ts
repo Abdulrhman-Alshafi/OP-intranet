@@ -192,9 +192,17 @@ export class PollService {
       `&$expand=Author` +
       `&$orderby=Created desc` +
       `&$top=50` +
-      filter;
+      filter +
+      `&_t=${new Date().getTime()}`;
 
-    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1);
+    const requestOptions: ISPHttpClientOptions = {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    };
+
+    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1, requestOptions);
     if (!response.ok) {
       throw new Error(`Failed to fetch polls: ${response.statusText}`);
     }
@@ -288,9 +296,17 @@ export class PollService {
     const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_VOTES}')/items` +
       `?$select=SelectedChoice` +
       `&$filter=PollQuestionId eq ${pollId} and VoterId eq ${currentUserId}` +
-      `&$top=1`;
+      `&$top=1` +
+      `&_t=${new Date().getTime()}`;
 
-    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1);
+    const requestOptions: ISPHttpClientOptions = {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    };
+
+    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1, requestOptions);
     if (!response.ok) return null;
 
     const json = await response.json();
@@ -366,9 +382,17 @@ export class PollService {
     const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_VOTES}')/items` +
       `?$select=SelectedChoice,VoterId` +
       `&$filter=PollQuestionId eq ${pollId}` +
-      `&$top=5000`;
+      `&$top=5000` +
+      `&_t=${new Date().getTime()}`;
 
-    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1);
+    const requestOptions: ISPHttpClientOptions = {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    };
+
+    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1, requestOptions);
 
     // Initialize counts for all choices to 0
     const optionCounts: { [option: string]: number } = {};
@@ -424,9 +448,17 @@ export class PollService {
     // Fetch all votes in one call and group by PollQuestionId
     const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_VOTES}')/items` +
       `?$select=PollQuestionId,SelectedChoice,VoterId` +
-      `&$top=5000`;
+      `&$top=5000` +
+      `&_t=${new Date().getTime()}`;
 
-    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1);
+    const requestOptions: ISPHttpClientOptions = {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    };
+
+    const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1, requestOptions);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let allVotes: any[] = [];
     if (response.ok) {

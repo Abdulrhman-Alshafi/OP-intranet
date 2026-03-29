@@ -20,6 +20,22 @@ import { IHrDocument } from '../../../services/HrDocumentService';
 
 // ── File icon map ─────────────────────────────────────────────────────────────
 
+const getDocTypeStyle = (docType: string): React.CSSProperties => {
+  const type = docType.toLowerCase();
+  if (type.includes('termination') || type.includes('warning') || type.includes('dismissal')) {
+    return { background: 'rgba(164, 38, 44, 0.1)', color: '#a4262c' }; // Red
+  } else if (type.includes('promotion') || type.includes('bonus') || type.includes('reward')) {
+    return { background: 'rgba(16, 124, 16, 0.1)', color: '#107c10' }; // Green
+  } else if (type.includes('contract') || type.includes('offer') || type.includes('agreement')) {
+    return { background: 'rgba(0, 120, 212, 0.1)', color: '#0078d4' }; // Blue
+  } else if (type.includes('leave') || type.includes('vacation')) {
+    return { background: 'rgba(216, 59, 1, 0.1)', color: '#d83b01' }; // Yellow/Orange
+  } else if (type.includes('certificate') || type.includes('letter')) {
+    return { background: 'rgba(92, 45, 145, 0.1)', color: '#5c2d91' }; // Purple
+  }
+  return {}; // default badge style
+};
+
 const EXTENSION_ICONS: Record<string, string> = {
   pdf: 'PDF',
   doc: 'WordDocument',
@@ -151,7 +167,12 @@ export const HrTable: React.FC<IHrTableProps> = ({
       isResizable: true,
       onRender: (item: IHrDocument) =>
         item.documentType ? (
-          <span className={styles.docTypeBadge}>{item.documentType}</span>
+          <span 
+            className={styles.docTypeBadge}
+            style={getDocTypeStyle(item.documentType)}
+          >
+            {item.documentType}
+          </span>
         ) : null
     });
 
