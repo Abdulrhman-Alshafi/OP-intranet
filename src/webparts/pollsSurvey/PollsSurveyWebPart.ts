@@ -21,27 +21,30 @@ export interface IPollsSurveyWebPartProps {
   refreshInterval: number;
   allowAnonymous: boolean;
   pollsPerPage: number;
+  autoHideDays: number;
 }
 
 export default class PollsSurveyWebPart extends BaseClientSideWebPart<IPollsSurveyWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _currentUserId: number = 0;
+  private _isAdmin: boolean = false;
 
   public async render(): Promise<void> {
-    // Resolve current user's SharePoint numeric ID (needed for Person field)
+    // Resolve current user's SharePoint numeric ID + site admin status
     if (this._currentUserId === 0) {
       try {
         const response = await this.context.spHttpClient.get(
-          `${this.context.pageContext.web.absoluteUrl}/_api/web/currentuser?$select=Id`,
+          `${this.context.pageContext.web.absoluteUrl}/_api/web/currentuser?$select=Id,IsSiteAdmin`,
           SPHttpClient.configurations.v1
         );
         if (response.ok) {
           const json = await response.json();
           this._currentUserId = json.Id;
+          this._isAdmin = !!json.IsSiteAdmin;
         }
       } catch (error) {
-        console.warn('PollsSurveyWebPart: Could not resolve current user ID', error);
+        console.warn('PollsSurveyWebPart: Could not resolve current user', error);
       }
     }
 
@@ -52,6 +55,8 @@ export default class PollsSurveyWebPart extends BaseClientSideWebPart<IPollsSurv
         refreshInterval: this.properties.refreshInterval || 30,
         allowAnonymous: this.properties.allowAnonymous || false,
         pollsPerPage: this.properties.pollsPerPage || 5,
+        isAdmin: this._isAdmin,
+        autoHideDays: this.properties.autoHideDays || 30,
         spHttpClient: this.context.spHttpClient,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         currentUserId: this._currentUserId,
@@ -132,6 +137,14 @@ export default class PollsSurveyWebPart extends BaseClientSideWebPart<IPollsSurv
                   step: 1,
                   showValue: true,
                   value: this.properties.pollsPerPage || 5
+                }),
+                PropertyPaneSlider('autoHideDays', {
+                  label: strings.AutoHideDaysLabel,
+                  min: 1,
+                  max: 365,
+                  step: 1,
+                  showValue: true,
+                  value: this.properties.autoHideDays || 30
                 })
               ]
             }

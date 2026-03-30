@@ -103,9 +103,22 @@
   }
 }
 
+.pollCardHidden {
+  opacity: 0.55;
+  border-style: dashed;
+  border-color: var(--neutralLight, #d2d0ce);
+}
+
 .pollCardHeader {
   padding: 20px 20px 12px;
   position: relative;
+}
+
+.pollHeaderTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .pollQuestion {
@@ -114,6 +127,55 @@
   color: var(--neutralPrimary, #323130);
   line-height: 1.4;
   margin-bottom: 8px;
+  flex: 1;
+}
+
+.pinnedBadge {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.hiddenBadge {
+  margin-right: 6px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.adminActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.adminActionButton {
+  width: 28px;
+  height: 28px;
+  color: var(--neutralSecondary, #605e5c);
+
+  &:hover {
+    color: var(--themePrimary, #0078d4);
+    background: rgba(0, 120, 212, 0.06);
+  }
+}
+
+.adminDeleteButton {
+  width: 28px;
+  height: 28px;
+  color: var(--neutralSecondary, #a19f9d);
+
+  &:hover {
+    color: #a4262c;
+    background: rgba(164, 38, 44, 0.06);
+  }
+}
+
+.showHiddenToggle {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(0, 120, 212, 0.04);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 120, 212, 0.1);
 }
 
 .pollMeta {

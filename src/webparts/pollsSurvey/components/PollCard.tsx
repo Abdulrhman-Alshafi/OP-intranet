@@ -3,6 +3,7 @@ import styles from './PollsSurvey.module.scss';
 import { IPoll, IPollResults, PollService } from '../../../services/PollService';
 import VoteOptions from './VoteOptions';
 import ResultsChart from './ResultsChart';
+import { IconButton } from '@fluentui/react/lib/Button';
 
 export interface IPollCardProps {
   /** The poll data */
@@ -15,8 +16,12 @@ export interface IPollCardProps {
   pollService: PollService;
   /** Pre-loaded results (from batch fetch) */
   initialResults: IPollResults | null;
+  /** Whether the current user is a poll admin */
+  isAdmin: boolean;
   /** Callback after a vote is successfully submitted */
   onVoteSubmitted: () => void;
+  /** Callback after poll admin action (pin, hide, delete) */
+  onPollUpdated: () => void;
 }
 
 /**
@@ -33,7 +38,9 @@ const PollCard: React.FC<IPollCardProps> = ({
   currentUserId,
   pollService,
   initialResults,
-  onVoteSubmitted
+  isAdmin,
+  onVoteSubmitted,
+  onPollUpdated
 }) => {
   const [results, setResults] = React.useState<IPollResults | null>(initialResults);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -133,16 +140,81 @@ const PollCard: React.FC<IPollCardProps> = ({
     URL.revokeObjectURL(url);
   };
 
+  // ── Admin Action Handlers ─────────────────────────────────────────
+  const handleTogglePin = async (): Promise<void> => {
+    try {
+      await pollService.togglePin(poll.Id, poll.IsPinned);
+      onPollUpdated();
+    } catch (err) {
+      console.error('Failed to toggle pin', err);
+    }
+  };
+
+  const handleToggleHidden = async (): Promise<void> => {
+    try {
+      await pollService.toggleHidden(poll.Id, poll.IsHidden);
+      onPollUpdated();
+    } catch (err) {
+      console.error('Failed to toggle hidden', err);
+    }
+  };
+
+  const handleDelete = async (): Promise<void> => {
+    // eslint-disable-next-line no-restricted-globals
+    const confirmed = confirm(`Delete poll "${poll.Title}" and all its votes? This cannot be undone.`);
+    if (!confirmed) return;
+    try {
+      await pollService.deletePoll(poll.Id);
+      onPollUpdated();
+    } catch (err) {
+      console.error('Failed to delete poll', err);
+    }
+  };
+
   // ── Format creation date ──────────────────────────────────────────
   const createdDate = new Date(poll.Created).toLocaleDateString(undefined, {
     year: 'numeric', month: 'short', day: 'numeric'
   });
 
   return (
-    <div className={`${styles.pollCard} ${isExpired ? styles.pollCardExpired : ''}`}>
+    <div className={`${styles.pollCard} ${isExpired ? styles.pollCardExpired : ''} ${poll.IsHidden ? styles.pollCardHidden : ''}`}>
       {/* Card Header */}
       <div className={styles.pollCardHeader}>
-        <div className={styles.pollQuestion}>{poll.Title}</div>
+        <div className={styles.pollHeaderTop}>
+          <div className={styles.pollQuestion}>
+            {poll.IsPinned && <span className={styles.pinnedBadge} title="Pinned">📌</span>}
+            {poll.IsHidden && <span className={styles.hiddenBadge} title="Hidden">👁️‍🗨️</span>}
+            {poll.Title}
+          </div>
+
+          {/* Admin action buttons */}
+          {isAdmin && (
+            <div className={styles.adminActions}>
+              <IconButton
+                iconProps={{ iconName: poll.IsPinned ? 'Unpin' : 'Pin' }}
+                title={poll.IsPinned ? 'Unpin poll' : 'Pin poll'}
+                ariaLabel={poll.IsPinned ? 'Unpin poll' : 'Pin poll'}
+                onClick={handleTogglePin}
+                className={styles.adminActionButton}
+              />
+              <IconButton
+                iconProps={{ iconName: poll.IsHidden ? 'View' : 'Hide3' }}
+                title={poll.IsHidden ? 'Show poll' : 'Hide poll'}
+                ariaLabel={poll.IsHidden ? 'Show poll' : 'Hide poll'}
+                onClick={handleToggleHidden}
+                className={styles.adminActionButton}
+              />
+              <IconButton
+                iconProps={{ iconName: 'Delete' }}
+                title="Delete poll"
+                ariaLabel="Delete poll"
+                onClick={handleDelete}
+                className={styles.adminDeleteButton}
+              />
+            </div>
+          )}
+        </div>
+
         <div className={styles.pollMeta}>
           <span className={styles.pollAuthor}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

@@ -259,25 +259,20 @@ export const HrDashboard: React.FC<IHrDocumentProps> = (props) => {
   // ── All Documents view (used in both employee tab and HR "Documents" tab)
   const allDocsContent = (
     <Stack tokens={{ childrenGap: 8 }}>
-      <Stack
-        horizontal
-        wrap
-        tokens={{ childrenGap: 16 }}
-        styles={{ root: { rowGap: 12, alignItems: 'stretch' } }}
-      >
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
         <Dropdown
           selectedKey={filterDocType}
           options={docTypeOptions}
           onChange={(_, o) => setFilterDocType(String(o?.key ?? ''))}
-          styles={{ root: { minWidth: 160, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
+          styles={{ root: { minWidth: 160, flex: '1 1 160px', maxWidth: 240 }, title: { height: 32, lineHeight: 30 } }}
         />
         <SearchBox
           placeholder={searchPlaceholder}
           value={searchQuery}
           onChange={(_, newValue) => setSearchQuery(newValue || '')}
-          styles={{ root: { flexGrow: 1, minWidth: 180, height: 32, margin: 0, padding: 0 } }}
+          styles={{ root: { flex: '2 1 180px', minWidth: 180, height: 32, padding: 0 } }}
         />
-      </Stack>
+      </div>
       {dataError && (
         <MessageBar messageBarType={MessageBarType.error}>{dataError}</MessageBar>
       )}
@@ -310,25 +305,20 @@ export const HrDashboard: React.FC<IHrDocumentProps> = (props) => {
   // ── HR / Admin: three-tab view ────────────────────────────────────────────
   const myDocsContent = (
     <Stack tokens={{ childrenGap: 8 }}>
-      <Stack
-        horizontal
-        wrap
-        tokens={{ childrenGap: 16 }}
-        styles={{ root: { rowGap: 12, alignItems: 'stretch' } }}
-      >
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
         <Dropdown
           selectedKey={myFilterDocType}
           options={myDocTypeOptions}
           onChange={(_, o) => setMyFilterDocType(String(o?.key ?? ''))}
-          styles={{ root: { minWidth: 160, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
+          styles={{ root: { minWidth: 160, flex: '1 1 160px', maxWidth: 240 }, title: { height: 32, lineHeight: 30 } }}
         />
         <SearchBox
           placeholder={strings.SearchPlaceholderEmployee}
           value={mySearchQuery}
           onChange={(_, newValue) => setMySearchQuery(newValue || '')}
-          styles={{ root: { flexGrow: 1, minWidth: 180, height: 32, margin: 0, padding: 0 } }}
+          styles={{ root: { flex: '2 1 180px', minWidth: 180, height: 32, padding: 0 } }}
         />
-      </Stack>
+      </div>
       {myDataError && (
         <MessageBar messageBarType={MessageBarType.error}>{myDataError}</MessageBar>
       )}

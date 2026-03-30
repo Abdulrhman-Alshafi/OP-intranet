@@ -9,6 +9,10 @@ export interface IPollsSurveyProps {
   allowAnonymous: boolean;
   /** Number of polls to display per page */
   pollsPerPage: number;
+  /** Whether the current user is a poll admin */
+  isAdmin: boolean;
+  /** Number of days after expiry to auto-hide polls */
+  autoHideDays: number;
   /** SharePoint HTTP client instance */
   spHttpClient: SPHttpClient;
   /** Absolute URL of the current site */

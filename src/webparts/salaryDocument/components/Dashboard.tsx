@@ -273,31 +273,26 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
 
   const tableContent = (
     <Stack tokens={{ childrenGap: 8 }}>
-      <Stack
-        horizontal
-        wrap
-        tokens={{ childrenGap: 16 }}
-        styles={{ root: { rowGap: 12, alignItems: 'stretch' } }}
-      >
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
         <Dropdown
           selectedKey={filterYear}
           options={yearOptions}
           onChange={(_, o) => setFilterYear(Number(o?.key ?? 0))}
-          styles={{ root: { minWidth: 120, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
+          styles={{ root: { minWidth: 120, flex: '1 1 120px', maxWidth: 200 }, title: { height: 32, lineHeight: 30 } }}
         />
         <Dropdown
           selectedKey={filterMonth}
           options={MONTH_FILTER_OPTIONS}
           onChange={(_, o) => setFilterMonth(Number(o?.key ?? 0))}
-          styles={{ root: { minWidth: 150, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
+          styles={{ root: { minWidth: 120, flex: '1 1 120px', maxWidth: 200 }, title: { height: 32, lineHeight: 30 } }}
         />
         <SearchBox
           placeholder={searchPlaceholder}
           value={searchQuery}
           onChange={(_, newValue) => setSearchQuery(newValue || '')}
-          styles={{ root: { flexGrow: 1, minWidth: 180, height: 32, margin: 0, padding: 0 } }}
+          styles={{ root: { flex: '2 1 180px', minWidth: 180, height: 32, padding: 0 } }}
         />
-      </Stack>
+      </div>
       {dataError && (
         <MessageBar messageBarType={MessageBarType.error}>
           {dataError}
@@ -331,31 +326,26 @@ export const SalaryDocumentWebPartDashboard: React.FC<ISalaryDocumentProps> = (p
   // Accountant: three-tab view (My Salary / All Documents / Upload)
   const mySalaryContent = (
     <Stack tokens={{ childrenGap: 8 }}>
-      <Stack
-        horizontal
-        wrap
-        tokens={{ childrenGap: 16 }}
-        styles={{ root: { rowGap: 12, alignItems: 'stretch' } }}
-      >
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
         <Dropdown
           selectedKey={myFilterYear}
           options={myYearOptions}
           onChange={(_, o) => setMyFilterYear(Number(o?.key ?? 0))}
-          styles={{ root: { minWidth: 120, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
+          styles={{ root: { minWidth: 120, flex: '1 1 120px', maxWidth: 200 }, title: { height: 32, lineHeight: 30 } }}
         />
         <Dropdown
           selectedKey={myFilterMonth}
           options={MONTH_FILTER_OPTIONS}
           onChange={(_, o) => setMyFilterMonth(Number(o?.key ?? 0))}
-          styles={{ root: { minWidth: 150, margin: 0 }, title: { height: 32, lineHeight: 30 } }}
+          styles={{ root: { minWidth: 120, flex: '1 1 120px', maxWidth: 200 }, title: { height: 32, lineHeight: 30 } }}
         />
         <SearchBox
           placeholder={strings.SearchPlaceholderEmployee}
           value={mySearchQuery}
           onChange={(_, newValue) => setMySearchQuery(newValue || '')}
-          styles={{ root: { flexGrow: 1, minWidth: 180, height: 32, margin: 0, padding: 0 } }}
+          styles={{ root: { flex: '2 1 180px', minWidth: 180, height: 32, padding: 0 } }}
         />
-      </Stack>
+      </div>
       {myDataError && (
         <MessageBar messageBarType={MessageBarType.error}>
           {myDataError}

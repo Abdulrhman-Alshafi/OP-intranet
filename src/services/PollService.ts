@@ -14,6 +14,8 @@ export interface IPoll {
   ClosingDate: string | null; // When the poll closes (null = never)
   Created: string;
   IsActive: boolean;        // Computed: not expired
+  IsHidden: boolean;        // Admin can manually hide a poll
+  IsPinned: boolean;        // Admin can pin a poll (immune to auto-hide)
 }
 
 /**
@@ -82,7 +84,9 @@ export class PollService {
       // Title = the question, Author = who created it (built-in)
       await this._ensureList(LIST_POLLS, 'Stores poll questions and choices', [
         { type: 'Note', title: 'PollChoices' },       // JSON array: ["Option A","Option B",...]
-        { type: 'DateTime', title: 'ClosingDate' }     // When poll closes (optional)
+        { type: 'DateTime', title: 'ClosingDate' },    // When poll closes (optional)
+        { type: 'Boolean', title: 'IsHidden' },        // Admin can manually hide a poll
+        { type: 'Boolean', title: 'IsPinned' }         // Admin can pin a poll (immune to auto-hide)
       ]);
 
       // PollsVotes list stores individual votes
@@ -143,6 +147,8 @@ export class PollService {
         schemaXml = `<Field Type="Number" DisplayName="${field.title}" Name="${field.title}" StaticName="${field.title}" />`;
       } else if (field.type === 'DateTime') {
         schemaXml = `<Field Type="DateTime" DisplayName="${field.title}" Name="${field.title}" StaticName="${field.title}" Format="DateOnly" />`;
+      } else if (field.type === 'Boolean') {
+        schemaXml = `<Field Type="Boolean" DisplayName="${field.title}" Name="${field.title}" StaticName="${field.title}"><Default>0</Default></Field>`;
       } else if (field.type === 'User') {
         schemaXml = `<Field Type="User" DisplayName="${field.title}" Name="${field.title}" StaticName="${field.title}" />`;
       }
@@ -177,22 +183,15 @@ export class PollService {
    * Polls are ordered newest first.
    * Uses built-in Author field for creator info (no custom CreatedByEmail needed).
    */
-  public async getPolls(activeOnly: boolean = true): Promise<IPoll[]> {
+  public async getPolls(): Promise<IPoll[]> {
     await this.ensureLists();
 
-    let filter = '';
-    if (activeOnly) {
-      const now = new Date().toISOString();
-      // Active = ClosingDate is null (no expiry) OR ClosingDate >= now
-      filter = `&$filter=(ClosingDate eq null) or (ClosingDate ge datetime'${now}')`;
-    }
-
+    // Fetch ALL polls (visibility filtering is done client-side)
     const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_POLLS}')/items` +
-      `?$select=Id,Title,PollChoices,Author/Title,Author/EMail,ClosingDate,Created` +
+      `?$select=Id,Title,PollChoices,Author/Title,Author/EMail,ClosingDate,Created,IsHidden,IsPinned` +
       `&$expand=Author` +
       `&$orderby=Created desc` +
       `&$top=50` +
-      filter +
       `&_t=${new Date().getTime()}`;
 
     const requestOptions: ISPHttpClientOptions = {
@@ -221,7 +220,9 @@ export class PollService {
         CreatedByEmail: item.Author?.EMail || '',
         ClosingDate: item.ClosingDate || null,
         Created: item.Created,
-        IsActive: closingDate === null || closingDate > now
+        IsActive: closingDate === null || closingDate > now,
+        IsHidden: !!item.IsHidden,
+        IsPinned: !!item.IsPinned
       } as IPoll;
     });
   }
@@ -278,6 +279,51 @@ export class PollService {
 
     // Then delete the poll itself
     await this._deleteItem(LIST_POLLS, pollId);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // ADMIN VISIBILITY CONTROLS
+  // ═══════════════════════════════════════════════════════════════════════
+
+  /**
+   * Toggle the hidden state of a poll.
+   * When hidden, the poll is invisible to non-admin users.
+   * Pinned polls cannot be hidden — unpin first.
+   */
+  public async toggleHidden(pollId: number, currentlyHidden: boolean): Promise<void> {
+    const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_POLLS}')/items(${pollId})`;
+    const body = JSON.stringify({ IsHidden: !currentlyHidden });
+    const options: ISPHttpClientOptions = {
+      headers: {
+        'IF-MATCH': '*',
+        'X-HTTP-Method': 'MERGE'
+      },
+      body
+    };
+    const response = await this._spHttpClient.post(url, SPHttpClient.configurations.v1, options);
+    if (!response.ok) {
+      throw new Error('Failed to toggle poll visibility.');
+    }
+  }
+
+  /**
+   * Toggle the pinned state of a poll.
+   * Pinned polls are immune to auto-hide and appear first in the list.
+   */
+  public async togglePin(pollId: number, currentlyPinned: boolean): Promise<void> {
+    const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_POLLS}')/items(${pollId})`;
+    const body = JSON.stringify({ IsPinned: !currentlyPinned });
+    const options: ISPHttpClientOptions = {
+      headers: {
+        'IF-MATCH': '*',
+        'X-HTTP-Method': 'MERGE'
+      },
+      body
+    };
+    const response = await this._spHttpClient.post(url, SPHttpClient.configurations.v1, options);
+    if (!response.ok) {
+      throw new Error('Failed to toggle poll pin state.');
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════

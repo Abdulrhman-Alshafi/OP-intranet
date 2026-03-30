@@ -6,6 +6,7 @@ import PollCard from './PollCard';
 import CreatePollForm from './CreatePollForm';
 import { PrimaryButton, IconButton } from '@fluentui/react/lib/Button';
 import { Icon } from '@fluentui/react/lib/Icon';
+import { Toggle } from '@fluentui/react/lib/Toggle';
 
 /**
  * Main container component for Polls & Quick Surveys.
@@ -22,6 +23,8 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
     refreshInterval,
     allowAnonymous,
     pollsPerPage,
+    isAdmin,
+    autoHideDays,
     spHttpClient,
     siteUrl,
     currentUserId
@@ -41,6 +44,7 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
   const [showCreateForm, setShowCreateForm] = React.useState(false);
   const [isCreating, setIsCreating] = React.useState(false);
   const [visibleCount, setVisibleCount] = React.useState(pollsPerPage);
+  const [showHidden, setShowHidden] = React.useState(false);
 
   // ── Data Fetching ──────────────────────────────────────────────────
   const loadPolls = React.useCallback(async (showLoading: boolean = false): Promise<void> => {
@@ -48,7 +52,7 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
     setError('');
 
     try {
-      const fetchedPolls = await pollService.getPolls(true);
+      const fetchedPolls = await pollService.getPolls();
       setPolls(fetchedPolls);
 
       // Batch-fetch results for all polls at once (optimization)
@@ -99,8 +103,43 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
     setVisibleCount(prev => prev + pollsPerPage);
   };
 
-  const visiblePolls = polls.slice(0, visibleCount);
-  const hasMore = polls.length > visibleCount;
+  // ── Client-side visibility filtering ─────────────────────────────────
+  // 1. Pinned polls always show (immune to hide + auto-hide)
+  // 2. Hidden polls are excluded unless admin toggles "Show Hidden"
+  // 3. Expired polls older than autoHideDays are auto-hidden (unless pinned)
+  const filteredPolls = React.useMemo((): IPoll[] => {
+    const now = new Date();
+    const autoHideMs = autoHideDays * 24 * 60 * 60 * 1000;
+
+    return polls.filter((poll) => {
+      // Pinned always shows
+      if (poll.IsPinned) return true;
+
+      // Hidden: only show when admin has toggled "Show Hidden"
+      if (poll.IsHidden) return showHidden && isAdmin;
+
+      // Auto-hide: expired polls older than autoHideDays
+      if (!poll.IsActive && poll.ClosingDate) {
+        const closingDate = new Date(poll.ClosingDate);
+        if (now.getTime() - closingDate.getTime() > autoHideMs) {
+          // Auto-hidden — only show when admin toggles "Show Hidden"
+          return showHidden && isAdmin;
+        }
+      }
+
+      return true;
+    });
+  }, [polls, autoHideDays, showHidden, isAdmin]);
+
+  // Sort: pinned polls first, then by created date (already sorted desc from API)
+  const sortedPolls = React.useMemo((): IPoll[] => {
+    const pinned = filteredPolls.filter(p => p.IsPinned);
+    const unpinned = filteredPolls.filter(p => !p.IsPinned);
+    return pinned.concat(unpinned);
+  }, [filteredPolls]);
+
+  const visiblePolls = sortedPolls.slice(0, visibleCount);
+  const hasMore = sortedPolls.length > visibleCount;
 
   return (
     <div className={styles.pollsSurvey}>
@@ -112,17 +151,19 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
             <div className={styles.summary}>
               <div className={styles.summaryItem}>
                 <Icon iconName="SurveyQuestions" className={styles.icon} />
-                <span>{polls.length} active {polls.length === 1 ? 'poll' : 'polls'}</span>
+                <span>{sortedPolls.length} {sortedPolls.length === 1 ? 'poll' : 'polls'}</span>
               </div>
             </div>
           )}
         </div>
         <div className={styles.controls}>
-          <PrimaryButton
-            text="New Poll"
-            iconProps={{ iconName: 'Add' }}
-            onClick={() => setShowCreateForm(true)}
-          />
+          {isAdmin && (
+            <PrimaryButton
+              text="New Poll"
+              iconProps={{ iconName: 'Add' }}
+              onClick={() => setShowCreateForm(true)}
+            />
+          )}
           <IconButton
             iconProps={{ iconName: 'Refresh' }}
             title="Refresh polls"
@@ -132,6 +173,19 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
           />
         </div>
       </div>
+
+      {/* Admin: Show Hidden toggle */}
+      {isAdmin && (
+        <div className={styles.showHiddenToggle}>
+          <Toggle
+            label="Show hidden polls"
+            inlineLabel
+            checked={showHidden}
+            onChange={(_ev, checked) => setShowHidden(!!checked)}
+            styles={{ root: { marginBottom: 0 } }}
+          />
+        </div>
+      )}
 
       {/* Loading State */}
       {isLoading && (
@@ -156,7 +210,7 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
       )}
 
       {/* Empty State */}
-      {!isLoading && !error && polls.length === 0 && (
+      {!isLoading && !error && sortedPolls.length === 0 && (
         <div className={styles.emptyContainer}>
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
             <rect x="8" y="10" width="32" height="28" rx="4" stroke="currentColor" strokeWidth="2" />
@@ -165,14 +219,16 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
             <path d="M36 9V15M33 12H39" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           <p>No active polls yet.</p>
-          <button className={styles.primaryButton} onClick={() => setShowCreateForm(true)}>
-            Create Your First Poll
-          </button>
+          {isAdmin && (
+            <button className={styles.primaryButton} onClick={() => setShowCreateForm(true)}>
+              Create Your First Poll
+            </button>
+          )}
         </div>
       )}
 
       {/* Polls Grid */}
-      {!isLoading && !error && polls.length > 0 && (
+      {!isLoading && !error && sortedPolls.length > 0 && (
         <div className={styles.pollsGrid}>
           {visiblePolls.map((poll) => (
             <PollCard
@@ -182,7 +238,9 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
               currentUserId={currentUserId}
               pollService={pollService}
               initialResults={resultsMap[poll.Id] || null}
+              isAdmin={isAdmin}
               onVoteSubmitted={handleRefresh}
+              onPollUpdated={handleRefresh}
             />
           ))}
         </div>
@@ -192,7 +250,7 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
       {hasMore && (
         <div className={styles.showMoreContainer}>
           <button className={styles.secondaryButton} onClick={handleShowMore}>
-            Show More Polls ({polls.length - visibleCount} remaining)
+            Show More Polls ({sortedPolls.length - visibleCount} remaining)
           </button>
         </div>
       )}
