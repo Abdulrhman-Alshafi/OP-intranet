@@ -89,6 +89,14 @@
           "manifest": "./src/webparts/hrDocument/HrDocumentWebPart.manifest.json"
         }
       ]
+    },
+    "it-support-tickets-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/itSupportTickets/ItSupportTicketsWebPart.js",
+          "manifest": "./src/webparts/itSupportTickets/ItSupportTicketsWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -104,6 +112,7 @@
     "AnnouncementsWebPartStrings": "lib/webparts/announcements/loc/{locale}.js",
     "SalaryDocumentWebPartStrings": "lib/webparts/salaryDocument/loc/{locale}.js",
     "HrDocumentWebPartStrings": "lib/webparts/hrDocument/loc/{locale}.js",
+    "ItSupportTicketsWebPartStrings": "lib/webparts/itSupportTickets/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
   }
