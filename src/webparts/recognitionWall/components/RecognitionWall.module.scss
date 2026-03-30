@@ -94,6 +94,13 @@
   box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.08);
   position: relative;
 
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 12px;
+  }
+
   .highlightBadge {
     display: flex;
     align-items: center;
@@ -114,6 +121,7 @@
 
   .highlightContent {
     flex: 1;
+    width: 100%;
   }
 }
 
@@ -157,8 +165,12 @@
 /* ─── Feed Grid ──────────────────────────────────────────────────── */
 .feed {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ─── Kudos Card ─────────────────────────────────────────────────── */
