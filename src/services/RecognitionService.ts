@@ -358,7 +358,7 @@ export class RecognitionService {
    */
   public async hasUserLiked(postId: number, userId: number): Promise<boolean> {
     const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_KUDOS_LIKES}')/items` +
-      `?$select=Id&$filter=PostId eq ${postId} and UserId eq ${userId}&$top=1`;
+      `?$select=Id&$filter=PostId eq ${postId} and UserIdId eq ${userId}&$top=1`;
 
     const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1);
     if (!response.ok) return false;
@@ -378,7 +378,7 @@ export class RecognitionService {
 
     try {
       const url = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_KUDOS_LIKES}')/items` +
-        `?$select=PostId&$filter=UserId eq ${userId}&$top=5000`;
+        `?$select=PostId&$filter=UserIdId eq ${userId}&$top=5000`;
 
       const response = await this._spHttpClient.get(url, SPHttpClient.configurations.v1);
       if (!response.ok) return result;
@@ -404,7 +404,7 @@ export class RecognitionService {
   public async toggleLike(postId: number, userId: number): Promise<boolean> {
     // Check if already liked
     const likeUrl = `${this._siteUrl}/_api/web/lists/getbytitle('${LIST_KUDOS_LIKES}')/items` +
-      `?$select=Id&$filter=PostId eq ${postId} and UserId eq ${userId}&$top=1`;
+      `?$select=Id&$filter=PostId eq ${postId} and UserIdId eq ${userId}&$top=1`;
 
     const checkResponse = await this._spHttpClient.get(likeUrl, SPHttpClient.configurations.v1);
     const checkJson = await checkResponse.json();
@@ -422,7 +422,7 @@ export class RecognitionService {
       const body = JSON.stringify({
         Title: `Like on post ${postId}`,
         PostId: postId,
-        UserId: userId
+        UserIdId: userId
       });
       const options: ISPHttpClientOptions = {
         body: body
