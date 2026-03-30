@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "d8e9f0a1-b2c3-4d5e-6f7a-8b9c0d1e2f3a",
-  "alias": "AnnouncementsWebPart",
+  "id": "b2d3f4a5-6c78-4e90-bdf2-345678901bcd",
+  "alias": "FAQSectionWebPart",
   "componentType": "WebPart",
   "version": "*",
   "manifestVersion": 2,
@@ -18,19 +18,14 @@
         "default": "Advanced"
       },
       "title": {
-        "default": "OP Announcements"
+        "default": "FAQ Section"
       },
       "description": {
-        "default": "Share announcements with reactions and comments. Keep your team informed and engaged."
+        "default": "Displays a collapsible FAQ accordion from a SharePoint list. Site admins can add, edit, and delete FAQ items."
       },
-      "officeFabricIconFontName": "Megaphone",
+      "officeFabricIconFontName": "FAQ",
       "properties": {
-        "title": "OP Announcements",
-        "announcementsListName": "Announcements",
-        "enableCreateAnnouncement": true,
-        "enableReactions": true,
-        "enableComments": true,
-        "itemsPerPage": 5
+        "listName": "FAQs"
       }
     }
   ]

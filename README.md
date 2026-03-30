@@ -36,61 +36,7 @@ Upload this file to your SharePoint App Catalog to deploy.
 
 ## Web Parts
 
-### 1. OP Announcement Banner
-
-**What it does**
-
-Displays dismissable, color-coded announcement banners at the top of a page. Supports four severity levels — Info, Warning, Success, and Urgent — each with its own color and icon. Users can dismiss individual banners; dismissed banners are remembered in local browser storage.
-
-**Property pane settings**
-
-| Setting | Description |
-|---|---|
-| Announcements | Collection editor — add/edit banners. Each banner has: Message, Type (Info / Warning / Success / Urgent), optional CTA link text, optional CTA URL |
-| Stack direction | Vertical (banners stacked) or Horizontal (side by side) |
-| Show icons | Toggle banner icons on or off |
-| Show dismiss button | Allow users to close individual banners |
-
-**SharePoint requirements**
-
-None — all banner data is stored directly in web part properties. No list or library needed.
-
----
-
-### 2. OP Announcements
-
-**What it does**
-
-A social-style announcements feed where users can read, create, react to (emoji), and comment on company announcements. Supports pagination and role-based creation controls.
-
-**Property pane settings**
-
-| Setting | Description |
-|---|---|
-| Title | Display title of the web part |
-| List name | Internal name of the SharePoint announcements list (default: `Announcements`) |
-| Items per page | 1–20 announcements per page |
-| Enable create | Allow regular users to author new announcements |
-| Enable reactions | Show emoji reaction buttons |
-| Enable comments | Show threaded comments on each announcement |
-
-**SharePoint requirements**
-
-1. Create a **Custom list** named `Announcements` (name is configurable) in the target site.
-2. Add the following columns:
-
-| Column name | Type | Notes |
-|---|---|---|
-| Title | Single line of text | Built-in — used as the announcement headline |
-| Body | Multiple lines of text | Rich text recommended |
-| Reactions | Multiple lines (JSON) | Stores emoji reaction data as JSON |
-| Comments | Multiple lines (JSON) | Stores comment threads as JSON |
-
-3. Set list permissions so all site members can read items; restrict creation if needed.
-
----
-
-### 3. OP Countdown Timer
+### 1. OP Countdown Timer
 
 **What it does**
 
@@ -116,7 +62,7 @@ None — all configuration is stored in web part properties.
 
 ---
 
-### 4. OP Knowledge Base
+### 2. OP Knowledge Base
 
 **What it does**
 
@@ -148,7 +94,7 @@ A searchable, filterable FAQ and knowledge base viewer. Reads articles from a Sh
 
 ---
 
-### 5. OP Polls & Quick Surveys
+### 3. OP Polls & Quick Surveys
 
 **What it does**
 
@@ -186,7 +132,7 @@ An interactive polling web part. Employees vote on active polls and immediately 
 
 ---
 
-### 6. OP Recognition Wall
+### 4. OP Recognition Wall
 
 **What it does**
 
@@ -219,7 +165,7 @@ An employee recognition board for submitting and viewing kudos posts. Optionally
 
 ---
 
-### 7. OP Services Grid
+### 5. OP Services Grid
 
 **What it does**
 
@@ -239,7 +185,7 @@ None — all card data is stored directly in web part properties.
 
 ---
 
-### 8. OP Swiper
+### 6. OP Swiper
 
 **What it does**
 
@@ -263,7 +209,7 @@ None — all slide and tile data is stored directly in web part properties.
 
 ---
 
-### 9. OP Task Dashboard
+### 7. OP Task Dashboard
 
 **What it does**
 
@@ -297,7 +243,7 @@ A unified task view aggregating tasks from **Microsoft Planner** (via Graph API)
 
 ---
 
-### 10. Salary Documents
+### 8. Salary Documents
 
 **What it does**
 
@@ -385,7 +331,7 @@ The Excel manifest must contain exactly **four columns** in the first sheet:
 
 ---
 
-### 11. HR Documents
+### 9. HR Documents
 
 **What it does**
 
@@ -458,6 +404,74 @@ The Excel manifest used for bulk upload must contain exactly **three columns** i
 - `FileName` must exactly match the file name of the uploaded document (including extension)
 - `EmployeeEmail` must be a valid user email that exists in Azure AD
 - `DocumentType` must be one of: `Offer Letter`, `Contract`, `Warning Letter`, `Promotion Letter`, `Termination Letter`, `NDA`
+
+---
+
+### 10. FAQ Section
+
+**What it does**
+
+A collapsible accordion-style FAQ web part that reads questions and answers from a SharePoint list. FAQs are grouped by **Category** and sorted by **Order**. Regular users can only view; site collection administrators see **Add**, **Edit**, and **Delete** controls.
+
+**Features**
+
+- Smooth CSS animated expand/collapse for each item (chevron rotates 90°)
+- Category grouping — items are rendered under their category label, falling back to "General"
+- Site-admin gate — add/edit/delete controls are hidden from non-admins
+- Inline form panel (Fluent UI `Panel`) for creating and editing FAQs
+- Loading spinner while fetching, error `MessageBar` on failure, empty-state message when the list has no items
+
+**Permission model**
+
+The web part calls `/_api/web/currentuser?$select=IsSiteAdmin`. Only users with the **Site Collection Administrator** flag can add, edit, or delete FAQ items. All other users have read-only access.
+
+**Property pane settings**
+
+| Setting | Default | Description |
+|---|---|---|
+| FAQ List Name | `FAQs` | Internal name of the SharePoint list storing the FAQ items |
+
+**SharePoint requirements — step by step**
+
+#### Step 1 — Create the FAQs list
+
+1. Go to the target site → **New → List**
+2. Name it `FAQs` (must match the property pane setting exactly)
+
+#### Step 2 — Add columns to the list
+
+The `Title` column (built-in) stores the **Question** text. Add the following additional columns:
+
+| Column display name | Column type | Notes |
+|---|---|---|
+| `Answer` | Multiple lines of plain text | Stores the FAQ answer |
+| `Order` | Number | Controls display order (ascending); SharePoint stores this internally as `Order0` |
+| `Category` | Single line of text | Groups FAQs visually (leave blank to fall back to "General") |
+
+> **Important:** When you name a Number column `Order` via the SharePoint UI, the internal/REST API field name becomes `Order0` (SharePoint reserves `Order` as a system keyword). The web part uses `Order0` in all REST calls automatically.
+
+#### Step 3 — Set list permissions (optional)
+
+By default the list inherits site permissions. If you want to restrict who can update FAQs beyond site-admin status, break inheritance and configure item-level permissions manually. The web part permission check (`IsSiteAdmin`) is independent of SharePoint list permissions.
+
+**Source files**
+
+```
+src/services/FAQService.ts                           ← data access layer
+src/webparts/faqSection/
+├── FAQSectionWebPart.ts                             ← web part class
+├── FAQSectionWebPart.manifest.json                  ← component manifest
+├── loc/
+│   ├── en-us.js
+│   └── mystrings.d.ts
+└── components/
+    ├── IFAQSectionProps.ts                          ← root props interface
+    ├── FAQSection.tsx                               ← root component (data + state)
+    ├── FAQList.tsx                                  ← category-grouped list renderer
+    ├── FAQItem.tsx                                  ← single accordion item
+    ├── FAQForm.tsx                                  ← add/edit panel form
+    └── FAQSection.module.scss                       ← all styles (CSS Modules + SP theme tokens)
+```
 
 ---
 

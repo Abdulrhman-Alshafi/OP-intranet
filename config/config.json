@@ -26,14 +26,6 @@
         }
       ]
     },
-    "announcement-banner-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/announcementBanner/AnnouncementBannerWebPart.js",
-          "manifest": "./src/webparts/announcementBanner/AnnouncementBannerWebPart.manifest.json"
-        }
-      ]
-    },
     "task-dashboard-web-part": {
       "components": [
         {
@@ -66,14 +58,6 @@
         }
       ]
     },
-    "announcements-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/announcements/AnnouncementsWebPart.js",
-          "manifest": "./src/webparts/announcements/AnnouncementsWebPart.manifest.json"
-        }
-      ]
-    },
     "salary-document-web-part": {
       "components": [
         {
@@ -96,12 +80,10 @@
     "SwiperWebPartStrings": "lib/webparts/swiper/loc/{locale}.js",
     "ServicesGridWebPartStrings": "lib/webparts/servicesGrid/loc/{locale}.js",
     "CountdownTimerWebPartStrings": "lib/webparts/countdownTimer/loc/{locale}.js",
-    "AnnouncementBannerWebPartStrings": "lib/webparts/announcementBanner/loc/{locale}.js",
     "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js",
     "RecognitionWallWebPartStrings": "lib/webparts/recognitionWall/loc/{locale}.js",
     "PollsSurveyWebPartStrings": "lib/webparts/pollsSurvey/loc/{locale}.js",
     "KnowledgeBaseWebPartStrings": "lib/webparts/knowledgeBase/loc/{locale}.js",
-    "AnnouncementsWebPartStrings": "lib/webparts/announcements/loc/{locale}.js",
     "SalaryDocumentWebPartStrings": "lib/webparts/salaryDocument/loc/{locale}.js",
     "HrDocumentWebPartStrings": "lib/webparts/hrDocument/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",

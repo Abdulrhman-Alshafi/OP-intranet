@@ -1,0 +1,205 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.faqSection {
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 24px;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  background: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  min-height: 200px;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: "[theme:themeDarkAlt, default: #005a9e]";
+    color: var(--themeDarkAlt);
+  }
+}
+
+// ── Empty / Loading ────────────────────────────────────────────────────────────
+
+.emptyState {
+  padding: 40px 0;
+  text-align: center;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+  font-size: 14px;
+}
+
+// ── Category group ─────────────────────────────────────────────────────────────
+
+.categoryGroup {
+  margin-bottom: 28px;
+}
+
+.categoryLabel {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary);
+  padding: 0 0 6px 0;
+  margin-bottom: 8px;
+  border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-bottom-color: var(--neutralLight);
+}
+
+// ── FAQ Item ───────────────────────────────────────────────────────────────────
+
+.faqItem {
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  background: "[theme:white, default: #ffffff]";
+  background-color: var(--white);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.faqHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  gap: 8px;
+
+  &:hover {
+    background: "[theme:neutralLighter, default: #f3f2f1]";
+    background-color: var(--neutralLighter);
+  }
+
+  &:focus {
+    outline: 2px solid "[theme:themePrimary, default: #0078d4]";
+    outline-color: var(--themePrimary);
+    outline-offset: -2px;
+  }
+}
+
+.faqHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: "[theme:themePrimary, default: #0078d4]";
+  color: var(--themePrimary);
+  font-size: 12px;
+  transition: transform 0.25s ease;
+  transform: rotate(0deg);
+}
+
+.chevronExpanded {
+  transform: rotate(90deg);
+}
+
+.questionText {
+  font-size: 15px;
+  font-weight: 600;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.adminActions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+
+  .faqItem:hover & {
+    opacity: 1;
+  }
+}
+
+// ── Answer body (animated) ─────────────────────────────────────────────────────
+
+.answerBody {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+}
+
+.answerBodyExpanded {
+  opacity: 1;
+  // max-height set inline via JS (pixel measurement)
+}
+
+.answerContent {
+  padding: 4px 16px 16px 38px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+  white-space: pre-line;
+  word-break: break-word;
+
+  @media (max-width: 480px) {
+    padding-left: 16px;
+  }
+}
+
+// ── Form / Panel ───────────────────────────────────────────────────────────────
+
+.formError {
+  margin-bottom: 16px;
+}
+
+.formFooter {
+  display: flex;
+  gap: 8px;
+  padding-top: 24px;
+  border-top: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-top-color: var(--neutralLight);
+  margin-top: 24px;
+}
+
+// ── Responsive ─────────────────────────────────────────────────────────────────
+
+@media (max-width: 480px) {
+  .faqSection {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    h2 {
+      font-size: 18px;
+    }
+  }
+
+  .questionText {
+    font-size: 14px;
+  }
+}
