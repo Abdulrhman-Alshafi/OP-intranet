@@ -1,0 +1,48 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+.helpDeskDevices {
+  font-family: 'Segoe UI', "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  color: var(--bodyText, #323130);
+  background-color: var(--bodyBackground, #ffffff);
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+
+  .wpHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+  }
+
+  .wpTitle {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .accessDenied {
+    text-align: center;
+    padding: 40px;
+    background-color: var(--neutralLighter, #f3f2f1);
+    border-radius: 4px;
+  }
+
+  .emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    color: var(--neutralSecondary, #605e5c);
+    text-align: center;
+  }
+
+  .emptyStateIcon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    color: var(--neutralTertiary, #a19f9d);
+  }
+}

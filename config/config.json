@@ -66,6 +66,22 @@
         }
       ]
     },
+    "help-desk-devices-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/helpDeskDevices/HelpDeskDevicesWebPart.js",
+          "manifest": "./src/webparts/helpDeskDevices/HelpDeskDevicesWebPart.manifest.json"
+        }
+      ]
+    },
+    "user-devices-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/userDevices/UserDevicesWebPart.js",
+          "manifest": "./src/webparts/userDevices/UserDevicesWebPart.manifest.json"
+        }
+      ]
+    },
     "salary-document-web-part": {
       "components": [
         {
@@ -96,6 +112,8 @@
     "HrDocumentWebPartStrings": "lib/webparts/hrDocument/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
-    "OPTeamMembersWebPartStrings": "lib/webparts/opTeamMembers/loc/{locale}.js"
+    "OPTeamMembersWebPartStrings": "lib/webparts/opTeamMembers/loc/{locale}.js",
+    "HelpDeskDevicesWebPartStrings": "lib/webparts/helpDeskDevices/loc/{locale}.js",
+    "UserDevicesWebPartStrings": "lib/webparts/userDevices/loc/{locale}.js"
   }
 }

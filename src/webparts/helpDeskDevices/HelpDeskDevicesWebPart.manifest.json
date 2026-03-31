@@ -1,0 +1,23 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b8b5fdf2-8eb4-40fe-b5cc-4ff211d4d291",
+  "alias": "HelpDeskDevicesWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Other" },
+    "title": { "default": "Help Desk Devices" },
+    "description": { "default": "Manage Help Desk device requests and inventory" },
+    "officeFabricIconFontName": "Devices3",
+    "properties": {
+      "devicesListName": "HelpDeskDevices",
+      "requestsListName": "HelpDeskDeviceRequests",
+      "helpDeskGroupName": "Help Desk"
+    }
+  }]
+}

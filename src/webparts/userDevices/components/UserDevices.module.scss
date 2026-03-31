@@ -1,0 +1,86 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+.userDevices {
+  font-family: 'Segoe UI', "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  color: var(--bodyText, #323130);
+  background-color: var(--bodyBackground, #ffffff);
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+
+  .wpHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+  }
+
+  .wpTitle {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 16px;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .card {
+    background: var(--bodyBackground, #ffffff);
+    border: 1px solid var(--neutralLight, #edebe9);
+    border-radius: 2px;
+    padding: 16px;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+
+    &:hover {
+      background-color: var(--neutralLighter, #f3f2f1);
+      border-color: var(--neutralTertiaryAlt, #c8c6c4);
+    }
+
+    .cardTitle {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .cardSubText {
+      font-size: 14px;
+      color: var(--bodySubtext, #605e5c);
+      margin: 0;
+    }
+  }
+
+  .emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    color: var(--neutralSecondary, #605e5c);
+    text-align: center;
+  }
+
+  .emptyStateIcon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    color: var(--neutralTertiary, #a19f9d);
+  }
+}
