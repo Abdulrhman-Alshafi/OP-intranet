@@ -1,0 +1,26 @@
+.card {
+  background: var(--bodyBackground, #ffffff);
+  border: 1px solid var(--neutralLight, #edebe9);
+  border-radius: 2px;
+  padding: 16px;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--neutralLighter, #f3f2f1);
+    border-color: var(--neutralTertiaryAlt, #c8c6c4);
+  }
+
+  // To ensure the persona text truncates correctly and fits
+  :global {
+    .ms-Persona-primaryText {
+      font-weight: 600;
+      color: var(--bodyText, #323130);
+    }
+    .ms-Persona-secondaryText {
+      color: var(--bodySubtext, #605e5c);
+    }
+  }
+}

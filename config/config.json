@@ -58,6 +58,14 @@
         }
       ]
     },
+    "op-team-members-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/opTeamMembers/OPTeamMembersWebPart.js",
+          "manifest": "./src/webparts/opTeamMembers/OPTeamMembersWebPart.manifest.json"
+        }
+      ]
+    },
     "salary-document-web-part": {
       "components": [
         {
@@ -87,6 +95,7 @@
     "SalaryDocumentWebPartStrings": "lib/webparts/salaryDocument/loc/{locale}.js",
     "HrDocumentWebPartStrings": "lib/webparts/hrDocument/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
-    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "OPTeamMembersWebPartStrings": "lib/webparts/opTeamMembers/loc/{locale}.js"
   }
 }
