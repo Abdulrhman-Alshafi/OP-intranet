@@ -1,0 +1,23 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "a7c3e1f4-8b2d-4e6a-9f0c-1d3b5e7a9c2f",
+  "alias": "HeroSectionWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportsFullBleed": true,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Other" },
+    "title": { "default": "OP Hero Section" },
+    "description": { "default": "A customizable hero section with heading, description and images" },
+    "officeFabricIconFontName": "Header1",
+    "properties": {
+      "heading": "Building Tomorrow's Solutions. Code with Excellence.",
+      "description": "Your central hub for development collaboration, coding standards, libraries, APIs, technical resources, and company-wide announcements.",
+      "images": []
+    }
+  }]
+}

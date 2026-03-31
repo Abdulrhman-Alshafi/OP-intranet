@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b8d4e2f5-9c3a-4f7b-a1e6-2d5c8f0b3a7e",
+  "alias": "IntranetHubWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Other" },
+    "title": { "default": "OP Intranet Hub" },
+    "description": { "default": "A fully dynamic intranet dashboard with Quick Links, Stats, Departments, Tools, Employee Spotlight, and Materials sections" },
+    "officeFabricIconFontName": "ViewDashboard",
+    "properties": {
+      "showQuickLinks": true,
+      "quickLinksTitle": "Quick Links",
+      "quickLinks": [],
+      "showDashboard": true,
+      "dashboardTitle": "Dashboard",
+      "dashboardStats": [],
+      "showDepartments": true,
+      "departmentsTitle": "Departments",
+      "departments": [],
+      "showToolsGrid": true,
+      "toolsItems": [],
+      "showSpotlight": true,
+      "spotlightName": "",
+      "spotlightRole": "",
+      "spotlightDescription": "",
+      "spotlightImageUrl": "",
+      "showMaterials": true,
+      "materialsItems": []
+    }
+  }]
+}
