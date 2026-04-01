@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Spinner } from '@fluentui/react/lib/Spinner';
-import { PrimaryButton } from '@fluentui/react/lib/Button';
+import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
+import { PrimaryButton, DefaultButton } from '@fluentui/react/lib/Button';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
 import { TextField } from '@fluentui/react/lib/TextField';
 import { Dialog, DialogType, DialogFooter } from '@fluentui/react/lib/Dialog';
-import { DefaultButton } from '@fluentui/react/lib/Button';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { Text } from '@fluentui/react/lib/Text';
 import { Stack } from '@fluentui/react/lib/Stack';
+import { DetailsList, DetailsListLayoutMode, IColumn, SelectionMode } from '@fluentui/react/lib/DetailsList';
 
 import styles from './UserDevices.module.scss';
 import { IHelpDeskDevice, HelpDeskDeviceService } from '../../../services/HelpDeskDeviceService';
@@ -29,7 +29,6 @@ export const AvailableUserDevicesTab: React.FC<IAvailableUserDevicesTabProps> = 
   const [errorMsg, setErrorMsg] = React.useState<string | undefined>();
   const [successMsg, setSuccessMsg] = React.useState<string | undefined>();
 
-  // Filter to only show devices that are Available AND isRequestable
   const availableDevices = devices.filter(d => d.IsRequestable && d.Status === 'Available');
 
   const handleSubmitRequest = async () => {
@@ -62,16 +61,38 @@ export const AvailableUserDevicesTab: React.FC<IAvailableUserDevicesTabProps> = 
     setErrorMsg(undefined);
   };
 
-  if (loading && devices.length === 0) {
-    return <Spinner label="Loading available devices..." styles={{ root: { marginTop: 16 } }} />;
+  const columns: IColumn[] = [
+    { key: 'title', name: 'Device', fieldName: 'Title', minWidth: 160, maxWidth: 280, isResizable: true },
+    { key: 'type', name: 'Type', fieldName: 'DeviceType', minWidth: 100, maxWidth: 160, isResizable: true },
+    { key: 'sn', name: 'Serial Number', fieldName: 'SerialNumber', minWidth: 120, maxWidth: 200, isResizable: true },
+    { key: 'status', name: 'Status', fieldName: 'Status', minWidth: 90, maxWidth: 120 },
+    {
+      key: 'action', name: '', minWidth: 140, maxWidth: 160,
+      onRender: (item: IHelpDeskDevice) => (
+        <PrimaryButton
+          text="Request Device"
+          iconProps={{ iconName: 'Send' }}
+          onClick={() => setRequestingDeviceId(item.Id)}
+          styles={{ root: { height: 28, padding: '0 10px', fontSize: 12 } }}
+        />
+      )
+    }
+  ];
+
+  if (loading && availableDevices.length === 0) {
+    return (
+      <Stack horizontalAlign="center" styles={{ root: { padding: 32 } }}>
+        <Spinner size={SpinnerSize.medium} label="Loading available devices..." />
+      </Stack>
+    );
   }
 
   if (availableDevices.length === 0) {
     return (
-      <Stack horizontalAlign="center" verticalAlign="center" tokens={{ childrenGap: 16 }} styles={{ root: { minHeight: 200 } }}>
-        <Icon iconName="Devices3" styles={{ root: { fontSize: 48, color: '#106EBE' } }} />
+      <div className={styles.emptyState}>
+        <Icon iconName="Devices3" className={styles.emptyStateIcon} />
         <Text variant="large">No devices are currently available for request.</Text>
-      </Stack>
+      </div>
     );
   }
 
@@ -79,21 +100,24 @@ export const AvailableUserDevicesTab: React.FC<IAvailableUserDevicesTabProps> = 
 
   return (
     <>
-      {successMsg && <MessageBar messageBarType={MessageBarType.success} styles={{ root: { marginTop: 16 } }}>{successMsg}</MessageBar>}
-      <div className={styles.grid}>
-        {availableDevices.map(device => (
-          <div key={device.Id} className={styles.card}>
-            <div>
-              <p className={styles.cardTitle}>{device.Title}</p>
-              <p className={styles.cardSubText}>{device.DeviceType}</p>
-              {device.SerialNumber && <p className={styles.cardSubText}>SN: {device.SerialNumber}</p>}
-            </div>
-            <PrimaryButton 
-              text="Request Device" 
-              onClick={() => setRequestingDeviceId(device.Id)} 
-            />
-          </div>
-        ))}
+      {successMsg && (
+        <MessageBar
+          messageBarType={MessageBarType.success}
+          onDismiss={() => setSuccessMsg(undefined)}
+          styles={{ root: { marginTop: 12 } }}
+        >
+          {successMsg}
+        </MessageBar>
+      )}
+
+      <div className={styles.tableScrollWrapper} style={{ marginTop: 16 }}>
+        <DetailsList
+          items={availableDevices}
+          columns={columns}
+          setKey="available"
+          layoutMode={DetailsListLayoutMode.justified}
+          selectionMode={SelectionMode.none}
+        />
       </div>
 
       <Dialog
@@ -101,14 +125,11 @@ export const AvailableUserDevicesTab: React.FC<IAvailableUserDevicesTabProps> = 
         onDismiss={closeDialog}
         dialogContentProps={{
           type: DialogType.normal,
-          title: 'Request Device'
+          title: 'Request Device',
+          subText: selectedDevice ? `You are requesting: ${selectedDevice.Title}` : ''
         }}
-        modalProps={{
-          isBlocking: true,
-          styles: { main: { maxWidth: 450 } }
-        }}
+        modalProps={{ isBlocking: true, styles: { main: { maxWidth: 450 } } }}
       >
-        <p>You are requesting: <strong>{selectedDevice?.Title}</strong></p>
         <TextField
           label="Reason for request"
           multiline
@@ -116,13 +137,25 @@ export const AvailableUserDevicesTab: React.FC<IAvailableUserDevicesTabProps> = 
           value={reason}
           onChange={(_, v) => setReason(v || '')}
           required
+          placeholder="Describe why you need this device"
         />
-        {errorMsg && <MessageBar messageBarType={MessageBarType.error}>{errorMsg}</MessageBar>}
+        {errorMsg && <MessageBar messageBarType={MessageBarType.error} styles={{ root: { marginTop: 8 } }}>{errorMsg}</MessageBar>}
         <DialogFooter>
-          <PrimaryButton onClick={handleSubmitRequest} text="Submit" disabled={submitting} />
+          <PrimaryButton onClick={handleSubmitRequest} text={submitting ? 'Submitting...' : 'Submit'} disabled={submitting} />
           <DefaultButton onClick={closeDialog} text="Cancel" disabled={submitting} />
         </DialogFooter>
       </Dialog>
     </>
   );
 };
+
+
+export interface IAvailableUserDevicesTabProps {
+  devices: IHelpDeskDevice[];
+  service: HelpDeskDeviceService;
+  requestsListName: string;
+  currentUserId: number;
+  onDataChange: () => Promise<void>;
+  loading: boolean;
+}
+

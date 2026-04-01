@@ -1,7 +1,10 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 
 .opTeamMembers {
-  padding: 16px 0px;
+  padding: 16px 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 
   &.teams {
     font-family: $ms-font-family-fallbacks;

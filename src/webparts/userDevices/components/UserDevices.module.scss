@@ -1,86 +1,114 @@
-@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+@import '~@fluentui/react/dist/sass/References.scss';
+
+$font-stack: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+
+/* ─── Container ─────────────────────────────────────────────────────────────── */
 
 .userDevices {
-  font-family: 'Segoe UI', "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
-  color: var(--bodyText, #323130);
-  background-color: var(--bodyBackground, #ffffff);
-  padding: 16px;
-  border-radius: 4px;
-  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 24px;
+  font-family: $font-stack;
+  background: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  min-height: 200px;
+}
 
-  .wpHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 12px;
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+
+.wpHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wpTitleSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wpIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0, 120, 212, 0.08);
+  flex-shrink: 0;
+
+  i {
+    font-size: 20px;
+    color: "[theme:themePrimary, default: #0078d4]";
+    color: var(--themePrimary);
+  }
+}
+
+.wpTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: "[theme:neutralPrimary, default: #323130]";
+  color: var(--neutralPrimary);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Scrollable table wrapper ─────────────────────────────────────────────── */
+
+.tableScrollWrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 480px;
+
+  :global(.ms-DetailsList-headerWrapper) {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bodyBackground, #ffffff);
+  }
+
+  :global(.ms-DetailsRow) {
+    border-bottom: 1px solid var(--neutralLight, #edebe9);
+    border-top: none;
+  }
+
+  :global(.ms-DetailsHeader) {
     border-bottom: 1px solid var(--neutralLight, #edebe9);
   }
 
-  .wpTitle {
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 16px;
-
-    @media (max-width: 1024px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (max-width: 640px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .card {
-    background: var(--bodyBackground, #ffffff);
-    border: 1px solid var(--neutralLight, #edebe9);
-    border-radius: 2px;
-    padding: 16px;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  :global(.ms-DetailsRow-cell) {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-
-    &:hover {
-      background-color: var(--neutralLighter, #f3f2f1);
-      border-color: var(--neutralTertiaryAlt, #c8c6c4);
-    }
-
-    .cardTitle {
-      font-size: 16px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .cardSubText {
-      font-size: 14px;
-      color: var(--bodySubtext, #605e5c);
-      margin: 0;
-    }
-  }
-
-  .emptyState {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 48px 24px;
-    color: var(--neutralSecondary, #605e5c);
-    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
+}
 
-  .emptyStateIcon {
-    font-size: 48px;
-    margin-bottom: 12px;
-    color: var(--neutralTertiary, #a19f9d);
-  }
+/* ─── Empty state ───────────────────────────────────────────────────────────── */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: var(--neutralSecondary, #605e5c);
+  text-align: center;
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: var(--neutralTertiary, #a19f9d);
 }

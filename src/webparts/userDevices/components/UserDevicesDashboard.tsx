@@ -3,6 +3,8 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { Pivot, PivotItem } from '@fluentui/react/lib/Pivot';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { Icon } from '@fluentui/react/lib/Icon';
 
 import { IUserDevicesProps } from './IUserDevicesProps';
 import { AvailableUserDevicesTab } from './AvailableUserDevicesTab';
@@ -25,21 +27,22 @@ export const UserDevicesDashboard: React.FC<IUserDevicesProps> = (props) => {
   // 1. Get current user ID
   useEffect(() => {
     mountedRef.current = true;
+    let cancelled = false;
     (async () => {
       setInitLoading(true);
       try {
         const id = await service.getCurrentUserId();
-        if (mountedRef.current) {
+        if (!cancelled) {
           setCurrentUserId(id);
           setInitError(undefined);
         }
       } catch (err) {
-        if (mountedRef.current) setInitError('Unable to get user info.');
+        if (!cancelled) setInitError('Unable to get user info.');
       } finally {
-        if (mountedRef.current) setInitLoading(false);
+        if (!cancelled) setInitLoading(false);
       }
     })().catch(console.error);
-    return () => { mountedRef.current = false; };
+    return () => { cancelled = true; mountedRef.current = false; };
   }, [service]);
 
   // 2. Load Data
@@ -69,14 +72,29 @@ export const UserDevicesDashboard: React.FC<IUserDevicesProps> = (props) => {
   }, [initLoading, currentUserId, loadData]);
 
   if (initLoading) {
-    return <Spinner size={SpinnerSize.large} label="Loading profile..." />;
+    return (
+      <div className={styles.userDevices}>
+        <div className={styles.wpHeader}>
+          <div className={styles.wpTitleSection}>
+            <div className={styles.wpIconWrap}><Icon iconName="Devices2" /></div>
+            <h2 className={styles.wpTitle}>Devices Catalog</h2>
+          </div>
+        </div>
+        <Stack horizontalAlign="center" styles={{ root: { padding: 32 } }}>
+          <Spinner size={SpinnerSize.large} label="Loading profile..." />
+        </Stack>
+      </div>
+    );
   }
 
   if (initError || !currentUserId) {
     return (
       <div className={styles.userDevices}>
         <div className={styles.wpHeader}>
-          <h2 className={styles.wpTitle}>Devices Catalog</h2>
+          <div className={styles.wpTitleSection}>
+            <div className={styles.wpIconWrap}><Icon iconName="Devices2" /></div>
+            <h2 className={styles.wpTitle}>Devices Catalog</h2>
+          </div>
         </div>
         <MessageBar messageBarType={MessageBarType.error} isMultiline={false}>
           {initError || 'User not found'}
@@ -88,11 +106,14 @@ export const UserDevicesDashboard: React.FC<IUserDevicesProps> = (props) => {
   return (
     <div className={styles.userDevices}>
       <div className={styles.wpHeader}>
-        <h2 className={styles.wpTitle}>Devices Catalog</h2>
+        <div className={styles.wpTitleSection}>
+          <div className={styles.wpIconWrap}><Icon iconName="Devices2" /></div>
+          <h2 className={styles.wpTitle}>Devices Catalog</h2>
+        </div>
       </div>
 
       <Pivot>
-        <PivotItem headerText="Available Devices">
+        <PivotItem headerText="Available Devices" itemIcon="Devices3">
           <AvailableUserDevicesTab
             devices={devices}
             service={service}
@@ -102,7 +123,7 @@ export const UserDevicesDashboard: React.FC<IUserDevicesProps> = (props) => {
             loading={dataLoading}
           />
         </PivotItem>
-        <PivotItem headerText="My Requested Devices">
+        <PivotItem headerText="My Requested Devices" itemIcon="PageList">
           <MyRequestedDevicesTab
             requests={requests}
             devices={devices}
@@ -113,3 +134,5 @@ export const UserDevicesDashboard: React.FC<IUserDevicesProps> = (props) => {
     </div>
   );
 };
+
+

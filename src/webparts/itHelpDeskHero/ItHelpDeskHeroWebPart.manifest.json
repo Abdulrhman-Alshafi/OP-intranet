@@ -1,0 +1,64 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "a3f7c21d-9b54-4e8a-b2f6-7d3e10c85a49",
+  "alias": "ItHelpDeskHeroWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportsFullBleed": true,
+  "supportedHosts": ["SharePointWebPart", "SharePointFullPage"],
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": { "default": "Other" },
+      "title": { "default": "OP IT Help Desk Hero" },
+      "description": { "default": "A hero section for IT Help Desk with action buttons and image tiles mosaic." },
+      "officeFabricIconFontName": "Help",
+      "properties": {
+        "title": "Welcome to the IT help desk",
+        "titleColor": "#0078d4",
+        "description": "Get help with technical issues, check the status of an existing ticket, find self-guided training, and connect with your IT support team.",
+        "backgroundColor": "#ffffff",
+        "leftColumnWidthPercent": "40",
+        "buttons": [
+          {
+            "label": "Submit a new ticket",
+            "iconName": "Mail",
+            "url": "https://example.com/new-ticket",
+            "openInNewTab": false
+          },
+          {
+            "label": "View the status of your ticket",
+            "iconName": "Search",
+            "url": "https://example.com/ticket-status",
+            "openInNewTab": false
+          }
+        ],
+        "tiles": [
+          {
+            "title": "Returning to the worksite?",
+            "linkText": "Review latest policies →",
+            "linkUrl": "https://example.com/policies",
+            "imageUrl": "",
+            "openInNewTab": false
+          },
+          {
+            "title": "New devices are in stock",
+            "linkText": "",
+            "linkUrl": "https://example.com/devices",
+            "imageUrl": "",
+            "openInNewTab": false
+          },
+          {
+            "title": "Download latest security update",
+            "linkText": "",
+            "linkUrl": "https://example.com/security",
+            "imageUrl": "",
+            "openInNewTab": false
+          }
+        ]
+      }
+    }
+  ]
+}

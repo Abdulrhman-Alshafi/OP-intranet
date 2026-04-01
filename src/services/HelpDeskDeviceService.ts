@@ -178,6 +178,28 @@ export class HelpDeskDeviceService {
     }
   }
 
+  /**
+   * Bulk-imports an array of devices sequentially, reporting per-item progress via the callback.
+   */
+  public async addDeviceBulk(
+    listName: string,
+    devices: Omit<IHelpDeskDevice, 'Id'>[],
+    onProgress: (result: { title: string; status: 'success' | 'error'; message?: string }) => void
+  ): Promise<void> {
+    for (const device of devices) {
+      try {
+        await this.addDevice(listName, device);
+        onProgress({ title: device.Title, status: 'success' });
+      } catch (err) {
+        onProgress({
+          title: device.Title,
+          status: 'error',
+          message: err instanceof Error ? err.message : 'Unknown error'
+        });
+      }
+    }
+  }
+
   private async _get(url: string): Promise<SPHttpClientResponse> {
     return this._spHttpClient.get(url, SPHttpClient.configurations.v1, {
       headers: { Accept: 'application/json;odata=nometadata', 'odata-version': '' }

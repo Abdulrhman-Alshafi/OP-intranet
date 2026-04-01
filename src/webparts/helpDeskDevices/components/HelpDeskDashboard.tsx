@@ -3,11 +3,14 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { Pivot, PivotItem } from '@fluentui/react/lib/Pivot';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { Icon } from '@fluentui/react/lib/Icon';
 
 import { IHelpDeskDevicesProps } from './IHelpDeskDevicesProps';
 import { RequestedDevicesTab } from './RequestedDevicesTab';
 import { AvailableDevicesTab } from './AvailableDevicesTab';
 import { AddNewDeviceTab } from './AddNewDeviceTab';
+import { BulkImportDevicesTab } from './BulkImportDevicesTab';
 import styles from './HelpDeskDevices.module.scss';
 import { IHelpDeskDevice, IHelpDeskDeviceRequest } from '../../../services/HelpDeskDeviceService';
 
@@ -26,6 +29,7 @@ export const HelpDeskDashboard: React.FC<IHelpDeskDevicesProps> = (props) => {
   // 1. Auth check
   useEffect(() => {
     mountedRef.current = true;
+    let cancelled = false;
     (async () => {
       setAuthLoading(true);
       try {
@@ -33,17 +37,17 @@ export const HelpDeskDashboard: React.FC<IHelpDeskDevicesProps> = (props) => {
           service.isUserInGroup(helpDeskGroupName),
           service.isCurrentUserSiteAdmin()
         ]);
-        if (mountedRef.current) {
+        if (!cancelled) {
           setHasAccess(isGroupMember || isSiteAdmin);
           setAuthError(undefined);
         }
       } catch (err) {
-        if (mountedRef.current) setAuthError('Unable to verify permissions.');
+        if (!cancelled) setAuthError('Unable to verify permissions.');
       } finally {
-        if (mountedRef.current) setAuthLoading(false);
+        if (!cancelled) setAuthLoading(false);
       }
     })().catch(console.error);
-    return () => { mountedRef.current = false; };
+    return () => { cancelled = true; mountedRef.current = false; };
   }, [service, helpDeskGroupName]);
 
   // 2. Load Data
@@ -72,14 +76,29 @@ export const HelpDeskDashboard: React.FC<IHelpDeskDevicesProps> = (props) => {
   }, [authLoading, hasAccess, loadData]);
 
   if (authLoading) {
-    return <Spinner size={SpinnerSize.large} label="Verifying access..." />;
+    return (
+      <div className={styles.helpDeskDevices}>
+        <div className={styles.wpHeader}>
+          <div className={styles.wpTitleSection}>
+            <div className={styles.wpIconWrap}><Icon iconName="Devices3" /></div>
+            <h2 className={styles.wpTitle}>Help Desk Devices Admin</h2>
+          </div>
+        </div>
+        <Stack horizontalAlign="center" styles={{ root: { padding: 32 } }}>
+          <Spinner size={SpinnerSize.large} label="Verifying access..." />
+        </Stack>
+      </div>
+    );
   }
 
   if (authError) {
     return (
       <div className={styles.helpDeskDevices}>
         <div className={styles.wpHeader}>
-          <h2 className={styles.wpTitle}>Help Desk Devices Admin</h2>
+          <div className={styles.wpTitleSection}>
+            <div className={styles.wpIconWrap}><Icon iconName="Devices3" /></div>
+            <h2 className={styles.wpTitle}>Help Desk Devices Admin</h2>
+          </div>
         </div>
         <MessageBar messageBarType={MessageBarType.error} isMultiline={false}>
           {authError}
@@ -92,8 +111,9 @@ export const HelpDeskDashboard: React.FC<IHelpDeskDevicesProps> = (props) => {
     return (
       <div className={styles.helpDeskDevices}>
         <div className={styles.accessDenied}>
-          <h2>Access Denied</h2>
-          <p>You do not have permission to view the Help Desk Devices dashboard.</p>
+          <Icon iconName="Lock" styles={{ root: { fontSize: 40, marginBottom: 12, color: '#a4262c' } }} />
+          <h2 style={{ margin: '0 0 8px' }}>Access Denied</h2>
+          <p style={{ margin: 0, color: '#605e5c' }}>You do not have permission to view the Help Desk Devices dashboard.</p>
         </div>
       </div>
     );
@@ -102,11 +122,14 @@ export const HelpDeskDashboard: React.FC<IHelpDeskDevicesProps> = (props) => {
   return (
     <div className={styles.helpDeskDevices}>
       <div className={styles.wpHeader}>
-        <h2 className={styles.wpTitle}>Help Desk Devices Admin</h2>
+        <div className={styles.wpTitleSection}>
+          <div className={styles.wpIconWrap}><Icon iconName="Devices3" /></div>
+          <h2 className={styles.wpTitle}>Help Desk Devices Admin</h2>
+        </div>
       </div>
 
       <Pivot>
-        <PivotItem headerText="Requested Devices">
+        <PivotItem headerText="Requested Devices" itemIcon="InboxCheck">
           <RequestedDevicesTab
             requests={requests}
             devices={devices}
@@ -116,7 +139,7 @@ export const HelpDeskDashboard: React.FC<IHelpDeskDevicesProps> = (props) => {
             loading={dataLoading}
           />
         </PivotItem>
-        <PivotItem headerText="Available Devices">
+        <PivotItem headerText="Available Devices" itemIcon="Devices3">
           <AvailableDevicesTab
             devices={devices}
             service={service}
@@ -125,14 +148,22 @@ export const HelpDeskDashboard: React.FC<IHelpDeskDevicesProps> = (props) => {
             loading={dataLoading}
           />
         </PivotItem>
-        <PivotItem headerText="Add New Device">
+        <PivotItem headerText="Add Device" itemIcon="Add">
           <AddNewDeviceTab
             service={service}
             devicesListName={devicesListName}
             onDeviceAdded={loadData}
           />
         </PivotItem>
+        <PivotItem headerText="Bulk Import" itemIcon="BulkUpload">
+          <BulkImportDevicesTab
+            service={service}
+            devicesListName={devicesListName}
+            onImportComplete={loadData}
+          />
+        </PivotItem>
       </Pivot>
     </div>
   );
 };
+

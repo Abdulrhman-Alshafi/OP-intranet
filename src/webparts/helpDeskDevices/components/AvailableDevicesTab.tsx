@@ -76,13 +76,15 @@ export const AvailableDevicesTab: React.FC<IAvailableDevicesTabProps> = (props) 
   return (
     <Stack tokens={{ childrenGap: 16 }} styles={{ root: { marginTop: 16 } }}>
       {errorMsg && <MessageBar messageBarType={MessageBarType.error}>{errorMsg}</MessageBar>}
-      <DetailsList
-        items={devices}
-        columns={columns}
-        setKey="set"
-        layoutMode={DetailsListLayoutMode.justified}
-        selectionMode={SelectionMode.none}
-      />
+      <div className={styles.tableScrollWrapper}>
+        <DetailsList
+          items={devices}
+          columns={columns}
+          setKey="set"
+          layoutMode={DetailsListLayoutMode.justified}
+          selectionMode={SelectionMode.none}
+        />
+      </div>
     </Stack>
   );
 };
