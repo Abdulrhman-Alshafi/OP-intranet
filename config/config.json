@@ -97,6 +97,30 @@
           "manifest": "./src/webparts/hrDocument/HrDocumentWebPart.manifest.json"
         }
       ]
+    },
+    "hero-section-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/heroSection/HeroSectionWebPart.js",
+          "manifest": "./src/webparts/heroSection/HeroSectionWebPart.manifest.json"
+        }
+      ]
+    },
+    "intranet-hub-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/intranetHub/IntranetHubWebPart.js",
+          "manifest": "./src/webparts/intranetHub/IntranetHubWebPart.manifest.json"
+        }
+      ]
+    },
+    "announcements-hub-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/announcementsHub/AnnouncementsHubWebPart.js",
+          "manifest": "./src/webparts/announcementsHub/AnnouncementsHubWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -114,6 +138,9 @@
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "OPTeamMembersWebPartStrings": "lib/webparts/opTeamMembers/loc/{locale}.js",
     "HelpDeskDevicesWebPartStrings": "lib/webparts/helpDeskDevices/loc/{locale}.js",
-    "UserDevicesWebPartStrings": "lib/webparts/userDevices/loc/{locale}.js"
+    "UserDevicesWebPartStrings": "lib/webparts/userDevices/loc/{locale}.js",
+    "HeroSectionWebPartStrings": "lib/webparts/heroSection/loc/{locale}.js",
+    "IntranetHubWebPartStrings": "lib/webparts/intranetHub/loc/{locale}.js",
+    "AnnouncementsHubWebPartStrings": "lib/webparts/announcementsHub/loc/{locale}.js"
   }
 }

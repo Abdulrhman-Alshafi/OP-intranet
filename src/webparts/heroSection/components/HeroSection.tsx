@@ -1,7 +1,7 @@
+// Trigger TS reload
 import * as React from 'react';
 import styles from './HeroSection.module.scss';
 import type { IHeroSectionProps } from './IHeroSectionProps';
-import { escape } from '@microsoft/sp-lodash-subset';
 
 const HeroSection = (props: IHeroSectionProps): React.ReactElement => {
   const { heading, description, images } = props;
@@ -20,36 +20,46 @@ const HeroSection = (props: IHeroSectionProps): React.ReactElement => {
     );
   }
 
+  // Determine grid columns based on image count
+  const imgCount = imageList.length;
+  const gridColumns = imgCount >= 2 ? '1fr 1fr' : '1fr';
+  const gridRows = imgCount >= 3 ? '1fr 1fr' : undefined;
+
   return (
     <section className={styles.heroSection}>
-      {/* ── Top row: heading + description ── */}
-      <div className={styles.topRow}>
-        {heading && (
-          <h1 className={styles.heading}>{escape(heading)}</h1>
-        )}
-        {description && (
-          <p className={styles.description}>{escape(description)}</p>
-        )}
-      </div>
+      <div className={styles['heroLayout']}>
+        {/* ── Left: Text ── */}
+        <div className={styles['textContent']}>
+          {heading && (
+            <h1 className={styles.heading}>{heading}</h1>
+          )}
+          {description && (
+            <p className={styles.description}>{description}</p>
+          )}
+        </div>
 
-      {/* ── Bottom row: images ── */}
-      {imageList.length > 0 && (
-        <div className={styles.imagesRow}>
-          {imageList.map((img, i) => (
-            <div key={i} className={styles.imageWrapper}>
-              <img src={img.image} alt={img.altText || `Hero image ${i + 1}`} />
+        {/* ── Right: Images ── */}
+        <div
+          className={styles['imagesContent']}
+          style={{ gridTemplateColumns: gridColumns, gridTemplateRows: gridRows }}
+        >
+          {imageList.length > 0 ? (
+            imageList.slice(0, 3).map((img, i) => (
+              <div
+                key={i}
+                className={styles.imageWrapper}
+                style={imgCount >= 3 && i === 0 ? { gridRow: '1 / 3' } : undefined}
+              >
+                <img src={img.image} alt={img.altText || `Hero image ${i + 1}`} />
+              </div>
+            ))
+          ) : (
+            <div className={styles.imagePlaceholder}>
+              Add images via the property pane
             </div>
-          ))}
+          )}
         </div>
-      )}
-
-      {imageList.length === 0 && (
-        <div className={styles.imagesRow}>
-          <div className={styles.imagePlaceholder}>
-            Add images via the property pane
-          </div>
-        </div>
-      )}
+      </div>
     </section>
   );
 };
