@@ -39,18 +39,20 @@ export const BulkImportDevicesTab: React.FC<IBulkImportDevicesTabProps> = ({ ser
         const devices = data.map(row => {
           return {
             Title: String(row[0] || '').trim(),
-            Type: String(row[1] || '').trim(),
-            Model: String(row[2] || '').trim(),
+            DeviceType: String(row[1] || '').trim(),
             SerialNumber: String(row[3] || '').trim(),
-            Availability: true
+            IsRequestable: true,
+            Status: 'Available'
           };
-        }).filter(d => d.Title && d.Type);
+        }).filter(d => d.Title && d.DeviceType);
 
         if (devices.length === 0) {
           throw new Error("No valid devices found in CSV.");
         }
 
-        await service.addDeviceBulk(devicesListName, devices);
+        await service.addDeviceBulk(devicesListName, devices, (progress) => {
+          console.log(`Import progress for ${progress.title}: ${progress.status}`);
+        });
         onImportComplete();
       } catch (err: any) {
         setError(err.message || 'Error processing file');
