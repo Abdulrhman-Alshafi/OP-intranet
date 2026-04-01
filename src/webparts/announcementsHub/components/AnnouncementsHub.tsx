@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { PrimaryButton, IconButton } from '@fluentui/react/lib/Button';
 import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
+import { Panel, PanelType } from '@fluentui/react/lib/Panel';
 
 import { IAnnouncementsHubProps, IAnnouncement } from './IAnnouncementsHubProps';
 import { AnnouncementsService } from '../../../services/AnnouncementsService';
@@ -36,6 +37,7 @@ const AnnouncementsHub: React.FC<IAnnouncementsHubProps> = (props) => {
   const [selectedCategory, setSelectedCategory] = React.useState<string>('All');
   const [currentLayout, setCurrentLayout] = React.useState<'grid' | 'list'>(layoutMode);
   const [formOpen, setFormOpen] = React.useState<boolean>(false);
+  const [selectedAnnouncement, setSelectedAnnouncement] = React.useState<IAnnouncement | null>(null);
 
   // ─── Service ────────────────────────────────────────────────────────
   const serviceRef = React.useRef<AnnouncementsService | null>(null);
@@ -229,6 +231,7 @@ const AnnouncementsHub: React.FC<IAnnouncementsHubProps> = (props) => {
           enableCategoryColors={enableCategoryColors}
           accentColor={accentColor}
           isAdmin={isAdmin}
+          onClick={setSelectedAnnouncement}
           onDismiss={handleDismiss}
           onDelete={handleDelete}
         />
@@ -238,6 +241,7 @@ const AnnouncementsHub: React.FC<IAnnouncementsHubProps> = (props) => {
           enableAnimations={enableAnimations}
           enableCategoryColors={enableCategoryColors}
           isAdmin={isAdmin}
+          onClick={setSelectedAnnouncement}
           onDismiss={handleDismiss}
           onDelete={handleDelete}
         />
@@ -251,6 +255,48 @@ const AnnouncementsHub: React.FC<IAnnouncementsHubProps> = (props) => {
           onSave={handleCreate}
         />
       )}
+
+      {/* Detail Popover Panel */}
+      <Panel
+        isOpen={!!selectedAnnouncement}
+        onDismiss={() => setSelectedAnnouncement(null)}
+        type={PanelType.medium}
+        closeButtonAriaLabel="Close"
+        headerText={selectedAnnouncement?.Title}
+      >
+        {selectedAnnouncement && (
+          <div className={styles.detailPanelContent} style={{ paddingTop: 16 }}>
+            {selectedAnnouncement.IsImportant && (
+              <div className={styles.importantBadge} style={{ position: 'relative', display: 'inline-flex', marginBottom: 16, top: 0, right: 0 }}>
+                <Icon iconName="Warning" style={{ fontSize: 11 }} />
+                Important
+              </div>
+            )}
+            
+            <div className={styles.cardMeta} style={{ marginBottom: 20 }}>
+              <span className={styles.categoryBadge} style={{ background: '#f3f2f1', color: '#323130' }}>
+                {selectedAnnouncement.Category}
+              </span>
+              <span className={styles.cardDate}>
+                <Icon iconName="Calendar" style={{ fontSize: 11, marginRight: 4, opacity: 0.7 }} />
+                {new Date(selectedAnnouncement.Created).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+
+            {selectedAnnouncement.ImageUrl && (
+              <img
+                src={selectedAnnouncement.ImageUrl}
+                alt={selectedAnnouncement.Title}
+                style={{ width: '100%', borderRadius: 8, marginBottom: 20 }}
+              />
+            )}
+            
+            <p style={{ fontSize: 15, lineHeight: 1.6, color: '#323130', whiteSpace: 'pre-wrap', margin: 0 }}>
+              {selectedAnnouncement.Description}
+            </p>
+          </div>
+        )}
+      </Panel>
     </section>
   );
 };

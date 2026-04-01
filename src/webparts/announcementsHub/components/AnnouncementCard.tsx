@@ -22,6 +22,7 @@ export interface IAnnouncementCardProps {
   enableCategoryColors: boolean;
   accentColor: string;
   isAdmin: boolean;
+  onClick?: (announcement: IAnnouncement) => void;
   onDismiss?: (id: number) => void;
   onDelete?: (id: number) => void;
 }
@@ -33,6 +34,7 @@ const AnnouncementCard: React.FC<IAnnouncementCardProps> = React.memo((props) =>
     enableAnimations,
     enableCategoryColors,
     isAdmin,
+    onClick,
     onDismiss,
     onDelete
   } = props;
@@ -52,9 +54,15 @@ const AnnouncementCard: React.FC<IAnnouncementCardProps> = React.memo((props) =>
   return (
     <article
       className={cardClass}
-      role="article"
-      aria-label={`Announcement: ${announcement.Title}`}
+      role="button"
+      aria-label={`View Announcement: ${announcement.Title}`}
       tabIndex={0}
+      onClick={() => { if (onClick) onClick(announcement); }}
+      onKeyPress={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          if (onClick) onClick(announcement);
+        }
+      }}
     >
       {/* Important badge */}
       {announcement.IsImportant && (
@@ -113,7 +121,10 @@ const AnnouncementCard: React.FC<IAnnouncementCardProps> = React.memo((props) =>
                 icon: { fontSize: 12, color: '#8a8886' },
                 rootHovered: { background: '#f3f2f1' }
               }}
-              onClick={() => onDismiss(announcement.Id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onDismiss) onDismiss(announcement.Id);
+              }}
             />
           )}
           {isAdmin && onDelete && (
@@ -126,7 +137,10 @@ const AnnouncementCard: React.FC<IAnnouncementCardProps> = React.memo((props) =>
                 icon: { fontSize: 12, color: '#d13438' },
                 rootHovered: { background: '#fde8ea', color: '#a80000' }
               }}
-              onClick={() => onDelete(announcement.Id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onDelete) onDelete(announcement.Id);
+              }}
             />
           )}
         </div>

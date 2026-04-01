@@ -10,6 +10,7 @@ export interface IAnnouncementGridProps {
   enableCategoryColors: boolean;
   accentColor: string;
   isAdmin: boolean;
+  onClick?: (announcement: IAnnouncement) => void;
   onDismiss?: (id: number) => void;
   onDelete?: (id: number) => void;
 }
@@ -22,6 +23,7 @@ const AnnouncementGrid: React.FC<IAnnouncementGridProps> = React.memo((props) =>
     enableCategoryColors,
     accentColor,
     isAdmin,
+    onClick,
     onDismiss,
     onDelete
   } = props;
@@ -37,6 +39,7 @@ const AnnouncementGrid: React.FC<IAnnouncementGridProps> = React.memo((props) =>
             enableCategoryColors={enableCategoryColors}
             accentColor={accentColor}
             isAdmin={isAdmin}
+            onClick={onClick}
             onDismiss={onDismiss}
             onDelete={onDelete}
           />

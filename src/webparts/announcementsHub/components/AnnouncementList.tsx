@@ -20,6 +20,7 @@ export interface IAnnouncementListProps {
   enableAnimations: boolean;
   enableCategoryColors: boolean;
   isAdmin: boolean;
+  onClick?: (announcement: IAnnouncement) => void;
   onDismiss?: (id: number) => void;
   onDelete?: (id: number) => void;
 }
@@ -30,6 +31,7 @@ const AnnouncementList: React.FC<IAnnouncementListProps> = React.memo((props) =>
     enableAnimations,
     enableCategoryColors,
     isAdmin,
+    onClick,
     onDismiss,
     onDelete
   } = props;
@@ -51,9 +53,15 @@ const AnnouncementList: React.FC<IAnnouncementListProps> = React.memo((props) =>
           <div
             key={a.Id}
             className={rowClass}
-            role="listitem"
-            aria-label={`Announcement: ${a.Title}`}
+            role="button"
+            aria-label={`View Announcement: ${a.Title}`}
             tabIndex={0}
+            onClick={() => { if (onClick) onClick(a); }}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                if (onClick) onClick(a);
+              }
+            }}
           >
             {/* Important dot */}
             {a.IsImportant && (
@@ -104,7 +112,10 @@ const AnnouncementList: React.FC<IAnnouncementListProps> = React.memo((props) =>
                     icon: { fontSize: 12, color: '#8a8886' },
                     rootHovered: { background: '#f3f2f1' }
                   }}
-                  onClick={() => onDismiss(a.Id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onDismiss) onDismiss(a.Id);
+                  }}
                 />
               )}
               {isAdmin && onDelete && (
@@ -117,7 +128,10 @@ const AnnouncementList: React.FC<IAnnouncementListProps> = React.memo((props) =>
                     icon: { fontSize: 12, color: '#d13438' },
                     rootHovered: { background: '#fde8ea', color: '#a80000' }
                   }}
-                  onClick={() => onDelete(a.Id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onDelete) onDelete(a.Id);
+                  }}
                 />
               )}
             </div>
