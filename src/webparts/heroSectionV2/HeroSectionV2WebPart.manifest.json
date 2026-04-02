@@ -1,0 +1,30 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b4d2f6a8-3c9e-4f1b-a0d5-e8f7c6b2a1d3",
+  "alias": "HeroSectionV2WebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportsFullBleed": true,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Other" },
+    "title": { "default": "OP Hero Section V2" },
+    "description": { "default": "A cinematic full-width hero section with background image, overlay, and optional CTA" },
+    "officeFabricIconFontName": "Photo2",
+    "properties": {
+      "heading": "Welcome to Our Platform",
+      "subheading": "Empowering teams to build, collaborate, and innovate together.",
+      "backgroundImage": "",
+      "ctaText": "Get Started",
+      "ctaLink": "",
+      "showCta": true,
+      "badgeText": "",
+      "overlayColor": "#000000",
+      "overlayOpacity": 50,
+      "heroHeight": 520
+    }
+  }]
+}

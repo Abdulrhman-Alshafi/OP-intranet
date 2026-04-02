@@ -137,6 +137,14 @@
           "manifest": "./src/webparts/faqSection/FAQSectionWebPart.manifest.json"
         }
       ]
+    },
+    "hero-section-v2-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/heroSectionV2/HeroSectionV2WebPart.js",
+          "manifest": "./src/webparts/heroSectionV2/HeroSectionV2WebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -159,6 +167,7 @@
     "IntranetHubWebPartStrings": "lib/webparts/intranetHub/loc/{locale}.js",
     "AnnouncementsHubWebPartStrings": "lib/webparts/announcementsHub/loc/{locale}.js",
     "ItHelpDeskHeroWebPartStrings": "lib/webparts/itHelpDeskHero/loc/{locale}.js",
-    "FAQSectionWebPartStrings": "lib/webparts/faqSection/loc/{locale}.js"
+    "FAQSectionWebPartStrings": "lib/webparts/faqSection/loc/{locale}.js",
+    "HeroSectionV2WebPartStrings": "lib/webparts/heroSectionV2/loc/{locale}.js"
   }
 }
