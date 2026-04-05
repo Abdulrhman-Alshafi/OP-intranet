@@ -1,0 +1,22 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "e6a1f810-bb23-455b-8012-1f4bfd8c9ff0",
+  "alias": "SalesPerformanceDashboardWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "SharePointFullPage", "TeamsTab"],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": {"default": "Advanced"},
+    "title": {"default": "Sales Performance Dashboard"},
+    "description": {"default": "View sales targets and achievements with interactive charts."},
+    "officeFabricIconFontName": "BarChartVertical",
+    "properties": {
+      "listId": "",
+      "chartType": "bar"
+    }
+  }]
+}

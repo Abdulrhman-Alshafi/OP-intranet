@@ -1,0 +1,18 @@
+.salesPerformanceDashboard {
+  padding: 16px 0;
+
+  // Most of the heavy lifting is now handled logically via Fluent UI,
+  // but we can retain this block safely for future custom overrides if requested.
+  // The global SCSS is drastically cleaned up since FluentUI handles layout constraints and shadow.
+  
+  :global {
+    .recharts-default-tooltip {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      background-color: var(--bodyBackground, #ffffff) !important;
+      color: var(--bodyText, #333333) !important;
+      border: 1px solid var(--neutralLight, #edebe9) !important;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+      border-radius: 6px !important;
+    }
+  }
+}
