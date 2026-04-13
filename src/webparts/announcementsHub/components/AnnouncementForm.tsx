@@ -18,7 +18,8 @@ const CATEGORY_OPTIONS: IDropdownOption[] = [
   { key: 'Finance', text: 'Finance' },
   { key: 'Events', text: 'Events' },
   { key: 'Policy', text: 'Policy' },
-  { key: 'Urgent', text: 'Urgent' }
+  { key: 'Urgent', text: 'Urgent' },
+  { key: 'Press release', text: 'Press release' }
 ];
 
 export interface IAnnouncementFormProps {

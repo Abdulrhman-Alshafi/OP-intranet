@@ -12,7 +12,7 @@ import AnnouncementList from './AnnouncementList';
 import AnnouncementForm from './AnnouncementForm';
 import styles from './AnnouncementsHub.module.scss';
 
-const ALL_CATEGORIES = ['All', 'General', 'HR', 'IT', 'Finance', 'Events', 'Policy', 'Urgent'];
+const ALL_CATEGORIES = ['All', 'General', 'HR', 'IT', 'Finance', 'Events', 'Policy', 'Urgent', 'Press release'];
 
 const AnnouncementsHub: React.FC<IAnnouncementsHubProps> = (props) => {
   const {

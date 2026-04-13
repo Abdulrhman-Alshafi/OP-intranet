@@ -47,7 +47,7 @@ export class AnnouncementsService {
         { type: 'Note', title: 'Description' },
         {
           type: 'Choice', title: 'Category', choices: [
-            'General', 'HR', 'IT', 'Finance', 'Events', 'Policy', 'Urgent'
+            'General', 'HR', 'IT', 'Finance', 'Events', 'Policy', 'Urgent', 'Press release'
           ]
         },
         { type: 'Text', title: 'ImageUrl' },

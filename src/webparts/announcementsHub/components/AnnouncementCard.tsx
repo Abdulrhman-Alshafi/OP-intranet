@@ -12,7 +12,8 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string; glow: string }
   Finance:  { bg: '#d4f0da', text: '#107c41', glow: 'rgba(16,124,65,0.12)' },
   Events:   { bg: '#fff4d1', text: '#9a6700', glow: 'rgba(154,103,0,0.12)' },
   Policy:   { bg: '#fde8ea', text: '#c42b30', glow: 'rgba(196,43,48,0.12)' },
-  Urgent:   { bg: '#d13438', text: '#ffffff', glow: 'rgba(209,52,56,0.25)' }
+  Urgent:   { bg: '#d13438', text: '#ffffff', glow: 'rgba(209,52,56,0.25)' },
+  'Press release': { bg: '#e0f7fa', text: '#006064', glow: 'rgba(0,96,100,0.12)' }
 };
 
 export interface IAnnouncementCardProps {
