@@ -1,0 +1,424 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+/* ─── Root Container ─────────────────────────────────────────────── */
+.cvRecommendation {
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  padding: 24px;
+  font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  background: "[theme:bodyBackground, default: #ffffff]";
+  background-color: var(--bodyBackground);
+  min-height: 300px;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-bottom-color: var(--neutralLight);
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    .titleIcon {
+      font-size: 22px;
+      color: "[theme:themePrimary, default: #0078d4]";
+      color: var(--themePrimary);
+    }
+
+    .title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+      color: "[theme:neutralPrimary, default: #323130]";
+      color: var(--neutralPrimary);
+      line-height: 1.3;
+    }
+
+    .roleBadge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .roleBadgeHr {
+      background: #e1f0ff;
+      color: #0063b1;
+    }
+
+    .roleBadgeEmployee {
+      background: "#[theme:neutralLighter, default: #f3f2f1]";
+      background-color: var(--neutralLighter, #f3f2f1);
+      color: "[theme:neutralSecondary, default: #605e5c]";
+      color: var(--neutralSecondary, #605e5c);
+    }
+  }
+}
+
+/* ─── Dashboard Stats ────────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.statCard {
+  background: "[theme:white, default: #ffffff]";
+  background-color: var(--white, #ffffff);
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight, #edebe9);
+  border-radius: 6px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 1.6px 3.6px rgba(0,0,0,.1), 0 0.3px 0.9px rgba(0,0,0,.07);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,.12), 0 1px 3px rgba(0,0,0,.08);
+  }
+
+  .statValue {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .statLabel {
+    font-size: 12px;
+    font-weight: 500;
+    color: "[theme:neutralSecondary, default: #605e5c]";
+    color: var(--neutralSecondary, #605e5c);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+}
+
+.statTotal   { .statValue { color: "[theme:themePrimary, default: #0078d4]"; color: var(--themePrimary, #0078d4); } }
+.statSubmitted { .statValue { color: #8764b8; } }
+.statReview    { .statValue { color: #d47500; } }
+.statAccepted  { .statValue { color: #107c10; } }
+.statRejected  { .statValue { color: #a4262c; } }
+
+/* ─── Toolbar ────────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .toolbarLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .toolbarRight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .searchBox {
+    min-width: 220px;
+  }
+}
+
+/* ─── Filter Pills ───────────────────────────────────────────────── */
+.filterPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  background: "[theme:white, default: #ffffff]";
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  transition: all 0.15s ease;
+  user-select: none;
+  &:hover { background: "[theme:neutralLighter, default: #f3f2f1]"; }
+}
+
+.pillActive {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  background: "[theme:themePrimary, default: #0078d4]";
+  color: #ffffff;
+  border: 1px solid "[theme:themePrimary, default: #0078d4]";
+  transition: all 0.15s ease;
+  &:hover { background: "[theme:themeDark, default: #005a9e]"; }
+}
+
+/* ─── Table / List ───────────────────────────────────────────────── */
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight, #edebe9);
+  border-radius: 6px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    background: "[theme:neutralLighterAlt, default: #faf9f8]";
+    background-color: var(--neutralLighterAlt, #faf9f8);
+    color: "[theme:neutralSecondary, default: #605e5c]";
+    color: var(--neutralSecondary, #605e5c);
+    font-weight: 600;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      background: "[theme:neutralLighter, default: #f3f2f1]";
+      background-color: var(--neutralLighter, #f3f2f1);
+    }
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid "[theme:neutralLighter, default: #f3f2f1]";
+    border-bottom-color: var(--neutralLighter, #f3f2f1);
+    color: "[theme:neutralPrimary, default: #323130]";
+    color: var(--neutralPrimary, #323130);
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: "[theme:neutralLighterAlt, default: #faf9f8]";
+    background-color: var(--neutralLighterAlt, #faf9f8);
+  }
+}
+
+/* ─── Status Badge ───────────────────────────────────────────────── */
+.statusBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusSubmitted  { background: #f0f0ff; color: #5c2d91; }
+.statusUnderReview { background: #fff4ce; color: #7d5900; }
+.statusAccepted   { background: #dff6dd; color: #107c10; }
+.statusRejected   { background: #fde7e6; color: #a4262c; }
+
+/* ─── Actions ────────────────────────────────────────────────────── */
+.actionsCell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── Empty / Error / Loading ────────────────────────────────────── */
+.stateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  gap: 12px;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary, #605e5c);
+  text-align: center;
+
+  .stateIcon {
+    font-size: 40px;
+    opacity: 0.5;
+  }
+
+  .stateTitle {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .stateDesc {
+    font-size: 13px;
+    max-width: 340px;
+  }
+}
+
+/* ─── Pagination ─────────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .pageInfo {
+    font-size: 13px;
+    color: "[theme:neutralSecondary, default: #605e5c]";
+    color: var(--neutralSecondary, #605e5c);
+  }
+
+  .pageButtons {
+    display: flex;
+    gap: 6px;
+  }
+}
+
+/* ─── Panel Form ─────────────────────────────────────────────────── */
+.formSection {
+  margin-bottom: 20px;
+}
+
+.formSectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: "[theme:neutralSecondary, default: #605e5c]";
+  color: var(--neutralSecondary, #605e5c);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-bottom-color: var(--neutralLight, #edebe9);
+}
+
+/* File upload area */
+.fileUploadArea {
+  border: 2px dashed "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight, #edebe9);
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    border-color: "[theme:themePrimary, default: #0078d4]";
+    background: "[theme:neutralLighterAlt, default: #faf9f8]";
+    background-color: var(--neutralLighterAlt, #faf9f8);
+  }
+
+  .fileUploadIcon {
+    font-size: 28px;
+    color: "[theme:themePrimary, default: #0078d4]";
+    color: var(--themePrimary, #0078d4);
+    margin-bottom: 8px;
+  }
+
+  .fileUploadText {
+    font-size: 13px;
+    color: "[theme:neutralSecondary, default: #605e5c]";
+    color: var(--neutralSecondary, #605e5c);
+  }
+
+  .fileUploadSubtext {
+    font-size: 11px;
+    color: "[theme:neutralTertiary, default: #a19f9d]";
+    color: var(--neutralTertiary, #a19f9d);
+    margin-top: 4px;
+  }
+}
+
+.fileSelected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: "[theme:neutralLighterAlt, default: #faf9f8]";
+  background-color: var(--neutralLighterAlt, #faf9f8);
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight, #edebe9);
+  border-radius: 6px;
+
+  .fileIcon {
+    font-size: 20px;
+    color: "#d83b01";
+  }
+
+  .fileName {
+    flex: 1;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* ─── CV Detail Panel ────────────────────────────────────────────── */
+.detailRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+
+  .detailLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: "[theme:neutralSecondary, default: #605e5c]";
+    color: var(--neutralSecondary, #605e5c);
+    min-width: 130px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding-top: 2px;
+  }
+
+  .detailValue {
+    font-size: 14px;
+    color: "[theme:neutralPrimary, default: #323130]";
+    color: var(--neutralPrimary, #323130);
+    flex: 1;
+    word-break: break-word;
+  }
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .cvRecommendation { padding: 16px; }
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbarLeft { flex-direction: column; }
+  .searchBox { min-width: unset; width: 100%; }
+}

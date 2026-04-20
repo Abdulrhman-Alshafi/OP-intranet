@@ -7,7 +7,7 @@ export interface ICreatePollFormProps {
   /** Whether submission is in progress */
   isSubmitting: boolean;
   /** Callback to create a new poll */
-  onCreate: (question: string, options: string[], expiryDate: string | null) => void;
+  onCreate: (question: string, options: string[], expiryDate: string | undefined) => void;
   /** Callback to close the form */
   onClose: () => void;
 }
@@ -93,7 +93,7 @@ const CreatePollForm: React.FC<ICreatePollFormProps> = ({
     onCreate(
       question.trim(),
       validOptions,
-      expiryDate ? new Date(expiryDate).toISOString() : null
+      expiryDate ? new Date(expiryDate).toISOString() : undefined
     );
   };
 

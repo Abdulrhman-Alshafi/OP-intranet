@@ -18,7 +18,7 @@
         "default": "Advanced"
       },
       "title": {
-        "default": "HR Documents"
+        "default": "OP HR Documents"
       },
       "description": {
         "default": "Employees view their own HR letters and contracts; HR staff manage and upload all documents with item-level security."

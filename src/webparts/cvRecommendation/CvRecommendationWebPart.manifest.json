@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "a1c2e3f4-5b67-4d89-ace1-234567890abc",
-  "alias": "SalaryDocumentWebPart",
+  "id": "c4d7e2a1-8f3b-4e9c-b5a2-d1e6f0c3b8a7",
+  "alias": "CvRecommendationWebPart",
   "componentType": "WebPart",
   "version": "*",
   "manifestVersion": 2,
@@ -18,15 +18,16 @@
         "default": "Advanced"
       },
       "title": {
-        "default": "OP Salary Documents"
+        "default": "OP CV Recommendation"
       },
       "description": {
-        "default": "Employees view their own salary documents; accountants manage and upload all documents with item-level security."
+        "default": "Allow employees to recommend candidate CVs to HR. Includes submission form, status tracking, role-based views, and an HR dashboard."
       },
-      "officeFabricIconFontName": "Money",
+      "officeFabricIconFontName": "People",
       "properties": {
-        "libraryName": "SalaryDocuments",
-        "accountantGroupName": "Accountants"
+        "title": "OP CV Recommendation",
+        "accentColor": "#0078d4",
+        "itemsPerPage": 10
       }
     }
   ]

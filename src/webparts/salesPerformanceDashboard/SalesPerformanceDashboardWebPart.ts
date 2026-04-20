@@ -77,6 +77,7 @@ export default class SalesPerformanceDashboardWebPart extends BaseClientSideWebP
                   disabled: false,
                   onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
                   properties: this.properties,
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   context: this.context as any,
                   onGetErrorMessage: undefined,
                   deferredValidationTime: 0,

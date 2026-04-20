@@ -1,6 +1,6 @@
 # OP Intranet — SPFx Web Parts
 
-A collection of production-ready SharePoint Framework web parts built for the OP intranet.
+A collection of production-ready SharePoint Framework (SPFx) web parts built for the OP intranet portal. All web parts follow a consistent design language using Fluent UI v8, SharePoint theme tokens, and a shared service pattern.
 
 ---
 
@@ -9,11 +9,11 @@ A collection of production-ready SharePoint Framework web parts built for the OP
 | | |
 |---|---|
 | **SPFx** | 1.22.2 |
-| **React** | 17.0.1 |
+| **React** | 17.0.1 (Functional components + Hooks) |
 | **TypeScript** | ~5.8.0 |
-| **Fluent UI** | v8 |
+| **Fluent UI** | v8 (`@fluentui/react`) |
 | **Build system** | Heft (Rush Stack) |
-| **PnP Controls** | `@pnp/spfx-controls-react` v3 |
+| **PnP Controls** | `@pnp/spfx-controls-react` v3 · `@pnp/spfx-property-controls` |
 
 ---
 
@@ -22,7 +22,7 @@ A collection of production-ready SharePoint Framework web parts built for the OP
 ```bash
 npm install -g @rushstack/heft   # one-time global install
 npm install                      # install project dependencies
-npm start                        # local workbench (https://localhost:4321/temp/workbench.html)
+npm start                        # local workbench → https://localhost:4321/temp/workbench.html
 npm run build                    # production build + package (.sppkg)
 ```
 
@@ -31,6 +31,33 @@ The packaged solution file is output to:
 sharepoint/solution/op-intranet.sppkg
 ```
 Upload this file to your SharePoint App Catalog to deploy.
+
+---
+
+## Web Parts Overview
+
+| # | Web Part | SharePoint Backend |
+|---|---|---|
+| 1 | [OP Countdown Timer](#1-op-countdown-timer) | None — web part properties only |
+| 2 | [OP Knowledge Base](#2-op-knowledge-base) | `KnowledgeBase` list |
+| 3 | [OP Polls & Quick Surveys](#3-op-polls--quick-surveys) | `Polls` + `PollVotes` lists |
+| 4 | [OP Recognition Wall](#4-op-recognition-wall) | `Recognition` list |
+| 5 | [OP Services Grid](#5-op-services-grid) | None — web part properties only |
+| 6 | [OP Swiper](#6-op-swiper) | None — web part properties only |
+| 7 | [OP Task Dashboard](#7-op-task-dashboard) | Planner (Graph) + optional SP Tasks list |
+| 8 | [OP Salary Documents](#8-op-salary-documents) | `SalaryDocuments` library |
+| 9 | [OP HR Documents](#9-op-hr-documents) | `HRDocuments` library |
+| 10 | [OP FAQ Section](#10-op-faq-section) | `FAQs` list |
+| 11 | [OP Announcements Hub](#11-op-announcements-hub) | `OPAnnouncements` + `OPAnnouncementsDismissed` lists |
+| 12 | [OP Help Desk Devices](#12-op-help-desk-devices) | SharePoint list (auto-provisioned) |
+| 13 | [OP Devices Catalog](#13-op-devices-catalog) | SharePoint list (auto-provisioned) |
+| 14 | [OP Hero Section](#14-op-hero-section) | None — web part properties only |
+| 15 | [OP Hero Section V2](#15-op-hero-section-v2) | None — web part properties only |
+| 16 | [OP Intranet Hub](#16-op-intranet-hub) | Multiple SP lists (auto-provisioned) |
+| 17 | [OP IT Help Desk Hero](#17-op-it-help-desk-hero) | None — web part properties only |
+| 18 | [OP Team Members](#18-op-team-members) | None — web part properties only |
+| 19 | [OP Sales Performance Dashboard](#19-op-sales-performance-dashboard) | SharePoint list |
+| 20 | [OP CV Recommendation](#20-op-cv-recommendation) | `CVRecommendations` list + `CVRecommendationFiles` library |
 
 ---
 
@@ -243,7 +270,7 @@ A unified task view aggregating tasks from **Microsoft Planner** (via Graph API)
 
 ---
 
-### 8. Salary Documents
+### 8. OP Salary Documents
 
 **What it does**
 
@@ -331,7 +358,7 @@ The Excel manifest must contain exactly **four columns** in the first sheet:
 
 ---
 
-### 9. HR Documents
+### 9. OP HR Documents
 
 **What it does**
 
@@ -407,7 +434,7 @@ The Excel manifest used for bulk upload must contain exactly **three columns** i
 
 ---
 
-### 10. FAQ Section
+### 10. OP FAQ Section
 
 **What it does**
 
@@ -493,4 +520,347 @@ npx heft package-solution --production
 1. Upload `op-intranet.sppkg` to the SharePoint App Catalog
 2. Choose **Make this solution available to all sites** if you want tenant-wide deployment
 3. Add individual web parts to pages via the modern page editor
+
+---
+
+### 11. OP Announcements Hub
+
+**What it does**
+
+A dynamic announcements hub with card grid and list views, category filter pills, and admin management. Employees can dismiss announcements; admins can create, edit, and delete them. Supports configurable layout mode, number of items, sort order, and accent color.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Title | Display title of the web part |
+| Layout mode | Grid or List |
+| Number of items to display | 1–50 |
+| Sort order | Newest first / Oldest first |
+| Show images | Toggle announcement images |
+| Enable animations | Toggle card hover animations |
+| Enable category colors | Color-coded category badges |
+| Accent color | Hex color for primary accents |
+
+**SharePoint requirements**
+
+Lists are **auto-provisioned** on first load.
+
+1. `OPAnnouncements` — stores announcement items:
+
+| Column | Type |
+|---|---|
+| Title | Single line |
+| Description | Multiple lines |
+| Category | Choice: General, HR, IT, Finance, Events, Policy, Urgent, Press release |
+| ImageUrl | Single line |
+| IsImportant | Yes/No |
+
+2. `OPAnnouncementsDismissed` — tracks per-user dismissals:
+
+| Column | Type |
+|---|---|
+| AnnouncementId | Number |
+| UserId | Number |
+
+Grant site members **Contribute** on both lists.
+
+---
+
+### 12. OP Help Desk Devices
+
+**What it does**
+
+Allows IT Help Desk staff to manage device inventory and device request workflows. Admins can add, assign, and track devices. Employees can view and request available devices.
+
+**SharePoint requirements**
+
+The list and columns are **auto-provisioned** on first load by the service layer. Ensure the logged-in user has at least **Contribute** permissions on the target site.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Title | Display title of the web part |
+
+---
+
+### 13. OP Devices Catalog
+
+**What it does**
+
+A self-service device catalog for employees to browse available IT devices and submit requests. Displays device details such as model, category, availability, and specs.
+
+**SharePoint requirements**
+
+The list and columns are **auto-provisioned** on first load. Ensure site members have **Contribute** access.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Title | Display title of the web part |
+
+---
+
+### 14. OP Hero Section
+
+**What it does**
+
+A customizable hero section with a heading, description, and optional images. Designed to be placed at the top of intranet home pages.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Heading | Main hero headline |
+| Description | Supporting body text |
+| Image URL | Background or side image |
+| CTA button label | Call-to-action button text |
+| CTA button URL | Call-to-action link target |
+| Accent color | Hex color for button and accents |
+
+**SharePoint requirements**
+
+None — all configuration is stored in web part properties.
+
+---
+
+### 15. OP Hero Section V2
+
+**What it does**
+
+A cinematic full-width hero section with a full-bleed background image, overlay, and an optional CTA button. Upgraded visual style over V1 with parallax-ready layout and overlay opacity control.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Heading | Main hero headline |
+| Description | Subtitle / supporting text |
+| Background image URL | Full-width background image |
+| Overlay opacity | 0–100% darkness of image overlay |
+| CTA button label | Call-to-action button text |
+| CTA button URL | Call-to-action link |
+| Accent color | Button and highlight hex color |
+
+**SharePoint requirements**
+
+None — all configuration is stored in web part properties.
+
+---
+
+### 16. OP Intranet Hub
+
+**What it does**
+
+A fully dynamic intranet dashboard with multiple configurable sections: Quick Links, Stats, Departments, Tools, Employee Spotlight, and Materials. Acts as the main landing page hub for the intranet.
+
+**SharePoint requirements**
+
+Multiple lists are **auto-provisioned** on first load. Ensure the user has at least **Contribute** access on the target site. A site collection administrator is required for the initial provisioning run.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Title | Display title |
+| Visible sections | Toggle Quick Links, Stats, Departments, Tools, Spotlight, Materials individually |
+| Accent color | Global hex accent color |
+
+---
+
+### 17. OP IT Help Desk Hero
+
+**What it does**
+
+A hero section purpose-built for the IT Help Desk page. Includes a pre-configured headline, description, and up to 4 action image tiles (e.g. "New devices in stock", "Download latest security update"). Each tile links to a relevant page.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Title | Hero headline |
+| Description | Supporting body text |
+| Tiles | Collection editor — each tile has: Title, Image URL, Link URL |
+| Background image | Hero section background |
+| Overlay opacity | 0–100% |
+| Accent color | Hex color for button |
+
+**SharePoint requirements**
+
+None — all configuration is stored in web part properties.
+
+---
+
+### 18. OP Team Members
+
+**What it does**
+
+Displays a curated set of employees as profile cards. Each card shows a photo, name, job title, department, and a contact link. Ideal for Department or About pages.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| Title | Section heading |
+| Members | Collection editor — each member has: Display name, Job title, Department, Photo URL, Email |
+| Columns | 2, 3, or 4 cards per row |
+| Card style | Default or Compact |
+
+**SharePoint requirements**
+
+None — all configuration is stored in web part properties.
+
+---
+
+### 19. OP Sales Performance Dashboard
+
+**What it does**
+
+Visualizes sales targets vs. achievements with interactive charts (bar or pie). Reads data from a SharePoint list and renders progress indicators per sales rep or team.
+
+**Property pane settings**
+
+| Setting | Description |
+|---|---|
+| List ID | GUID of the SharePoint list containing sales data |
+| Chart type | Bar or Pie |
+
+**SharePoint requirements**
+
+Create a SharePoint list with the following columns:
+
+| Column | Type |
+|---|---|
+| Title | Single line — sales rep or team name |
+| Target | Number — sales target value |
+| Achievement | Number — actual achieved value |
+| Period | Single line — e.g. `Q1 2026` |
+
+---
+
+### 20. OP CV Recommendation
+
+**What it does**
+
+An HR portal web part that allows employees to recommend candidate CVs to the HR department. Includes a submission form, role-based list view, status tracking, and an HR dashboard.
+
+**Role-based behaviour**
+
+| Role | Access |
+|---|---|
+| **Employees** | Submit CVs; view, and delete only their own submissions |
+| **HR Team** (SP group `HR Team`) | View all submissions; update status; delete any entry |
+
+**Features**
+
+- Dashboard stats cards: Total / Submitted / Under Review / Accepted / Rejected
+- CV submission panel form with validation and file upload (PDF / DOC / DOCX)
+- Searchable, filterable, sortable table view with pagination
+- Status workflow: Submitted → Under Review → Accepted / Rejected (HR only)
+- Detail panel with CV file download link
+- Delete confirmation dialog
+
+**Property pane settings**
+
+| Setting | Default | Description |
+|---|---|---|
+| Title | `CV Recommendation` | Display title of the web part |
+| Items per page | `10` | Rows shown per page (5–50) |
+| Accent color | `#0078d4` | Hex color for primary button and accents |
+
+**SharePoint requirements — step by step**
+
+#### Step 1 — Lists and library (auto-provisioned)
+
+Both the list and the document library are created automatically on first load if they don't exist:
+
+- **`CVRecommendations`** (Custom list) — stores submission metadata
+- **`CVRecommendationFiles`** (Document library) — stores uploaded CV files
+
+No manual provisioning is required, but the user performing the first load must have **Contribute** permissions (or higher) on the site.
+
+#### Step 2 — CVRecommendations list columns
+
+These columns are auto-created by the service. For reference:
+
+| Column | Type | Notes |
+|---|---|---|
+| Title | Single line | Candidate full name (built-in) |
+| CandidateEmail | Single line | Candidate email address |
+| PhoneNumber | Single line | Candidate phone number |
+| Position | Single line | Role being applied for |
+| Notes | Multiple lines | Recommender's comments |
+| Status | Choice | Submitted · Under Review · Accepted · Rejected |
+| CVFileUrl | Single line | Server-relative URL of uploaded file |
+| CVFileName | Single line | Original file name |
+| Author | Person (built-in) | Automatically set to submitting user |
+| Created | Date (built-in) | Auto-stamped by SharePoint |
+
+#### Step 3 — Create the SharePoint groups
+
+**HR Team group** (full access to all records):
+
+1. Go to **Site settings → People and groups → New → New Group**
+2. Name it exactly `HR Team`
+3. Add all HR staff to this group
+4. Grant this group **Full Control** on the `CVRecommendations` list and the `CVRecommendationFiles` library
+
+**Employees group** (submit and read own items only):
+
+1. The default `Site Members` group (Contribute level) is sufficient
+2. To restrict employees to **read only their own items**, configure item-level permissions on the list:
+   - Go to **List settings → Advanced settings**
+   - Set **Read access**: *Read items that were created by the user*
+   - Set **Create and edit access**: *Create items and edit items that were created by the user*
+
+#### Step 4 — Item-level permissions on the list
+
+1. **List settings → Advanced settings**
+2. Under **Item-Level Permissions**:
+   - Read access → **Read items that were created by the user**
+   - Create and edit access → **Create items and edit items that were created by the user**
+3. Click **OK**
+
+This ensures SharePoint enforces access at the data layer — not only the frontend filter.
+
+#### Step 5 — Document library permissions
+
+1. Navigate to the `CVRecommendationFiles` library
+2. **Library settings → Permissions for this document library → Stop Inheriting Permissions**
+3. Grant:
+   - `HR Team` → **Full Control**
+   - `Site Members` → **Contribute** (needed for employees to upload their own CV files)
+   - `Site Owners` → **Full Control**
+
+#### Step 6 — Optional: Power Automate notification flow
+
+To send an email/Teams notification to HR when a new CV is submitted:
+
+1. Go to **Power Automate → New flow → Automated cloud flow**
+2. Trigger: **When an item is created** → select site + `CVRecommendations` list
+3. Action: **Send an email (V2)** or **Post a message in a Teams channel**
+4. Address the notification to your HR Team distribution list or Teams channel
+
+**Source files**
+
+```
+src/services/CvRecommendationService.ts            ← data access layer
+src/webparts/cvRecommendation/
+├── CvRecommendationWebPart.ts                     ← web part class
+├── CvRecommendationWebPart.manifest.json          ← component manifest
+├── loc/
+│   ├── en-us.js
+│   └── mystrings.d.ts
+└── components/
+    ├── ICvRecommendationProps.ts                  ← root props interface
+    ├── CvRecommendation.tsx                       ← root component (data + state)
+    ├── CvDashboard.tsx                            ← stats cards
+    ├── CvSubmitForm.tsx                           ← submission panel form
+    ├── CvList.tsx                                 ← filterable/sortable table + detail panel
+    └── CvRecommendation.module.scss               ← styles (CSS Modules + SP theme tokens)
+```
+
+---
 

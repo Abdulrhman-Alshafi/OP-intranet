@@ -1,11 +1,11 @@
 import * as React from 'react';
 import importedStyles from './RecognitionWall.module.scss';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const styles: any = importedStyles;
 import { IEmployeeHighlightProps } from './IRecognitionWallProps';
 import { Persona, PersonaSize } from '@fluentui/react/lib/Persona';
 import { Icon } from '@fluentui/react/lib/Icon';
 import { IconButton } from '@fluentui/react/lib/Button';
+
+const styles = importedStyles as unknown as Record<string, string>;
 
 /**
  * EmployeeHighlight displays a banner for the Employee of the Month.
@@ -14,8 +14,8 @@ import { IconButton } from '@fluentui/react/lib/Button';
  */
 const EmployeeHighlight = (props: IEmployeeHighlightProps): React.ReactElement => {
   const { employee, siteUrl, isAdmin, onRemove } = props;
-  const email = 'email' in employee ? employee.email : ('EmployeeEmail' in employee ? (employee as any).EmployeeEmail : '');
-  const name = 'name' in employee ? employee.name : ('EmployeeName' in employee ? (employee as any).EmployeeName : 'Unknown');
+  const email = 'email' in employee ? employee.email : ('EmployeeEmail' in employee ? (employee as unknown as Record<string, string>).EmployeeEmail : '');
+  const name = 'name' in employee ? employee.name : ('EmployeeName' in employee ? (employee as unknown as Record<string, string>).EmployeeName : 'Unknown');
   const secondaryText = 'kudosCount' in employee ? `${employee.kudosCount} kudos this month` : 'Employee of the Month';
   const photoUrl = `${siteUrl}/_layouts/15/userphoto.aspx?size=L&accountname=${encodeURIComponent(email)}`;
 

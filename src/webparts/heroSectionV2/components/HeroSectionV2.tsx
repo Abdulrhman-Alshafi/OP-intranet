@@ -1,5 +1,4 @@
 import * as React from 'react';
-// @ts-ignore - Ignore SPFx SCSS typings issue
 import styles from './HeroSectionV2.module.scss';
 import type { IHeroSectionV2Props } from './IHeroSectionV2Props';
 

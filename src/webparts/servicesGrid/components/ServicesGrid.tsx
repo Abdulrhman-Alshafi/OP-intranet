@@ -20,7 +20,7 @@ const ServicesGrid = (props: IServicesGridProps): React.ReactElement => {
       <section className={styles.servicesGridContainer}>
         <div className={styles.emptyState}>
           <h2>{escape(sectionTitle)}</h2>
-          <p>Please configure your cards by clicking 'Manage Cards' in the property pane.</p>
+          <p>Please configure your cards by clicking &apos;Manage Cards&apos; in the property pane.</p>
         </div>
       </section>
     );

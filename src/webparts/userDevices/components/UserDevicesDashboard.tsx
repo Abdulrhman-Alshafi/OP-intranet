@@ -36,7 +36,7 @@ export const UserDevicesDashboard: React.FC<IUserDevicesProps> = (props) => {
           setCurrentUserId(id);
           setInitError(undefined);
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) setInitError('Unable to get user info.');
       } finally {
         if (!cancelled) setInitLoading(false);

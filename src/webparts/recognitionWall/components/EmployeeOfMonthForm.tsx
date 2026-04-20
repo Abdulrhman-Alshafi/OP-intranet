@@ -67,6 +67,7 @@ const EmployeeOfMonthForm = (props: IEmployeeOfMonthFormProps): React.ReactEleme
         const json = await response.json();
         const resultStr = json.value || json.ClientPeoplePickerSearchUser || '[]';
         const parsed = typeof resultStr === 'string' ? JSON.parse(resultStr) : resultStr;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const results = (parsed as any[]).map((person) => ({
           displayName: person.DisplayText || person.Key || '',
           mail: person.EntityData?.Email || person.Key || ''

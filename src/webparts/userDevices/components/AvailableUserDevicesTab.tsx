@@ -31,7 +31,7 @@ export const AvailableUserDevicesTab: React.FC<IAvailableUserDevicesTabProps> = 
 
   const availableDevices = devices.filter(d => d.IsRequestable && d.Status === 'Available');
 
-  const handleSubmitRequest = async () => {
+  const handleSubmitRequest = async (): Promise<void> => {
     if (!requestingDeviceId || !reason) {
       setErrorMsg('Please enter a reason for your request.');
       return;
@@ -55,7 +55,7 @@ export const AvailableUserDevicesTab: React.FC<IAvailableUserDevicesTabProps> = 
     }
   };
 
-  const closeDialog = () => {
+  const closeDialog = (): void => {
     setRequestingDeviceId(null);
     setReason('');
     setErrorMsg(undefined);

@@ -11,8 +11,6 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import { SPHttpClient } from '@microsoft/sp-http';
-import { RecognitionService } from '../../services/RecognitionService';
-
 import * as strings from 'RecognitionWallWebPartStrings';
 import RecognitionWall from './components/RecognitionWall';
 import { IRecognitionWallProps } from './components/IRecognitionWallProps';

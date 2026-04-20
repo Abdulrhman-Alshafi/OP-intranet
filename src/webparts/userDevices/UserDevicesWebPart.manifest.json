@@ -11,7 +11,7 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
     "group": { "default": "Other" },
-    "title": { "default": "Devices Catalog" },
+    "title": { "default": "OP Devices Catalog" },
     "description": { "default": "View and request available IT devices" },
     "officeFabricIconFontName": "Devices3",
     "properties": {

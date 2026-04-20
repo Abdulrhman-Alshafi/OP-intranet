@@ -236,7 +236,7 @@ export class PollService {
   public async createPoll(
     question: string,
     choices: string[],
-    closingDate: string | null
+    closingDate: string | undefined
   ): Promise<void> {
     await this.ensureLists();
 

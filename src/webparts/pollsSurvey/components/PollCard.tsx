@@ -15,7 +15,7 @@ export interface IPollCardProps {
   /** PollService instance */
   pollService: PollService;
   /** Pre-loaded results (from batch fetch) */
-  initialResults: IPollResults | null;
+  initialResults: IPollResults | undefined;
   /** Whether the current user is a poll admin */
   isAdmin: boolean;
   /** Callback after a vote is successfully submitted */
@@ -42,7 +42,7 @@ const PollCard: React.FC<IPollCardProps> = ({
   onVoteSubmitted,
   onPollUpdated
 }) => {
-  const [results, setResults] = React.useState<IPollResults | null>(initialResults);
+  const [results, setResults] = React.useState<IPollResults | null>(initialResults ?? null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [voteError, setVoteError] = React.useState('');
   const [countdown, setCountdown] = React.useState('');

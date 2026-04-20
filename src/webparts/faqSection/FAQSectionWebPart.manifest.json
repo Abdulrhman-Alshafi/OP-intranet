@@ -18,7 +18,7 @@
         "default": "Advanced"
       },
       "title": {
-        "default": "FAQ Section"
+        "default": "OP FAQ Section"
       },
       "description": {
         "default": "Displays a collapsible FAQ accordion from a SharePoint list. Site admins can add, edit, and delete FAQ items."

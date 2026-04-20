@@ -8,18 +8,26 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Dropdown, IDropdownOption, DocumentCard, Text, MessageBar, MessageBarType, Stack, IStackTokens, Spinner, SpinnerSize, useTheme } from '@fluentui/react';
 import { Placeholder } from '@pnp/spfx-controls-react/lib/Placeholder';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const RC: any = ResponsiveContainer;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BC: any = BarChart;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CG: any = CartesianGrid;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const XA: any = XAxis;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const YA: any = YAxis;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TT: any = Tooltip;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LG: any = Legend;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BR: any = Bar;
 
 const stackTokens: IStackTokens = { childrenGap: 24 };
 
-export default function SalesPerformanceDashboard(props: ISalesPerformanceDashboardProps) {
+export default function SalesPerformanceDashboard(props: ISalesPerformanceDashboardProps): React.ReactElement {
   const [data, setData] = useState<ISalesData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedRegion, setSelectedRegion] = useState<string>('All');
@@ -28,7 +36,7 @@ export default function SalesPerformanceDashboard(props: ISalesPerformanceDashbo
   const theme = useTheme();
 
   useEffect(() => {
-    async function loadData() {
+    async function loadData(): Promise<void> {
       if (!props.listId) {
         setLoading(false);
         return;
@@ -82,7 +90,7 @@ export default function SalesPerformanceDashboard(props: ISalesPerformanceDashbo
       acc[curr.Product].Target += curr.Target;
       acc[curr.Product].Achieved += curr.Achieved;
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, { name: string; Target: number; Achieved: number }>);
     return Object.keys(grouped).map(key => grouped[key]);
   }, [filteredData]);
 

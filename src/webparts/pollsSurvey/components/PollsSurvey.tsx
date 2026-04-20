@@ -20,7 +20,7 @@ import { Toggle } from '@fluentui/react/lib/Toggle';
 const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
   const {
     title,
-    refreshInterval,
+    refreshInterval: _refreshInterval,
     allowAnonymous,
     pollsPerPage,
     isAdmin,
@@ -79,7 +79,7 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
   const handleCreatePoll = async (
     question: string,
     choices: string[],
-    closingDate: string | null
+    closingDate: string | undefined
   ): Promise<void> => {
     setIsCreating(true);
     try {
@@ -237,7 +237,7 @@ const PollsSurvey: React.FC<IPollsSurveyProps> = (props) => {
               allowAnonymous={allowAnonymous}
               currentUserId={currentUserId}
               pollService={pollService}
-              initialResults={resultsMap[poll.Id] || null}
+              initialResults={resultsMap[poll.Id] || undefined}
               isAdmin={isAdmin}
               onVoteSubmitted={handleRefresh}
               onPollUpdated={handleRefresh}

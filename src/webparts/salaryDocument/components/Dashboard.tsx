@@ -11,7 +11,7 @@ import * as strings from 'SalaryDocumentWebPartStrings';
 import { ISalaryDocumentProps } from './ISalaryDocumentProps';
 import { SalaryTable } from './SalaryTable';
 import { UploadPanel } from './UploadPanel';
-import { ISalaryDocument, IPagedSalaryDocuments } from '../../../services/SalaryDocumentService';
+import { ISalaryDocument } from '../../../services/SalaryDocumentService';
 import styles from './SalaryDocument.module.scss';
 
 const PAGE_SIZE = 50;

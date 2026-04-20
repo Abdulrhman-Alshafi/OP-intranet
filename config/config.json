@@ -153,6 +153,14 @@
           "manifest": "./src/webparts/salesPerformanceDashboard/SalesPerformanceDashboardWebPart.manifest.json"
         }
       ]
+    },
+    "cv-recommendation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/cvRecommendation/CvRecommendationWebPart.js",
+          "manifest": "./src/webparts/cvRecommendation/CvRecommendationWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -177,6 +185,7 @@
     "ItHelpDeskHeroWebPartStrings": "lib/webparts/itHelpDeskHero/loc/{locale}.js",
     "FAQSectionWebPartStrings": "lib/webparts/faqSection/loc/{locale}.js",
     "HeroSectionV2WebPartStrings": "lib/webparts/heroSectionV2/loc/{locale}.js",
-    "SalesPerformanceDashboardWebPartStrings": "lib/webparts/salesPerformanceDashboard/loc/{locale}.js"
+    "SalesPerformanceDashboardWebPartStrings": "lib/webparts/salesPerformanceDashboard/loc/{locale}.js",
+    "CvRecommendationWebPartStrings": "lib/webparts/cvRecommendation/loc/{locale}.js"
   }
 }

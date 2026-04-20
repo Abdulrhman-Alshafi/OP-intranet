@@ -123,7 +123,7 @@ export default class TaskDashboardWebPart extends BaseClientSideWebPart<ITaskDas
             environmentMessage = strings.UnknownEnvironment;
         }
         return environmentMessage;
-      } catch (error) {
+      } catch {
         return strings.UnknownEnvironment;
       }
     }
@@ -199,6 +199,7 @@ export default class TaskDashboardWebPart extends BaseClientSideWebPart<ITaskDas
                   baseTemplate: 171, // Tasks list template
                   onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
                   properties: this.properties,
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   context: this.context as any,
                   onGetErrorMessage: undefined,
                   deferredValidationTime: 0,

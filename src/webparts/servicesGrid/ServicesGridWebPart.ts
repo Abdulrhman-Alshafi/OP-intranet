@@ -135,7 +135,7 @@ export default class ServicesGridWebPart extends BaseClientSideWebPart<IServices
                             type: "text",
                             placeholder: "Paste Image URL...",
                             value: value && !value.toString().startsWith("data:image") ? value : "",
-                            onChange: (e: any) => onUpdate(field.id, e.target.value),
+                            onChange: (e: React.ChangeEvent<HTMLInputElement>) => onUpdate(field.id, e.target.value),
                             style: { padding: '6px', border: '1px solid rgb(96, 94, 92)', borderRadius: '2px', width: '100%' }
                           }),
                           React.createElement("span", { key: "label", style: { fontSize: "12px", color: "rgb(96, 94, 92)" } }, "— OR Upload File —"),
@@ -143,11 +143,11 @@ export default class ServicesGridWebPart extends BaseClientSideWebPart<IServices
                             key: "file-input",
                             type: "file",
                             accept: "image/*",
-                            onChange: (e: any) => {
-                              const file = e.target.files[0];
+                            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                              const file = e.target.files?.[0];
                               if (file) {
                                 const reader = new FileReader();
-                                reader.onload = (event: any) => {
+                                reader.onload = (event: ProgressEvent<FileReader>) => {
                                   if (event.target && event.target.result) {
                                     onUpdate(field.id, event.target.result);
                                   }
