@@ -1,5 +1,34 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
+/* ===== Web Part Header / Title ===== */
+.wpHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wpTitleSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wpTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--neutralPrimary, #323130);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ===== Container ===== */
 .countdownContainer {
   width: 100%;

@@ -1,4 +1,5 @@
 export interface ICountdownTimerProps {
+  title: string;
   eventTitle: string;
   eventDescription: string;
   targetDate: string;

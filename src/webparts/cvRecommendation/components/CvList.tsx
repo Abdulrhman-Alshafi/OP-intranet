@@ -6,7 +6,15 @@ import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { Panel, PanelType } from '@fluentui/react/lib/Panel';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
 import { Stack } from '@fluentui/react/lib/Stack';
+import { Text } from '@fluentui/react/lib/Text';
 import { Dialog, DialogType, DialogFooter } from '@fluentui/react/lib/Dialog';
+import {
+  DetailsList,
+  DetailsListLayoutMode,
+  IColumn,
+  SelectionMode,
+  ConstrainMode
+} from '@fluentui/react/lib/DetailsList';
 
 import {
   ICvRecommendation,
@@ -177,13 +185,7 @@ const CvList: React.FC<ICvListProps> = ({
     }
   }, [deleteTarget, service, onRefresh, selected, closeDetail]);
 
-  // ─── Sort indicator ──────────────────────────────────────────────
-  const sortIcon = (field: SortField): string => {
-    if (sortField !== field) return 'Sort';
-    return sortDir === 'asc' ? 'SortUp' : 'SortDown';
-  };
-
-  // ─── Render Status Pills ─────────────────────────────────────────
+  // ─── Render Status Pills (HR detail panel) ──────────────────────
   const renderStatusActions = (item: ICvRecommendation): JSX.Element => {
     const statuses: ICvRecommendation['Status'][] = ['Submitted', 'Under Review', 'Accepted', 'Rejected'];
     return (
@@ -209,12 +211,139 @@ const CvList: React.FC<ICvListProps> = ({
             title={`Set status to ${s}`}
             onKeyDown={(e) => { if (e.key === 'Enter') handleStatusChange(item, s).catch(() => undefined); }}
           >
-            {s}{updatingStatus && item.Status !== s ? '' : ''}
+            {s}
           </span>
         ))}
       </Stack>
     );
   };
+
+  // ─── Columns (DetailsList) ───────────────────────────────────────
+  const columns = React.useMemo<IColumn[]>(() => {
+    const cols: IColumn[] = [
+      {
+        key: 'candidate',
+        name: 'Candidate',
+        fieldName: 'Title',
+        minWidth: 120,
+        maxWidth: 200,
+        isResizable: true,
+        onRender: (item: ICvRecommendation) => (
+          <span
+            style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--themePrimary, #0078d4)' }}
+            onClick={() => openDetail(item)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') openDetail(item); }}
+          >
+            {item.Title}
+          </span>
+        )
+      },
+      {
+        key: 'email',
+        name: 'Email',
+        fieldName: 'CandidateEmail',
+        minWidth: 140,
+        maxWidth: 220,
+        isResizable: true,
+        onRender: (item: ICvRecommendation) => (
+          <Text variant="small" styles={{ root: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' } }}>
+            {item.CandidateEmail}
+          </Text>
+        )
+      },
+      {
+        key: 'position',
+        name: 'Position',
+        fieldName: 'Position',
+        minWidth: 100,
+        maxWidth: 180,
+        isResizable: true,
+        onRender: (item: ICvRecommendation) => (
+          <Text variant="small">{item.Position}</Text>
+        )
+      }
+    ];
+
+    if (isHr) {
+      cols.push({
+        key: 'submittedBy',
+        name: 'Submitted By',
+        fieldName: 'SubmittedByName',
+        minWidth: 120,
+        maxWidth: 180,
+        isResizable: true,
+        onRender: (item: ICvRecommendation) => (
+          <Text variant="small">{item.SubmittedByName}</Text>
+        )
+      });
+    }
+
+    cols.push(
+      {
+        key: 'date',
+        name: 'Date',
+        fieldName: 'Created',
+        minWidth: 90,
+        maxWidth: 120,
+        isResizable: true,
+        onRender: (item: ICvRecommendation) => (
+          <Text variant="small">{formatDate(item.Created)}</Text>
+        )
+      },
+      {
+        key: 'status',
+        name: 'Status',
+        fieldName: 'Status',
+        minWidth: 110,
+        maxWidth: 140,
+        isResizable: true,
+        onRender: (item: ICvRecommendation) => (
+          <span className={`${styles.statusBadge} ${getStatusClass(item.Status)}`}>
+            {item.Status}
+          </span>
+        )
+      },
+      {
+        key: 'actions',
+        name: '',
+        minWidth: 90,
+        maxWidth: 110,
+        onRender: (item: ICvRecommendation) => {
+          const canDelete = isHr || item.SubmittedById === currentUserId;
+          return (
+            <div className={styles.actionsCell}>
+              <IconButton
+                iconProps={{ iconName: 'View' }}
+                title="View details"
+                onClick={() => openDetail(item)}
+              />
+              {item.CVFileUrl && (
+                <IconButton
+                  iconProps={{ iconName: 'Download' }}
+                  title="Download CV"
+                  href={item.CVFileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              )}
+              {canDelete && (
+                <IconButton
+                  iconProps={{ iconName: 'Delete' }}
+                  title="Delete"
+                  onClick={() => setDeleteTarget(item)}
+                  styles={{ root: { color: '#a4262c' }, rootHovered: { color: '#750b1c', backgroundColor: 'rgba(164,38,44,0.08)' } }}
+                />
+              )}
+            </div>
+          );
+        }
+      }
+    );
+
+    return cols;
+  }, [isHr, currentUserId, openDetail]);
 
   // ─── Render ──────────────────────────────────────────────────────
   return (
@@ -245,96 +374,29 @@ const CvList: React.FC<ICvListProps> = ({
 
       {/* Table */}
       {pageItems.length === 0 ? (
-        <div className={styles.stateBox}>
+        <Stack horizontalAlign="center" className={styles.stateBox}>
           <Icon iconName="SearchIssue" className={styles.stateIcon} />
-          <div className={styles.stateTitle}>No results found</div>
-          <div className={styles.stateDesc}>
+          <Text variant="large" className={styles.stateTitle}>No results found</Text>
+          <Text variant="small" className={styles.stateDesc}>
             {search || statusFilter !== 'All'
               ? 'Try adjusting your search or filter.'
               : 'No CV submissions yet.'}
-          </div>
-        </div>
+          </Text>
+        </Stack>
       ) : (
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th onClick={() => handleSort('Title')}>
-                  Candidate&nbsp;<Icon iconName={sortIcon('Title')} style={{ fontSize: 11 }} />
-                </th>
-                <th>Email</th>
-                <th onClick={() => handleSort('Position')}>
-                  Position&nbsp;<Icon iconName={sortIcon('Position')} style={{ fontSize: 11 }} />
-                </th>
-                {isHr && <th>Submitted By</th>}
-                <th onClick={() => handleSort('Created')}>
-                  Date&nbsp;<Icon iconName={sortIcon('Created')} style={{ fontSize: 11 }} />
-                </th>
-                <th onClick={() => handleSort('Status')}>
-                  Status&nbsp;<Icon iconName={sortIcon('Status')} style={{ fontSize: 11 }} />
-                </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageItems.map(item => {
-                const ownItem = item.SubmittedById === currentUserId;
-                const canDelete = isHr || ownItem;
-
-                return (
-                  <tr key={item.Id}>
-                    <td>
-                      <span
-                        style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--themePrimary, #0078d4)' }}
-                        onClick={() => openDetail(item)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter') openDetail(item); }}
-                      >
-                        {item.Title}
-                      </span>
-                    </td>
-                    <td>{item.CandidateEmail}</td>
-                    <td>{item.Position}</td>
-                    {isHr && <td>{item.SubmittedByName}</td>}
-                    <td>{formatDate(item.Created)}</td>
-                    <td>
-                      <span className={`${styles.statusBadge} ${getStatusClass(item.Status)}`}>
-                        {item.Status}
-                      </span>
-                    </td>
-                    <td>
-                      <div className={styles.actionsCell}>
-                        <IconButton
-                          iconProps={{ iconName: 'View' }}
-                          title="View details"
-                          onClick={() => openDetail(item)}
-                        />
-                        {item.CVFileUrl && (
-                          <IconButton
-                            iconProps={{ iconName: 'Download' }}
-                            title="Download CV"
-                            href={item.CVFileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          />
-                        )}
-                        {canDelete && (
-                          <IconButton
-                            iconProps={{ iconName: 'Delete' }}
-                            title="Delete"
-                            onClick={() => setDeleteTarget(item)}
-                            styles={{ root: { color: '#a4262c' } }}
-                          />
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <Stack tokens={{ childrenGap: 8 }}>
+          <div className={styles.tableWrapper}>
+            <DetailsList
+              items={pageItems}
+              columns={columns}
+              layoutMode={DetailsListLayoutMode.fixedColumns}
+              constrainMode={ConstrainMode.unconstrained}
+              selectionMode={SelectionMode.none}
+              isHeaderVisible={true}
+              compact={false}
+            />
+          </div>
+        </Stack>
       )}
 
       {/* Pagination */}

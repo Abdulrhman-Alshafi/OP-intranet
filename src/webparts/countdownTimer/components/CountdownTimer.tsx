@@ -14,6 +14,7 @@ interface ITimeLeft {
 
 const CountdownTimer = (props: ICountdownTimerProps): React.ReactElement => {
   const {
+    title,
     eventTitle,
     eventDescription,
     targetDate,
@@ -67,12 +68,21 @@ const CountdownTimer = (props: ICountdownTimerProps): React.ReactElement => {
 
   if (!targetDate) {
     return (
-      <section className={styles.countdownContainer}>
-        <div className={styles.emptyState}>
-          <h2>Countdown Timer</h2>
-          <p>Set a target date in the property pane to start the countdown.</p>
-        </div>
-      </section>
+      <>
+        {title && (
+          <div className={styles.wpHeader}>
+            <div className={styles.wpTitleSection}>
+              <h2 className={styles.wpTitle}>{title}</h2>
+            </div>
+          </div>
+        )}
+        <section className={styles.countdownContainer}>
+          <div className={styles.emptyState}>
+            <h2>Countdown Timer</h2>
+            <p>Set a target date in the property pane to start the countdown.</p>
+          </div>
+        </section>
+      </>
     );
   }
 
@@ -113,8 +123,18 @@ const CountdownTimer = (props: ICountdownTimerProps): React.ReactElement => {
     </div>
   );
 
+  const titleElement = title ? (
+    <div className={styles.wpHeader}>
+      <div className={styles.wpTitleSection}>
+        <h2 className={styles.wpTitle}>{title}</h2>
+      </div>
+    </div>
+  ) : null;
+
   return (
-    <section className={styles.countdownContainer}>
+    <>
+      {titleElement}
+      <section className={styles.countdownContainer}>
       {hasImage && (
         <>
           <div className={styles.bgImage} style={{ backgroundImage: `url(${backgroundImage})` }} />
@@ -142,6 +162,7 @@ const CountdownTimer = (props: ICountdownTimerProps): React.ReactElement => {
         )}
       </div>
     </section>
+    </>
   );
 };
 

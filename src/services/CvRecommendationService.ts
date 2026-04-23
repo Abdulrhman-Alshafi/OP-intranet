@@ -29,7 +29,7 @@ export interface ICvStats {
 
 const LIST_NAME = 'CVRecommendations';
 const LIBRARY_NAME = 'CVRecommendationFiles';
-const HR_GROUP_NAME = 'HR Team';
+const HR_GROUP_NAME = 'HR';
 
 /**
  * Service class for all SharePoint operations related to CV Recommendations.
@@ -259,8 +259,9 @@ export class CvRecommendationService {
       {
         body,
         headers: {
-          'Content-Type': 'application/json;odata=verbose',
-          Accept: 'application/json;odata=verbose'
+          'Content-Type': 'application/json;odata=nometadata',
+          'Accept': 'application/json;odata=nometadata',
+          'odata-version': ''
         }
       } as ISPHttpClientOptions
     );
@@ -283,8 +284,9 @@ export class CvRecommendationService {
       {
         body: JSON.stringify({ Status: newStatus }),
         headers: {
-          'Content-Type': 'application/json;odata=verbose',
-          Accept: 'application/json;odata=verbose',
+          'Content-Type': 'application/json;odata=nometadata',
+          'Accept': 'application/json;odata=nometadata',
+          'odata-version': '',
           'IF-MATCH': '*',
           'X-HTTP-Method': 'MERGE'
         }
@@ -306,8 +308,9 @@ export class CvRecommendationService {
       {
         body: JSON.stringify({}),
         headers: {
-          'Content-Type': 'application/json;odata=verbose',
-          Accept: 'application/json;odata=verbose',
+          'Content-Type': 'application/json;odata=nometadata',
+          'Accept': 'application/json;odata=nometadata',
+          'odata-version': '',
           'IF-MATCH': '*',
           'X-HTTP-Method': 'DELETE'
         }
@@ -335,15 +338,17 @@ export class CvRecommendationService {
   // ─── File Upload ──────────────────────────────────────────────────────────
 
   private async _uploadFile(file: File): Promise<{ url: string; name: string }> {
-    const safeName = file.name.replace(/['"]/g, '_');
+    const safeName = encodeURIComponent(file.name.replace(/['"]/g, '_'));
     const uploadUrl = `${this._siteUrl}/_api/web/lists/getbytitle('${LIBRARY_NAME}')/rootfolder/files/add(url='${safeName}',overwrite=true)`;
 
     const arrayBuffer = await file.arrayBuffer();
     const res = await this._spHttpClient.post(uploadUrl, SPHttpClient.configurations.v1, {
-      body: arrayBuffer,
       headers: {
-        Accept: 'application/json;odata=verbose'
-      }
+        'Accept': 'application/json;odata=nometadata',
+        'Content-Type': 'application/octet-stream',
+        'odata-version': ''
+      },
+      body: arrayBuffer
     } as ISPHttpClientOptions);
 
     if (!res.ok) {
@@ -352,10 +357,10 @@ export class CvRecommendationService {
     }
 
     const json = await res.json();
-    const serverRelativeUrl: string = json?.d?.ServerRelativeUrl ?? '';
+    const serverRelativeUrl: string = json?.ServerRelativeUrl ?? '';
     return {
       url: serverRelativeUrl ? `${this._siteUrl.split('/_api')[0]}${serverRelativeUrl}` : '',
-      name: safeName
+      name: file.name.replace(/['"]/g, '_')
     };
   }
 }

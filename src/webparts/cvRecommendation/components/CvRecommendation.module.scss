@@ -17,9 +17,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid "[theme:neutralLight, default: #edebe9]";
-  border-bottom-color: var(--neutralLight);
   flex-wrap: wrap;
   gap: 12px;
 
@@ -187,6 +184,13 @@
 
 /* ─── Table / List ───────────────────────────────────────────────── */
 .tableWrapper {
+  overflow-x: auto;
+  border: 1px solid "[theme:neutralLight, default: #edebe9]";
+  border-color: var(--neutralLight, #edebe9);
+  border-radius: 6px;
+}
+
+.tableScrollWrapper {
   overflow-x: auto;
   border: 1px solid "[theme:neutralLight, default: #edebe9]";
   border-color: var(--neutralLight, #edebe9);

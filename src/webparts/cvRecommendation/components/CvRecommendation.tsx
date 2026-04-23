@@ -7,10 +7,8 @@ import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
 import { ICvRecommendationProps } from './ICvRecommendationProps';
 import {
   CvRecommendationService,
-  ICvRecommendation,
-  ICvStats
+  ICvRecommendation
 } from '../../../services/CvRecommendationService';
-import CvDashboard from './CvDashboard';
 import CvList from './CvList';
 import CvSubmitForm from './CvSubmitForm';
 import styles from './CvRecommendation.module.scss';
@@ -20,7 +18,6 @@ const CvRecommendation: React.FC<ICvRecommendationProps> = (props) => {
 
   // ─── State ────────────────────────────────────────────────────────────
   const [items, setItems] = React.useState<ICvRecommendation[]>([]);
-  const [stats, setStats] = React.useState<ICvStats>({ total: 0, submitted: 0, underReview: 0, accepted: 0, rejected: 0 });
   const [isHr, setIsHr] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string>('');
@@ -44,7 +41,6 @@ const CvRecommendation: React.FC<ICvRecommendationProps> = (props) => {
       setIsHr(hrCheck);
       const data = await svc.getCvRecommendations(currentUserId, hrCheck);
       setItems(data);
-      setStats(svc.computeStats(data));
     } catch (e) {
       console.error('CvRecommendation: init error', e);
       setError(e instanceof Error ? e.message : 'Failed to load CV recommendations.');
@@ -84,19 +80,11 @@ const CvRecommendation: React.FC<ICvRecommendationProps> = (props) => {
         <div className={styles.headerLeft}>
           <Icon iconName="People" className={styles.titleIcon} />
           <h2 className={styles.title}>{title}</h2>
-          <span className={`${styles.roleBadge} ${isHr ? styles.roleBadgeHr : styles.roleBadgeEmployee}`}>
-            <Icon iconName={isHr ? 'Shield' : 'Contact'} style={{ fontSize: 10 }} />
-            {isHr ? 'HR Admin' : 'Employee'}
-          </span>
         </div>
         <PrimaryButton
           iconProps={{ iconName: 'Add' }}
           text="Recommend a CV"
           onClick={() => setFormOpen(true)}
-          styles={{
-            root: { backgroundColor: accentColor, borderColor: accentColor },
-            rootHovered: { backgroundColor: accentColor, filter: 'brightness(0.9)' }
-          }}
         />
       </div>
 
@@ -118,9 +106,6 @@ const CvRecommendation: React.FC<ICvRecommendationProps> = (props) => {
         </div>
       ) : (
         <>
-          {/* Dashboard / Stats */}
-          <CvDashboard stats={stats} accentColor={accentColor} />
-
           {/* List */}
           {items.length === 0 && !error ? (
             <div className={styles.stateBox}>

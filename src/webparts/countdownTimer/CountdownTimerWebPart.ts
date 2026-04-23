@@ -19,6 +19,7 @@ import { ICountdownTimerProps } from './components/ICountdownTimerProps';
 import { configureFluentUi } from '../../common/configureFluentUi';
 
 export interface ICountdownTimerWebPartProps {
+  title: string;
   eventTitle: string;
   eventDescription: string;
   targetDate: IDateTimeFieldValue;
@@ -41,6 +42,7 @@ export default class CountdownTimerWebPart extends BaseClientSideWebPart<ICountd
     const element: React.ReactElement<ICountdownTimerProps> = React.createElement(
       CountdownTimer,
       {
+        title: this.properties.title || '',
         eventTitle: this.properties.eventTitle || '',
         eventDescription: this.properties.eventDescription || '',
         targetDate: this.properties.targetDate && this.properties.targetDate.value
@@ -98,6 +100,7 @@ export default class CountdownTimerWebPart extends BaseClientSideWebPart<ICountd
             {
               groupName: 'Event Details',
               groupFields: [
+                PropertyPaneTextField('title', { label: 'Title', placeholder: 'Enter webpart title...' }),
                 PropertyPaneTextField('eventTitle', { label: 'Event Title' }),
                 PropertyPaneTextField('eventDescription', { label: 'Event Description', multiline: true }),
                 PropertyFieldDateTimePicker('targetDate', {
